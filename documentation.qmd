@@ -1,0 +1,81 @@
+---
+title: "Documentation"
+format:
+  html:
+    toc: true
+---
+
+# omeka2dsp Documentation
+
+Complete documentation for the Omeka to DaSCH Service Platform (DSP) data migration tool.
+
+## Core Documentation
+
+### [System Architecture](architecture.qmd)
+Overview of system components, design patterns, and data flow architecture with class diagrams illustrating core components and their interactions.
+
+### [Data Migration Workflows](workflows.qmd) 
+Complete workflow documentation with Mermaid diagrams covering:
+- Main migration workflow (end-to-end process)
+- Data extraction workflow (Omeka API interaction)
+- Data transformation workflow (format conversion)
+- Synchronization workflow (incremental updates)
+- File upload workflow (media processing)
+- Error handling workflow (recovery and retry)
+
+### [Python API Reference](api.qmd)
+Comprehensive documentation of all 5 Python modules with 50+ functions:
+- `data_2_dasch.py` - Main migration orchestrator
+- `process_data_from_omeka.py` - Omeka API interface
+- `api_get_project.py` - DSP project information
+- `api_get_lists.py` - DSP list configuration
+- `api_get_lists_detailed.py` - Detailed list metadata
+
+## User Guides
+
+### [Installation & Setup](installation.qmd)
+Prerequisites, setup steps, and validation procedures for getting the system running.
+
+### [Configuration](configuration.qmd)
+Environment variables, settings, and performance tuning options.
+
+### [Usage Guide](usage.qmd)
+Processing modes, monitoring, and best practices for running migrations.
+
+### [Development Guide](development.qmd)
+Contribution guidelines, code standards, and extension examples.
+
+### [Troubleshooting](troubleshooting.qmd)
+Common issues, diagnostic scripts, and solutions.
+
+## Quick Start
+
+1. **Setup Environment**: Configure your environment variables (see [Configuration Guide](configuration.qmd))
+2. **Install Dependencies**: Install required Python packages
+3. **Run Migration**: Execute the data transfer script
+
+```bash
+# Set up environment variables
+cp example.env .env
+# Edit .env with your configuration
+
+# Run the migration
+python scripts/data_2_dasch.py
+```
+
+## System Overview
+
+The omeka2dsp system transfers research data from [Stadt.Geschichte.Basel (SGB)](https://stadtgeschichtebasel.ch/)'s Omeka instance to the [DaSCH Service Platform (DSP)](https://www.dasch.swiss/plattform-characteristics) for long-term preservation.
+
+```mermaid
+graph LR
+    A[Omeka API] --> B[data_2_dasch.py]
+    B --> C[DSP API]
+    B --> D[File Storage]
+    
+    E[process_data_from_omeka.py] --> B
+    F[Configuration] --> B
+    
+    style A fill:#e1f5fe
+    style C fill:#e8f5e8
+```

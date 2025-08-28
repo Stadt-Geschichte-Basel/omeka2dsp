@@ -28,6 +28,9 @@ website:
         href: index.qmd
       - text: Documentation
         menu:
+          - text: Overview
+            href: documentation.qmd
+          - text: '---'
           - text: Architecture
             href: architecture.qmd
           - text: Workflows
@@ -67,6 +70,8 @@ website:
             href: SECURITY.md
       - section: Documentation
         contents:
+          - text: Overview
+            href: documentation.qmd
           - text: System Architecture
             href: architecture.qmd
           - text: Data Workflows
