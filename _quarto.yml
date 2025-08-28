@@ -24,8 +24,27 @@ website:
       - icon: github
         url: https://github.com/Stadt-Geschichte-Basel/omeka2dsp/
     left:
-      - text: Readme
+      - text: Home
         href: index.qmd
+      - text: Documentation
+        menu:
+          - text: Architecture
+            href: architecture.qmd
+          - text: Workflows
+            href: workflows.qmd
+          - text: API Reference
+            href: api.qmd
+          - text: '---'
+          - text: Installation
+            href: installation.qmd
+          - text: Configuration
+            href: configuration.qmd
+          - text: Usage
+            href: usage.qmd
+          - text: Development
+            href: development.qmd
+          - text: Troubleshooting
+            href: troubleshooting.qmd
       - text: Report
         href: report.md
 
@@ -46,6 +65,26 @@ website:
             href: LICENSE-AGPL.md
           - text: Security
             href: SECURITY.md
+      - section: Documentation
+        contents:
+          - text: System Architecture
+            href: architecture.qmd
+          - text: Data Workflows
+            href: workflows.qmd
+          - text: API Reference
+            href: api.qmd
+      - section: Guides
+        contents:
+          - text: Installation & Setup
+            href: installation.qmd
+          - text: Configuration
+            href: configuration.qmd
+          - text: Usage Guide
+            href: usage.qmd
+          - text: Development Guide
+            href: development.qmd
+          - text: Troubleshooting
+            href: troubleshooting.qmd
       - href: report.md
         contents: project-management/*
 
