@@ -64,11 +64,13 @@ uv run python scripts/data_2_dasch.py -m all_data
 ```
 
 **Use Cases**:
+
 - Production migrations
 - Complete data transfers
 - Initial system setup
 
 **Considerations**:
+
 - Can take several hours for large collections
 - Requires stable network connection
 - Monitor disk space for media downloads
@@ -81,7 +83,8 @@ Processes a random sample of items for testing purposes.
 uv run python scripts/data_2_dasch.py -m sample_data
 ```
 
-**Configuration**: 
+**Configuration**:
+ 
 Edit `NUMBER_RANDOM_OBJECTS` in `data_2_dasch.py`:
 
 ```python
@@ -89,6 +92,7 @@ NUMBER_RANDOM_OBJECTS = 10  # Process 10 random items
 ```
 
 **Use Cases**:
+
 - Testing configuration changes
 - Validating data transformations
 - Performance testing with smaller datasets
@@ -102,6 +106,7 @@ uv run python scripts/data_2_dasch.py -m test_data
 ```
 
 **Configuration**:
+
 Edit `TEST_DATA` set in `data_2_dasch.py`:
 
 ```python
@@ -113,6 +118,7 @@ TEST_DATA = {
 ```
 
 **Use Cases**:
+
 - Debugging specific items
 - Testing edge cases
 - Development workflow
@@ -341,7 +347,8 @@ FILE_PROCESSING_CONFIG = {
 
 ### Authentication Problems
 
-**Issue**: Login failed or token expired
+**Issue**:
+ Login failed or token expired
 
 ```bash
 # Test authentication
@@ -357,13 +364,15 @@ except Exception as e:
 ```
 
 **Solutions**:
+
 - Verify username and password
 - Check if account is locked
 - Ensure API endpoints are correct
 
 ### Network Issues
 
-**Issue**: Connection timeouts or failures
+**Issue**:
+ Connection timeouts or failures
 
 ```bash
 # Test network connectivity
@@ -372,13 +381,15 @@ ping api.dasch.swiss
 ```
 
 **Solutions**:
+
 - Check internet connection
 - Verify firewall settings
 - Consider proxy configuration
 
 ### Data Validation Errors
 
-**Issue**: Invalid payload or data format errors
+**Issue**:
+ Invalid payload or data format errors
 
 ```bash
 # Check specific item data
@@ -391,13 +402,15 @@ print(json.dumps(problem_item, indent=2))
 ```
 
 **Solutions**:
+
 - Verify data model compatibility
 - Check required field presence
 - Validate list value mappings
 
 ### File Upload Failures
 
-**Issue**: Media files fail to upload
+**Issue**:
+ Media files fail to upload
 
 ```bash
 # Check file accessibility
@@ -405,6 +418,7 @@ curl -I "https://omeka.example.com/files/original/problematic-file.jpg"
 ```
 
 **Solutions**:
+
 - Verify file exists and is accessible
 - Check file size limits
 - Ensure stable network connection

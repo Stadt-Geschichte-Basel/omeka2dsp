@@ -66,11 +66,14 @@ graph TB
 
 ### 1. Data Extraction Layer (`process_data_from_omeka.py`)
 
-**Purpose**: Interfaces with Omeka API to retrieve items, media, and metadata.
+**Purpose**:
+ Interfaces with Omeka API to retrieve items, media, and metadata.
 
-**Key Functions**: - `get_items_from_collection()` - Retrieves paginated items from collections - `get_media()` - Fetches media files associated with items - `extract_property()` - Extracts specific metadata properties - `extract_combined_values()` - Combines multiple property values
+**Key Functions**:
+ - `get_items_from_collection()` - Retrieves paginated items from collections - `get_media()` - Fetches media files associated with items - `extract_property()` - Extracts specific metadata properties - `extract_combined_values()` - Combines multiple property values
 
-**Architecture Pattern**: Repository pattern with API abstraction
+**Architecture Pattern**:
+ Repository pattern with API abstraction
 
 ```{mermaid}
 classDiagram
@@ -93,11 +96,14 @@ classDiagram
 
 ### 2. Data Transformation Layer (`data_2_dasch.py` - transformation functions)
 
-**Purpose**: Converts Omeka data structures to DSP-compatible formats.
+**Purpose**:
+ Converts Omeka data structures to DSP-compatible formats.
 
-**Key Functions**: - `construct_payload()` - Builds DSP resource payloads - `extract_listvalueiri_from_value()` - Maps values to DSP list nodes - `specify_mediaclass()` - Determines appropriate DSP media classes
+**Key Functions**:
+ - `construct_payload()` - Builds DSP resource payloads - `extract_listvalueiri_from_value()` - Maps values to DSP list nodes - `specify_mediaclass()` - Determines appropriate DSP media classes
 
-**Architecture Pattern**: Builder pattern with strategy pattern for different resource types
+**Architecture Pattern**:
+ Builder pattern with strategy pattern for different resource types
 
 ```{mermaid}
 classDiagram
@@ -135,11 +141,14 @@ classDiagram
 
 ### 3. Synchronization Layer (`data_2_dasch.py` - sync functions)
 
-**Purpose**: Handles incremental updates and conflict resolution between systems.
+**Purpose**:
+ Handles incremental updates and conflict resolution between systems.
 
-**Key Functions**: - `check_values()` - Compares Omeka and DSP data for differences - `sync_value()` - Synchronizes single-value properties - `sync_array_value()` - Synchronizes multi-value properties - `update_value()` - Performs actual API updates
+**Key Functions**:
+ - `check_values()` - Compares Omeka and DSP data for differences - `sync_value()` - Synchronizes single-value properties - `sync_array_value()` - Synchronizes multi-value properties - `update_value()` - Performs actual API updates
 
-**Architecture Pattern**: Strategy pattern with command pattern for updates
+**Architecture Pattern**:
+ Strategy pattern with command pattern for updates
 
 ```{mermaid}
 classDiagram
@@ -185,9 +194,11 @@ classDiagram
 
 ### 4. Upload & File Management Layer (`data_2_dasch.py` - file functions)
 
-**Purpose**: Manages file uploads and media processing for DSP.
+**Purpose**:
+ Manages file uploads and media processing for DSP.
 
-**Key Functions**: - `upload_file_from_url()` - Downloads and uploads files to DSP - `create_resource()` - Creates new DSP resources - `get_full_resource()` - Retrieves complete resource data
+**Key Functions**:
+ - `upload_file_from_url()` - Downloads and uploads files to DSP - `create_resource()` - Creates new DSP resources - `get_full_resource()` - Retrieves complete resource data
 
 ## Data Flow Architecture
 

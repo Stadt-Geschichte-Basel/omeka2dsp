@@ -34,7 +34,7 @@ We recommend using **[GitHub Codespaces](https://github.com/features/codespaces)
 ### GitHub Codespaces (Recommended)
 
 1. Click the green **`<> Code`** button → **"Codespaces"** → **"Create codespace on `main`"**
-2. Configure environment: `cp example.env .env` and edit with your credentials  
+2. Configure environment: `cp example.env .env` and edit with your credentials
 3. Test installation: `uv run python scripts/api_get_project.py`
 
 ### Local Installation

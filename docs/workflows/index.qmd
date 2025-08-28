@@ -4,20 +4,20 @@ This document describes the various workflows in the omeka2dsp system using Merm
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Main Migration Workflow](#main-migration-workflow)
-3. [Data Extraction Workflow](#data-extraction-workflow)
-4. [Data Transformation Workflow](#data-transformation-workflow)
-5. [Synchronization Workflow](#synchronization-workflow)
-6. [File Upload Workflow](#file-upload-workflow)
-7. [Error Handling Workflow](#error-handling-workflow)
-8. [API Utility Workflows](#api-utility-workflows)
+1.  [Overview](#overview)
+2.  [Main Migration Workflow](#main-migration-workflow)
+3.  [Data Extraction Workflow](#data-extraction-workflow)
+4.  [Data Transformation Workflow](#data-transformation-workflow)
+5.  [Synchronization Workflow](#synchronization-workflow)
+6.  [File Upload Workflow](#file-upload-workflow)
+7.  [Error Handling Workflow](#error-handling-workflow)
+8.  [API Utility Workflows](#api-utility-workflows)
 
-## Overview
+## Overview {#overview}
 
 The omeka2dsp system implements several interconnected workflows that work together to migrate and synchronize cultural heritage data between Omeka and DSP platforms.
 
-```mermaid
+```{mermaid}
 graph TB
     subgraph "Primary Workflows"
         A[Main Migration Workflow]
@@ -51,11 +51,11 @@ graph TB
     style E fill:#fff3e0
 ```
 
-## Main Migration Workflow
+## Main Migration Workflow {#main-migration-workflow}
 
 This is the primary workflow executed when running `data_2_dasch.py`. It orchestrates all other workflows.
 
-```mermaid
+```{mermaid}
 flowchart TD
     Start([Start Script]) --> ParseArgs[Parse Command Line Arguments]
     ParseArgs --> LoadConfig[Load Environment Configuration]
@@ -128,7 +128,7 @@ flowchart TD
 
 ### Processing Mode Details
 
-```mermaid
+```{mermaid}
 graph LR
     subgraph "Processing Modes"
         A[all_data] --> A1[Process entire collection]
@@ -145,11 +145,11 @@ graph LR
     style C fill:#ffebee
 ```
 
-## Data Extraction Workflow
+## Data Extraction Workflow {#data-extraction-workflow}
 
 Handles the extraction of data from the Omeka API, implemented primarily in `process_data_from_omeka.py`.
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant Script as Main Script
     participant Extractor as Data Extractor
@@ -186,7 +186,7 @@ sequenceDiagram
 
 ### Property Extraction Details
 
-```mermaid
+```{mermaid}
 flowchart TD
     A[Raw Omeka Property Array] --> B[extract_property Function]
     B --> C{Property ID Match?}
@@ -211,11 +211,11 @@ flowchart TD
     style B fill:#fff3e0
 ```
 
-## Data Transformation Workflow
+## Data Transformation Workflow {#data-transformation-workflow}
 
 Converts Omeka data structures into DSP-compatible formats, primarily handled by the `construct_payload()` function.
 
-```mermaid
+```{mermaid}
 flowchart TD
     A[Omeka Item Data] --> B[construct_payload Function]
     B --> C[Initialize Base Payload Structure]
@@ -270,7 +270,7 @@ flowchart TD
 
 ### List Value Mapping
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant T as Transformer
     participant M as Mapper
@@ -293,11 +293,11 @@ sequenceDiagram
     end
 ```
 
-## Synchronization Workflow
+## Synchronization Workflow {#synchronization-workflow}
 
 Handles incremental updates by comparing existing DSP data with current Omeka data.
 
-```mermaid
+```{mermaid}
 flowchart TD
     A[Resource Exists in DSP] --> B[get_full_resource]
     B --> C[Extract Current DSP Values]
@@ -338,7 +338,7 @@ flowchart TD
 
 ### Array Value Synchronization Detail
 
-```mermaid
+```{mermaid}
 flowchart LR
     A[DSP Array: a,b,c] --> C[Comparison Logic]
     B[Omeka Array: b,c,d] --> C
@@ -359,11 +359,11 @@ flowchart LR
     style K fill:#e8f5e8
 ```
 
-## File Upload Workflow
+## File Upload Workflow {#file-upload-workflow}
 
 Manages the transfer of media files from Omeka to DSP storage.
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant Script as Main Script
     participant Uploader as File Uploader
@@ -398,7 +398,7 @@ sequenceDiagram
 
 ### Media Type Classification
 
-```mermaid
+```{mermaid}
 graph TD
     A[Media MIME Type] --> B[specify_mediaclass Function]
     
@@ -422,11 +422,11 @@ graph TD
     style H fill:#f3e5f5
 ```
 
-## Error Handling Workflow
+## Error Handling Workflow {#error-handling-workflow}
 
 Comprehensive error handling and recovery mechanisms throughout the system.
 
-```mermaid
+```{mermaid}
 flowchart TD
     A[Operation Attempted] --> B{Operation Successful?}
     
@@ -470,13 +470,13 @@ flowchart TD
     style E fill:#fff8e1
 ```
 
-## API Utility Workflows
+## API Utility Workflows {#api-utility-workflows}
 
 Supporting scripts that prepare the environment and fetch configuration data.
 
 ### Project Information Workflow (`api_get_project.py`)
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant Script as api_get_project.py
     participant DSPAPI as DSP API
@@ -499,7 +499,7 @@ sequenceDiagram
 
 ### Lists Retrieval Workflow (`api_get_lists.py`)
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant Script as api_get_lists.py
     participant DSPAPI as DSP API
@@ -522,7 +522,7 @@ sequenceDiagram
 
 ### Detailed Lists Workflow (`api_get_lists_detailed.py`)
 
-```mermaid
+```{mermaid}
 flowchart TD
     A[Start Script] --> B[Load data_lists.json]
     B --> C{File Loaded?}
@@ -558,7 +558,7 @@ flowchart TD
 
 All workflows integrate through the main processing pipeline:
 
-```mermaid
+```{mermaid}
 graph TB
     subgraph "Initialization Phase"
         A1[Configuration Loading]
