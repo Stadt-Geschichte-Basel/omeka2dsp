@@ -1,8 +1,0 @@
----
-title: "Data Migration Workflows"
-format:
-  html:
-    toc: true
----
-
-{{< include docs/workflows/index.qmd >}}

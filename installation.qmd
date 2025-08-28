@@ -1,8 +1,0 @@
----
-title: "Installation & Setup"
-format:
-  html:
-    toc: true
----
-
-{{< include docs/guides/installation.qmd >}}

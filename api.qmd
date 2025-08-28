@@ -1,8 +1,0 @@
----
-title: "Python API Reference"
-format:
-  html:
-    toc: true
----
-
-{{< include docs/api/index.qmd >}}

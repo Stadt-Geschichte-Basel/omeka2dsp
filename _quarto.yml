@@ -29,27 +29,27 @@ website:
       - text: Documentation
         menu:
           - text: Overview
-            href: documentation.qmd
+            href: docs/index.qmd
           - text: '---'
           - text: Architecture
-            href: architecture.qmd
+            href: docs/architecture/index.qmd
           - text: Workflows
-            href: workflows.qmd
+            href: docs/workflows/index.qmd
           - text: API Reference
-            href: api.qmd
+            href: docs/api/index.qmd
           - text: '---'
           - text: Installation
-            href: installation.qmd
+            href: docs/guides/installation.qmd
           - text: Configuration
-            href: configuration.qmd
+            href: docs/guides/configuration.qmd
           - text: Usage
-            href: usage.qmd
+            href: docs/guides/usage.qmd
           - text: Development
-            href: development.qmd
+            href: docs/guides/development.qmd
           - text: Troubleshooting
-            href: troubleshooting.qmd
+            href: docs/guides/troubleshooting.qmd
       - text: Report
-        href: report.md
+        href: report.qmd
 
   sidebar:
     contents:
@@ -71,26 +71,26 @@ website:
       - section: Documentation
         contents:
           - text: Overview
-            href: documentation.qmd
+            href: docs/index.qmd
           - text: System Architecture
-            href: architecture.qmd
+            href: docs/architecture/index.qmd
           - text: Data Workflows
-            href: workflows.qmd
+            href: docs/workflows/index.qmd
           - text: API Reference
-            href: api.qmd
+            href: docs/api/index.qmd
       - section: Guides
         contents:
           - text: Installation & Setup
-            href: installation.qmd
+            href: docs/guides/installation.qmd
           - text: Configuration
-            href: configuration.qmd
+            href: docs/guides/configuration.qmd
           - text: Usage Guide
-            href: usage.qmd
+            href: docs/guides/usage.qmd
           - text: Development Guide
-            href: development.qmd
+            href: docs/guides/development.qmd
           - text: Troubleshooting
-            href: troubleshooting.qmd
-      - href: report.md
+            href: docs/guides/troubleshooting.qmd
+      - href: report.qmd
         contents: project-management/*
 
 format:

@@ -1,8 +1,0 @@
----
-title: "System Architecture"
-format:
-  html:
-    toc: true
----
-
-{{< include docs/architecture/index.qmd >}}

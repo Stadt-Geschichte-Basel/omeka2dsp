@@ -1,8 +1,0 @@
----
-title: "Troubleshooting"
-format:
-  html:
-    toc: true
----
-
-{{< include docs/guides/troubleshooting.qmd >}}
