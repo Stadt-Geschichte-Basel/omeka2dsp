@@ -4,14 +4,14 @@ Comprehensive guide to configuring the omeka2dsp system for your specific migrat
 
 ## Table of Contents
 
-1. [Environment Variables](#environment-variables)
-2. [Processing Configuration](#processing-configuration)
-3. [Data Mapping Configuration](#data-mapping-configuration)
-4. [Performance Tuning](#performance-tuning)
-5. [Security Configuration](#security-configuration)
-6. [Advanced Configuration](#advanced-configuration)
+1.  [Environment Variables](#environment-variables)
+2.  [Processing Configuration](#processing-configuration)
+3.  [Data Mapping Configuration](#data-mapping-configuration)
+4.  [Performance Tuning](#performance-tuning)
+5.  [Security Configuration](#security-configuration)
+6.  [Advanced Configuration](#advanced-configuration)
 
-## Environment Variables
+## Environment Variables {#environment-variables}
 
 The system uses environment variables for configuration, following the 12-factor app methodology for maintainability and security.
 
@@ -19,7 +19,7 @@ The system uses environment variables for configuration, following the 12-factor
 
 #### Omeka API Configuration
 
-```bash
+``` bash
 # Omeka instance API endpoint
 OMEKA_API_URL=https://your-omeka-instance.com/api/
 
@@ -31,20 +31,13 @@ KEY_CREDENTIAL=your_api_key_credential
 ITEM_SET_ID=10780
 ```
 
-**Getting Omeka Credentials**:
-1. Log into your Omeka admin panel
-2. Navigate to User settings → API keys
-3. Create a new API key
-4. Copy the Identity and Credential values
+**Getting Omeka Credentials**: 1. Log into your Omeka admin panel 2. Navigate to User settings → API keys 3. Create a new API key 4. Copy the Identity and Credential values
 
-**Finding Collection ID**:
-1. In Omeka admin, go to Item sets
-2. Click on your collection
-3. The ID is in the URL: `/admin/item-sets/show/{ID}`
+**Finding Collection ID**: 1. In Omeka admin, go to Item sets 2. Click on your collection 3. The ID is in the URL: `/admin/item-sets/show/{ID}`
 
 #### DSP API Configuration
 
-```bash
+``` bash
 # DSP project identifier (shortcode)
 PROJECT_SHORT_CODE=0123
 
@@ -60,17 +53,13 @@ DSP_PWD=your_secure_password
 PREFIX=StadtGeschichteBasel_v1:
 ```
 
-**DSP Configuration Notes**:
-- `PROJECT_SHORT_CODE`: 4-character alphanumeric project identifier
-- `API_HOST`: Main DSP API endpoint (varies by instance)
-- `INGEST_HOST`: File upload service endpoint
-- `PREFIX`: Must match your DSP ontology namespace
+**DSP Configuration Notes**: - `PROJECT_SHORT_CODE`: 4-character alphanumeric project identifier - `API_HOST`: Main DSP API endpoint (varies by instance) - `INGEST_HOST`: File upload service endpoint - `PREFIX`: Must match your DSP ontology namespace
 
 ### Environment File Template
 
 Create `.env` from template:
 
-```bash
+``` bash
 # Copy example configuration
 cp example.env .env
 
@@ -80,7 +69,7 @@ nano .env
 
 Complete `.env` template:
 
-```bash
+``` bash
 # ===========================================
 # OMEKA CONFIGURATION
 # ===========================================
@@ -127,7 +116,7 @@ DEBUG_MODE=false
 MAX_RETRIES=3
 ```
 
-## Processing Configuration
+## Processing Configuration {#processing-configuration}
 
 Control how the migration processes data by modifying constants in `scripts/data_2_dasch.py`.
 
@@ -135,7 +124,7 @@ Control how the migration processes data by modifying constants in `scripts/data
 
 The system supports three processing modes:
 
-```python
+``` python
 # Edit these constants in data_2_dasch.py
 
 # Number of random items for sample mode
@@ -153,17 +142,17 @@ TEST_DATA = {
 
 #### Mode Configuration
 
-| Mode | Configuration | Use Case |
-|------|---------------|----------|
-| `all_data` | Uses `ITEM_SET_ID` | Full production migration |
-| `sample_data` | Uses `NUMBER_RANDOM_OBJECTS` | Testing with subset |
-| `test_data` | Uses `TEST_DATA` identifiers | Development and debugging |
+| Mode          | Configuration                | Use Case                  |
+|---------------|------------------------------|---------------------------|
+| `all_data`    | Uses `ITEM_SET_ID`           | Full production migration |
+| `sample_data` | Uses `NUMBER_RANDOM_OBJECTS` | Testing with subset       |
+| `test_data`   | Uses `TEST_DATA` identifiers | Development and debugging |
 
 ### Batch Processing Configuration
 
 For large datasets, configure batch processing:
 
-```python
+``` python
 # Add these constants to data_2_dasch.py
 
 # Process items in batches
@@ -180,20 +169,20 @@ MAX_ITEMS_PER_SESSION = 1000
 
 Configure retry behavior for API failures:
 
-```python
+``` python
 # Retry configuration
 MAX_RETRIES = 3
 RETRY_DELAY = 5  # seconds
 EXPONENTIAL_BACKOFF = True
 ```
 
-## Data Mapping Configuration
+## Data Mapping Configuration {#data-mapping-configuration}
 
 ### Property Mapping
 
 The system maps Omeka Dublin Core properties to DSP properties. Customize mappings in the `construct_payload()` function:
 
-```python
+``` python
 # Property ID mappings (edit in construct_payload function)
 PROPERTY_MAPPINGS = {
     'title': 1,         # dcterms:title
@@ -218,7 +207,7 @@ PROPERTY_MAPPINGS = {
 
 Configure how Omeka values map to DSP list nodes:
 
-```json
+``` json
 {
   "list_mappings": {
     "DCMI Type Vocabulary": {
@@ -247,7 +236,7 @@ Configure how Omeka values map to DSP list nodes:
 
 Configure DSP resource classes for different content types:
 
-```python
+``` python
 # Resource class configuration
 RESOURCE_CLASSES = {
     'metadata': f'{PREFIX}sgb_OBJECT',
@@ -272,13 +261,13 @@ MEDIA_TYPE_MAPPING = {
 }
 ```
 
-## Performance Tuning
+## Performance Tuning {#performance-tuning}
 
 ### API Request Configuration
 
 Optimize API performance:
 
-```python
+``` python
 # API configuration constants
 API_TIMEOUT = 30        # Request timeout in seconds
 API_BATCH_SIZE = 100    # Items per API request
@@ -297,7 +286,7 @@ REQUESTS_SESSION_CONFIG = {
 
 Configure file handling:
 
-```python
+``` python
 # File upload settings
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
 UPLOAD_CHUNK_SIZE = 8192            # 8KB chunks
@@ -312,7 +301,7 @@ SUPPORTED_FORMATS = [
 
 Configure memory usage:
 
-```python
+``` python
 # Memory management
 MEMORY_LIMIT = 1024 * 1024 * 1024  # 1GB
 CACHE_SIZE = 1000                  # Items to cache
@@ -324,7 +313,7 @@ CLEANUP_TEMP_FILES = True          # Clean up after processing
 
 Customize logging behavior:
 
-```python
+``` python
 # Logging configuration
 LOG_LEVEL = 'INFO'  # DEBUG, INFO, WARNING, ERROR, CRITICAL
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -337,13 +326,13 @@ CONSOLE_LOGGING = True
 FILE_LOGGING = True
 ```
 
-## Security Configuration
+## Security Configuration {#security-configuration}
 
 ### Credential Security
 
 Secure credential handling:
 
-```bash
+``` bash
 # File permissions for .env
 chmod 600 .env
 
@@ -359,7 +348,7 @@ echo ".env" >> .gitignore
 
 Configure secure API communications:
 
-```python
+``` python
 # Security settings
 VERIFY_SSL = True           # Verify SSL certificates
 USER_AGENT = 'omeka2dsp/1.0'  # Identify requests
@@ -377,7 +366,7 @@ SECURITY_HEADERS = {
 
 Configure access permissions:
 
-```python
+``` python
 # Required permissions check
 REQUIRED_OMEKA_PERMISSIONS = [
     'read_items',
@@ -392,13 +381,13 @@ REQUIRED_DSP_PERMISSIONS = [
 ]
 ```
 
-## Advanced Configuration
+## Advanced Configuration {#advanced-configuration}
 
 ### Custom Property Extractors
 
 Create custom extractors for special properties:
 
-```python
+``` python
 def extract_custom_property(item, property_name):
     """Custom property extraction logic"""
     props = item.get(property_name, [])
@@ -422,7 +411,7 @@ CUSTOM_EXTRACTORS = {
 
 Configure data validation:
 
-```python
+``` python
 # Validation configuration
 VALIDATION_RULES = {
     'required_fields': ['identifier', 'title'],
@@ -442,7 +431,7 @@ VALIDATION_RULES = {
 
 Configure data transformation:
 
-```python
+``` python
 # Data transformation rules
 TRANSFORMATION_RULES = {
     'text_cleanup': {
@@ -465,7 +454,7 @@ TRANSFORMATION_RULES = {
 
 Configure error handling behavior:
 
-```python
+``` python
 # Error handling configuration
 ERROR_CONFIG = {
     'continue_on_error': True,      # Continue processing after errors
@@ -481,7 +470,7 @@ ERROR_CONFIG = {
 
 Validate your configuration before running:
 
-```python
+``` python
 # Configuration validation script
 def validate_configuration():
     """Validate all configuration settings"""
@@ -523,7 +512,7 @@ if __name__ == '__main__':
 
 Run validation:
 
-```bash
+``` bash
 python scripts/validate_config.py
 ```
 
@@ -531,7 +520,7 @@ python scripts/validate_config.py
 
 ### Development Configuration
 
-```bash
+``` bash
 # .env.development
 DEBUG_MODE=true
 LOG_LEVEL=DEBUG
@@ -542,7 +531,7 @@ VERIFY_SSL=false  # For local development only
 
 ### Staging Configuration
 
-```bash
+``` bash
 # .env.staging
 DEBUG_MODE=false
 LOG_LEVEL=INFO
@@ -553,7 +542,7 @@ VERIFY_SSL=true
 
 ### Production Configuration
 
-```bash
+``` bash
 # .env.production
 DEBUG_MODE=false
 LOG_LEVEL=WARNING
@@ -569,7 +558,7 @@ BATCH_SIZE=100
 
 For complex setups, use JSON configuration files:
 
-```json
+``` json
 {
   "migration_config": {
     "processing": {
@@ -593,7 +582,7 @@ For complex setups, use JSON configuration files:
 
 Load configuration in Python:
 
-```python
+``` python
 import json
 
 def load_config(config_file='config.json'):

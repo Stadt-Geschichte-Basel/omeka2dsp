@@ -6,36 +6,34 @@ This guide walks you through installing and setting up the omeka2dsp system for 
 
 ### System Requirements
 
-- **Python**: Version 3.8 or higher
-- **Operating System**: Linux, macOS, or Windows
-- **Memory**: At least 2GB RAM for processing large datasets
-- **Storage**: Sufficient disk space for temporary file downloads
-- **Network**: Stable internet connection for API operations
+-   **Python**: Version 3.8 or higher
+-   **Operating System**: Linux, macOS, or Windows
+-   **Memory**: At least 2GB RAM for processing large datasets
+-   **Storage**: Sufficient disk space for temporary file downloads
+-   **Network**: Stable internet connection for API operations
 
 ### Access Requirements
 
 Before installation, ensure you have:
 
-1. **Omeka API Access**:
-   - Omeka instance URL
-   - API key identity and credential
-   - Collection/item set ID to migrate
-
-2. **DSP Instance Access**:
-   - DSP API endpoint URL
-   - DSP user account with appropriate permissions
-   - Existing DSP project with data model
-
-3. **Permissions**:
-   - Read access to Omeka collections and media
-   - Create/update permissions in DSP project
-   - File upload permissions to DSP storage
+1.  **Omeka API Access**:
+    -   Omeka instance URL
+    -   API key identity and credential
+    -   Collection/item set ID to migrate
+2.  **DSP Instance Access**:
+    -   DSP API endpoint URL
+    -   DSP user account with appropriate permissions
+    -   Existing DSP project with data model
+3.  **Permissions**:
+    -   Read access to Omeka collections and media
+    -   Create/update permissions in DSP project
+    -   File upload permissions to DSP storage
 
 ## Installation Steps
 
 ### 1. Clone the Repository
 
-```bash
+``` bash
 git clone https://github.com/Stadt-Geschichte-Basel/omeka2dsp.git
 cd omeka2dsp
 ```
@@ -44,7 +42,7 @@ cd omeka2dsp
 
 #### Option A: Using Virtual Environment (Recommended)
 
-```bash
+``` bash
 # Create virtual environment
 python -m venv venv
 
@@ -57,7 +55,7 @@ venv\Scripts\activate
 
 #### Option B: Using Conda
 
-```bash
+``` bash
 # Create conda environment
 conda create -n omeka2dsp python=3.9
 conda activate omeka2dsp
@@ -65,7 +63,7 @@ conda activate omeka2dsp
 
 ### 3. Install Dependencies
 
-```bash
+``` bash
 # Install Python dependencies
 pip install requests
 
@@ -77,7 +75,7 @@ python -c "import requests; print('Dependencies installed successfully')"
 
 For development tools and formatting:
 
-```bash
+``` bash
 # Install Node.js dependencies
 npm install
 
@@ -91,7 +89,7 @@ npm run check
 
 Copy the example environment file and customize it:
 
-```bash
+``` bash
 cp example.env .env
 ```
 
@@ -99,7 +97,7 @@ cp example.env .env
 
 Edit the `.env` file with your specific settings:
 
-```bash
+``` bash
 # Omeka Configuration
 OMEKA_API_URL=https://your-omeka-instance.com/api/
 KEY_IDENTITY=your_api_key_identity
@@ -121,7 +119,7 @@ PREFIX=StadtGeschichteBasel_v1:
 
 Test your configuration with a simple API call:
 
-```bash
+``` bash
 # Test Omeka API access
 python scripts/api_get_project.py
 
@@ -135,26 +133,28 @@ python scripts/api_get_project.py
 Your DSP project must have a compatible data model. The system expects:
 
 #### Required Resource Classes:
-- `sgb_OBJECT`: Main metadata objects
-- `sgb_MEDIA_IMAGE`: Image files
-- `sgb_MEDIA_ARCHIV`: Archive files (PDFs, documents)
+
+-   `sgb_OBJECT`: Main metadata objects
+-   `sgb_MEDIA_IMAGE`: Image files
+-   `sgb_MEDIA_ARCHIV`: Archive files (PDFs, documents)
 
 #### Required Properties:
-- `identifier`: Unique item identifier
-- `title`: Resource title
-- `description`: Resource description
-- `creator`: Creator information
-- `date`: Date information
-- `subject`: Subject classifications
-- `type`: Resource type (mapped to lists)
-- `format`: File format (mapped to lists)
-- `language`: Language (mapped to lists)
+
+-   `identifier`: Unique item identifier
+-   `title`: Resource title
+-   `description`: Resource description
+-   `creator`: Creator information
+-   `date`: Date information
+-   `subject`: Subject classifications
+-   `type`: Resource type (mapped to lists)
+-   `format`: File format (mapped to lists)
+-   `language`: Language (mapped to lists)
 
 ### 2. Create Data Model
 
 If you need to create the data model, use the provided JSON:
 
-```bash
+``` bash
 # Using DSP-Tools (requires system administrator rights)
 dsp-tools create -s your-dsp-host -u admin@example.com -p password data/data_model_dasch.json
 ```
@@ -163,7 +163,7 @@ dsp-tools create -s your-dsp-host -u admin@example.com -p password data/data_mod
 
 Ensure your project has the required value lists:
 
-```bash
+``` bash
 # Fetch current lists
 python scripts/api_get_lists.py
 
@@ -173,16 +173,13 @@ python scripts/api_get_lists_detailed.py
 # Verify lists in data/data_lists_detail.json
 ```
 
-Required lists include:
-- **DCMI Type Vocabulary**: For resource types
-- **Internet Media Type**: For file formats
-- **ISO 639 Language Codes**: For languages
+Required lists include: - **DCMI Type Vocabulary**: For resource types - **Internet Media Type**: For file formats - **ISO 639 Language Codes**: For languages
 
 ## Directory Structure Setup
 
 The system expects the following directory structure:
 
-```
+```         
 omeka2dsp/
 ├── data/                          # Configuration and cache files
 │   ├── data_model_dasch.json      # DSP data model definition
@@ -205,7 +202,7 @@ omeka2dsp/
 
 Create any missing directories:
 
-```bash
+``` bash
 mkdir -p data/media_files
 mkdir -p logs
 ```
@@ -214,7 +211,7 @@ mkdir -p logs
 
 ### 1. Test Omeka Connection
 
-```bash
+``` bash
 python -c "
 import os
 import requests
@@ -234,7 +231,7 @@ except Exception as e:
 
 ### 2. Test DSP Authentication
 
-```bash
+``` bash
 python -c "
 import os
 from scripts.data_2_dasch import login
@@ -249,7 +246,7 @@ except Exception as e:
 
 ### 3. Verify Project Setup
 
-```bash
+``` bash
 python -c "
 import os
 from scripts.data_2_dasch import login, get_project, get_lists
@@ -271,7 +268,8 @@ except Exception as e:
 **Issue**: `ModuleNotFoundError: No module named 'requests'`
 
 **Solution**:
-```bash
+
+``` bash
 # Ensure virtual environment is activated
 pip install requests
 ```
@@ -281,7 +279,8 @@ pip install requests
 **Issue**: `KeyError: 'PROJECT_SHORT_CODE'`
 
 **Solution**:
-```bash
+
+``` bash
 # Check .env file exists and contains required variables
 cat .env | grep PROJECT_SHORT_CODE
 
@@ -294,7 +293,8 @@ export $(cat .env | xargs)
 **Issue**: Connection timeouts or SSL errors
 
 **Solutions**:
-```bash
+
+``` bash
 # Test basic connectivity
 curl -k https://your-dsp-host.com/health
 
@@ -307,17 +307,15 @@ export HTTPS_PROXY=https://proxy.example.com:8080
 
 **Issue**: DSP API returns 403 Forbidden
 
-**Solution**:
-- Verify user account has correct project permissions
-- Check if user account is active and not locked
-- Confirm API endpoints are correct
+**Solution**: - Verify user account has correct project permissions - Check if user account is active and not locked - Confirm API endpoints are correct
 
 ### File System Permissions
 
 **Issue**: Cannot write to data directory
 
 **Solution**:
-```bash
+
+``` bash
 # Fix directory permissions
 chmod 755 data/
 mkdir -p data/media_files
@@ -330,7 +328,7 @@ For development and contribution:
 
 ### 1. Install Development Tools
 
-```bash
+``` bash
 # Install pre-commit hooks
 npm install
 npm run prepare
@@ -341,7 +339,7 @@ pip install -r requirements-dev.txt  # if available
 
 ### 2. Code Formatting
 
-```bash
+``` bash
 # Check code formatting
 npm run check
 
@@ -351,7 +349,7 @@ npm run format
 
 ### 3. Commit Standards
 
-```bash
+``` bash
 # Use conventional commits
 npm run commit
 
@@ -363,9 +361,9 @@ git commit -m "feat: add new synchronization feature"
 
 ### 1. Large Dataset Handling
 
-For large collections (>1000 items):
+For large collections (\>1000 items):
 
-```bash
+``` bash
 # Use sample mode for testing
 python scripts/data_2_dasch.py -m sample_data
 
@@ -375,7 +373,7 @@ python scripts/data_2_dasch.py -m sample_data
 
 ### 2. Memory Management
 
-```bash
+``` bash
 # Monitor memory usage during processing
 htop
 
@@ -384,7 +382,7 @@ htop
 
 ### 3. Network Optimization
 
-```bash
+``` bash
 # For slow connections, increase timeout values in scripts
 # Edit timeout parameters in API calls
 ```
@@ -393,13 +391,13 @@ htop
 
 ### 1. Credential Management
 
-- Never commit `.env` file to version control
-- Use secure credential storage for production
-- Rotate API keys regularly
+-   Never commit `.env` file to version control
+-   Use secure credential storage for production
+-   Rotate API keys regularly
 
 ### 2. File Permissions
 
-```bash
+``` bash
 # Secure environment file
 chmod 600 .env
 
@@ -409,26 +407,26 @@ chmod 600 *.log
 
 ### 3. Network Security
 
-- Use HTTPS for all API communications
-- Consider VPN for sensitive data transfers
-- Monitor API access logs
+-   Use HTTPS for all API communications
+-   Consider VPN for sensitive data transfers
+-   Monitor API access logs
 
 ## Next Steps
 
 After successful installation:
 
-1. **Read the [Configuration Guide](configuration.md)** for detailed configuration options
-2. **Follow the [Usage Guide](usage.md)** for running your first migration
-3. **Review the [Architecture Documentation](../architecture/README.md)** to understand the system
-4. **Check the [Troubleshooting Guide](troubleshooting.md)** for common issues
+1.  **Read the [Configuration Guide](configuration.qmd)** for detailed configuration options
+2.  **Follow the [Usage Guide](usage.qmd)** for running your first migration
+3.  **Review the [Architecture Documentation](../architecture/index.qmd)** to understand the system
+4.  **Check the [Troubleshooting Guide](troubleshooting.qmd)** for common issues
 
 ## Support
 
 If you encounter issues during installation:
 
-1. Check the [Troubleshooting Guide](troubleshooting.md)
-2. Review the logs in `data_2_dasch.log`
-3. Create an issue on the [GitHub repository](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)
-4. Include system information, error messages, and configuration details (without sensitive data)
+1.  Check the [Troubleshooting Guide](troubleshooting.qmd)
+2.  Review the logs in `data_2_dasch.log`
+3.  Create an issue on the [GitHub repository](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)
+4.  Include system information, error messages, and configuration details (without sensitive data)
 
 Installation is now complete! You're ready to configure and run your first data migration.

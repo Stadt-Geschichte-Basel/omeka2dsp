@@ -1,4 +1,3 @@
-````markdown
 # omeka2dsp
 
 This repository contains the pipeline and data model for the long-term preservation of the research data of [Stadt.Geschichte.Basel (SGB)](https://stadtgeschichtebasel.ch/) on the [DaSCH Service Platform (DSP)](https://www.dasch.swiss/plattform-characteristics).  
@@ -15,18 +14,18 @@ It enables the transfer of metadata and media files from the SGB Omeka S instanc
 
 Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
-- **[📖 Complete Documentation](docs/README.md)** – Full system documentation
-- **[🏗️ Architecture Overview](docs/architecture/README.md)** – System design and components
-- **[🔄 Workflows](docs/workflows/README.md)** – Data migration workflows with Mermaid diagrams
-- **[🔧 API Reference](docs/api/README.md)** – Python function documentation
+- **[📖 Complete Documentation](docs/index.qmd)** – Full system documentation
+- **[🏗️ Architecture Overview](docs/architecture/index.qmd)** – System design and components
+- **[🔄 Workflows](docs/workflows/index.qmd)** – Data migration workflows with Mermaid diagrams
+- **[🔧 API Reference](docs/api/index.qmd)** – Python function documentation
 
 ### 🚀 Quick Start Guides
 
-- **[⚡ Installation & Setup](docs/guides/installation.md)**
-- **[⚙️ Configuration](docs/guides/configuration.md)**
-- **[📋 Usage Guide](docs/guides/usage.md)**
-- **[🛠️ Development](docs/guides/development.md)**
-- **[🔍 Troubleshooting](docs/guides/troubleshooting.md)**
+- **[⚡ Installation & Setup](docs/guides/installation.qmd)**
+- **[⚙️ Configuration](docs/guides/configuration.qmd)**
+- **[📋 Usage Guide](docs/guides/usage.qmd)**
+- **[🛠️ Development](docs/guides/development.qmd)**
+- **[🔍 Troubleshooting](docs/guides/troubleshooting.qmd)**
 
 ## ⚡ Quick Installation
 
@@ -46,7 +45,6 @@ cp example.env .env
 # Test installation
 python scripts/api_get_project.py
 ```
-````
 
 ## 🚀 Quick Usage
 
@@ -71,7 +69,7 @@ python scripts/data_2_dasch.py -m test_data
 
 ## 🏗️ System Architecture
 
-```mermaid
+```{mermaid}
 graph LR
     A[Omeka API] --> B[Data Extraction]
     B --> C[Data Transformation]

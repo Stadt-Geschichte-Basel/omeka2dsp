@@ -6,7 +6,7 @@ The omeka2dsp system is designed as a data migration and synchronization pipelin
 
 ## High-Level Architecture
 
-```mermaid
+```{mermaid}
 graph TB
     subgraph "Source System"
         A[Omeka Instance]
@@ -68,15 +68,11 @@ graph TB
 
 **Purpose**: Interfaces with Omeka API to retrieve items, media, and metadata.
 
-**Key Functions**:
-- `get_items_from_collection()` - Retrieves paginated items from collections
-- `get_media()` - Fetches media files associated with items
-- `extract_property()` - Extracts specific metadata properties
-- `extract_combined_values()` - Combines multiple property values
+**Key Functions**: - `get_items_from_collection()` - Retrieves paginated items from collections - `get_media()` - Fetches media files associated with items - `extract_property()` - Extracts specific metadata properties - `extract_combined_values()` - Combines multiple property values
 
 **Architecture Pattern**: Repository pattern with API abstraction
 
-```mermaid
+```{mermaid}
 classDiagram
     class OmekaExtractor {
         +get_items_from_collection(collection_id)
@@ -99,14 +95,11 @@ classDiagram
 
 **Purpose**: Converts Omeka data structures to DSP-compatible formats.
 
-**Key Functions**:
-- `construct_payload()` - Builds DSP resource payloads
-- `extract_listvalueiri_from_value()` - Maps values to DSP list nodes
-- `specify_mediaclass()` - Determines appropriate DSP media classes
+**Key Functions**: - `construct_payload()` - Builds DSP resource payloads - `extract_listvalueiri_from_value()` - Maps values to DSP list nodes - `specify_mediaclass()` - Determines appropriate DSP media classes
 
 **Architecture Pattern**: Builder pattern with strategy pattern for different resource types
 
-```mermaid
+```{mermaid}
 classDiagram
     class PayloadBuilder {
         +construct_payload(item, type, project_iri, lists)
@@ -144,15 +137,11 @@ classDiagram
 
 **Purpose**: Handles incremental updates and conflict resolution between systems.
 
-**Key Functions**:
-- `check_values()` - Compares Omeka and DSP data for differences
-- `sync_value()` - Synchronizes single-value properties
-- `sync_array_value()` - Synchronizes multi-value properties
-- `update_value()` - Performs actual API updates
+**Key Functions**: - `check_values()` - Compares Omeka and DSP data for differences - `sync_value()` - Synchronizes single-value properties - `sync_array_value()` - Synchronizes multi-value properties - `update_value()` - Performs actual API updates
 
 **Architecture Pattern**: Strategy pattern with command pattern for updates
 
-```mermaid
+```{mermaid}
 classDiagram
     class SyncManager {
         +check_values(dasch_item, omeka_item, lists)
@@ -198,16 +187,13 @@ classDiagram
 
 **Purpose**: Manages file uploads and media processing for DSP.
 
-**Key Functions**:
-- `upload_file_from_url()` - Downloads and uploads files to DSP
-- `create_resource()` - Creates new DSP resources
-- `get_full_resource()` - Retrieves complete resource data
+**Key Functions**: - `upload_file_from_url()` - Downloads and uploads files to DSP - `create_resource()` - Creates new DSP resources - `get_full_resource()` - Retrieves complete resource data
 
 ## Data Flow Architecture
 
 ### Processing Pipeline
 
-```mermaid
+```{mermaid}
 flowchart TD
     Start([Start Migration]) --> Config[Load Configuration]
     Config --> Auth[Authenticate with DSP]
@@ -247,7 +233,7 @@ flowchart TD
 
 ### Data Transformation Flow
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant O as Omeka API
     participant E as Extractor
@@ -289,7 +275,7 @@ sequenceDiagram
 
 The system uses environment variables for configuration, following the 12-factor app methodology:
 
-```mermaid
+```{mermaid}
 graph LR
     subgraph "Configuration Sources"
         A[Environment Variables]
@@ -322,7 +308,7 @@ graph LR
 ### Configuration Categories
 
 | Category | Variables | Purpose |
-|----------|-----------|---------|
+|------------------------|--------------------------|----------------------|
 | **Omeka API** | `OMEKA_API_URL`, `KEY_IDENTITY`, `KEY_CREDENTIAL`, `ITEM_SET_ID` | Connect to source Omeka instance |
 | **DSP API** | `PROJECT_SHORT_CODE`, `API_HOST`, `INGEST_HOST` | Connect to target DSP instance |
 | **Authentication** | `DSP_USER`, `DSP_PWD` | Authenticate with DSP |
@@ -332,7 +318,7 @@ graph LR
 
 ### Logging Strategy
 
-```mermaid
+```{mermaid}
 graph TD
     A[Application Events] --> B[Logger]
     B --> C[Console Handler]
@@ -353,32 +339,32 @@ graph TD
 
 ### Fault Tolerance
 
-1. **API Resilience**: Handles rate limiting, timeouts, and temporary failures
-2. **Data Validation**: Validates data at multiple points in the pipeline
-3. **Partial Recovery**: Can resume processing from where it left off
-4. **Graceful Degradation**: Continues processing other items if one fails
+1.  **API Resilience**: Handles rate limiting, timeouts, and temporary failures
+2.  **Data Validation**: Validates data at multiple points in the pipeline
+3.  **Partial Recovery**: Can resume processing from where it left off
+4.  **Graceful Degradation**: Continues processing other items if one fails
 
 ## Performance Architecture
 
 ### Optimization Strategies
 
-1. **Pagination**: Efficiently handles large datasets through API pagination
-2. **Caching**: Caches frequently accessed data (projects, lists)
-3. **Batch Processing**: Groups operations where possible
-4. **Streaming**: Streams large files during upload to minimize memory usage
+1.  **Pagination**: Efficiently handles large datasets through API pagination
+2.  **Caching**: Caches frequently accessed data (projects, lists)
+3.  **Batch Processing**: Groups operations where possible
+4.  **Streaming**: Streams large files during upload to minimize memory usage
 
 ### Scalability Considerations
 
-- **Horizontal Scaling**: Can be containerized and scaled across multiple instances
-- **Rate Limiting**: Respects API rate limits to avoid service degradation
-- **Memory Management**: Processes items individually to maintain low memory footprint
-- **Monitoring**: Comprehensive logging for performance monitoring
+-   **Horizontal Scaling**: Can be containerized and scaled across multiple instances
+-   **Rate Limiting**: Respects API rate limits to avoid service degradation
+-   **Memory Management**: Processes items individually to maintain low memory footprint
+-   **Monitoring**: Comprehensive logging for performance monitoring
 
 ## Security Architecture
 
 ### Authentication Flow
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant S as Script
     participant D as DSP API
@@ -400,7 +386,7 @@ sequenceDiagram
 
 ### Security Features
 
-1. **Credential Management**: Environment-based credential storage
-2. **Token Handling**: Secure JWT token management for DSP API
-3. **HTTPS**: All API communications use HTTPS
-4. **Access Control**: Respects API permissions and rate limits
+1.  **Credential Management**: Environment-based credential storage
+2.  **Token Handling**: Secure JWT token management for DSP API
+3.  **HTTPS**: All API communications use HTTPS
+4.  **Access Control**: Respects API permissions and rate limits

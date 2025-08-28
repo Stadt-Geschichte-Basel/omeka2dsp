@@ -5,4 +5,4 @@ format:
     toc: true
 ---
 
-{{< include docs/architecture/README.md >}}
+{{< include docs/architecture/index.qmd >}}

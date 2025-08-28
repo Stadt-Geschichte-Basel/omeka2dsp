@@ -5,4 +5,4 @@ format:
     toc: true
 ---
 
-{{< include docs/guides/configuration.md >}}
+{{< include docs/guides/configuration.qmd >}}

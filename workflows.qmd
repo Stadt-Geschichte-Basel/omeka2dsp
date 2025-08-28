@@ -5,4 +5,4 @@ format:
     toc: true
 ---
 
-{{< include docs/workflows/README.md >}}
+{{< include docs/workflows/index.qmd >}}

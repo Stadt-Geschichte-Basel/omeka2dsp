@@ -4,27 +4,27 @@ Guide for developers contributing to or extending the omeka2dsp system.
 
 ## Table of Contents
 
-1. [Development Environment Setup](#development-environment-setup)
-2. [Code Architecture](#code-architecture)
-3. [Contributing Guidelines](#contributing-guidelines)
-4. [Testing](#testing)
-5. [Extending the System](#extending-the-system)
-6. [Debugging](#debugging)
-7. [Code Style](#code-style)
-8. [Release Process](#release-process)
+1.  [Development Environment Setup](#development-environment-setup)
+2.  [Code Architecture](#code-architecture)
+3.  [Contributing Guidelines](#contributing-guidelines)
+4.  [Testing](#testing)
+5.  [Extending the System](#extending-the-system)
+6.  [Debugging](#debugging)
+7.  [Code Style](#code-style)
+8.  [Release Process](#release-process)
 
-## Development Environment Setup
+## Development Environment Setup {#development-environment-setup}
 
 ### Prerequisites
 
-- Python 3.8+
-- Node.js 16+ (for development tools)
-- Git
-- Access to Omeka and DSP test instances
+-   Python 3.8+
+-   Node.js 16+ (for development tools)
+-   Git
+-   Access to Omeka and DSP test instances
 
 ### Initial Setup
 
-```bash
+``` bash
 # Clone repository
 git clone https://github.com/Stadt-Geschichte-Basel/omeka2dsp.git
 cd omeka2dsp
@@ -48,13 +48,13 @@ npm install
 
 Create a development environment file:
 
-```bash
+``` bash
 cp example.env .env.dev
 ```
 
 Edit `.env.dev` with test instance credentials:
 
-```bash
+``` bash
 # Development configuration
 OMEKA_API_URL=https://test-omeka.example.com/api/
 KEY_IDENTITY=test_key_identity
@@ -73,11 +73,11 @@ DEBUG_MODE=true
 LOG_LEVEL=DEBUG
 ```
 
-## Code Architecture
+## Code Architecture {#code-architecture}
 
 ### Module Structure
 
-```
+```         
 scripts/
 ├── data_2_dasch.py              # Main migration orchestrator
 ├── process_data_from_omeka.py   # Omeka API interface
@@ -88,14 +88,14 @@ scripts/
 
 ### Key Design Patterns
 
-1. **Repository Pattern**: Data access abstraction
-2. **Builder Pattern**: Payload construction
-3. **Strategy Pattern**: Different resource types
-4. **Command Pattern**: Update operations
+1.  **Repository Pattern**: Data access abstraction
+2.  **Builder Pattern**: Payload construction
+3.  **Strategy Pattern**: Different resource types
+4.  **Command Pattern**: Update operations
 
 ### Core Components
 
-```mermaid
+```{mermaid}
 classDiagram
     class MigrationOrchestrator {
         +main()
@@ -136,7 +136,7 @@ classDiagram
 
 ### Data Flow
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant Main as main()
     participant Omeka as OmekaRepository
@@ -166,39 +166,43 @@ sequenceDiagram
     end
 ```
 
-## Contributing Guidelines
+## Contributing Guidelines {#contributing-guidelines}
 
 ### Git Workflow
 
-1. **Create Feature Branch**
-   ```bash
-   git checkout -b feature/description-of-feature
-   ```
+1.  **Create Feature Branch**
 
-2. **Make Changes**
-   ```bash
-   # Make your changes
-   git add .
-   git commit -m "feat: add new synchronization feature"
-   ```
+    ``` bash
+    git checkout -b feature/description-of-feature
+    ```
 
-3. **Update Documentation**
-   ```bash
-   # Update relevant documentation
-   # Add tests for new features
-   ```
+2.  **Make Changes**
 
-4. **Submit Pull Request**
-   ```bash
-   git push origin feature/description-of-feature
-   # Create PR on GitHub
-   ```
+    ``` bash
+    # Make your changes
+    git add .
+    git commit -m "feat: add new synchronization feature"
+    ```
+
+3.  **Update Documentation**
+
+    ``` bash
+    # Update relevant documentation
+    # Add tests for new features
+    ```
+
+4.  **Submit Pull Request**
+
+    ``` bash
+    git push origin feature/description-of-feature
+    # Create PR on GitHub
+    ```
 
 ### Commit Message Convention
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-```bash
+``` bash
 # Types
 feat: new feature
 fix: bug fix
@@ -217,19 +221,19 @@ refactor: extract payload building to separate module
 
 ### Code Review Checklist
 
-- [ ] Code follows style guidelines
-- [ ] Tests are included and pass
-- [ ] Documentation is updated
-- [ ] No sensitive data in commits
-- [ ] Performance impact considered
-- [ ] Error handling included
-- [ ] Logging appropriate
+-   [ ] Code follows style guidelines
+-   [ ] Tests are included and pass
+-   [ ] Documentation is updated
+-   [ ] No sensitive data in commits
+-   [ ] Performance impact considered
+-   [ ] Error handling included
+-   [ ] Logging appropriate
 
-## Testing
+## Testing {#testing}
 
 ### Test Structure
 
-```
+```         
 tests/
 ├── unit/
 │   ├── test_omeka_repository.py
@@ -247,7 +251,7 @@ tests/
 
 Create unit tests for individual components:
 
-```python
+``` python
 # tests/unit/test_payload_builder.py
 import unittest
 from unittest.mock import Mock
@@ -299,7 +303,7 @@ class TestPayloadBuilder(unittest.TestCase):
 
 Test API integrations:
 
-```python
+``` python
 # tests/integration/test_api_integration.py
 import unittest
 import os
@@ -328,7 +332,7 @@ class TestAPIIntegration(unittest.TestCase):
 
 ### Running Tests
 
-```bash
+``` bash
 # Run all tests
 python -m pytest tests/
 
@@ -343,41 +347,44 @@ python -m pytest --cov=scripts tests/
 python -m pytest tests/integration/ -v
 ```
 
-## Extending the System
+## Extending the System {#extending-the-system}
 
 ### Adding New Resource Types
 
-1. **Define Resource Class**
-   ```python
-   # In construct_payload function
-   if type == f"{PREFIX}sgb_NEW_TYPE":
-       payload["specific_field"] = {
-           "@type": "knora-api:TextValue",
-           "knora-api:valueAsString": extract_property(item.get("custom:field", []), 42)
-       }
-   ```
+1.  **Define Resource Class**
 
-2. **Update Media Class Mapping**
-   ```python
-   def specify_mediaclass(media_type: str) -> str:
-       if media_type.startswith("audio/"):
-           return f"{PREFIX}sgb_MEDIA_AUDIO"
-       # ... existing mappings
-   ```
+    ``` python
+    # In construct_payload function
+    if type == f"{PREFIX}sgb_NEW_TYPE":
+        payload["specific_field"] = {
+            "@type": "knora-api:TextValue",
+            "knora-api:valueAsString": extract_property(item.get("custom:field", []), 42)
+        }
+    ```
 
-3. **Add Property Mappings**
-   ```python
-   # Add new property extractors
-   def extract_custom_property(item, prop_name):
-       # Custom extraction logic
-       pass
-   ```
+2.  **Update Media Class Mapping**
+
+    ``` python
+    def specify_mediaclass(media_type: str) -> str:
+        if media_type.startswith("audio/"):
+            return f"{PREFIX}sgb_MEDIA_AUDIO"
+        # ... existing mappings
+    ```
+
+3.  **Add Property Mappings**
+
+    ``` python
+    # Add new property extractors
+    def extract_custom_property(item, prop_name):
+        # Custom extraction logic
+        pass
+    ```
 
 ### Adding New Data Sources
 
 Create new repository classes:
 
-```python
+``` python
 # scripts/new_data_source.py
 class NewDataSourceRepository:
     
@@ -400,7 +407,7 @@ class NewDataSourceRepository:
 
 Add specialized extraction logic:
 
-```python
+``` python
 def extract_geo_coordinates(props):
     """Extract geographic coordinates"""
     for prop in props:
@@ -436,7 +443,7 @@ CUSTOM_EXTRACTORS = {
 
 Create extensible plugin system:
 
-```python
+``` python
 # scripts/plugins/base_plugin.py
 class BasePlugin:
     
@@ -471,11 +478,11 @@ class ImageProcessingPlugin(BasePlugin):
         pass
 ```
 
-## Debugging
+## Debugging {#debugging}
 
 ### Debugging Configuration
 
-```python
+``` python
 # Enable debug logging
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -489,36 +496,39 @@ def debug_item_processing(item):
 
 ### Common Debugging Techniques
 
-1. **Inspect API Responses**
-   ```python
-   import json
-   
-   # Pretty print API responses
-   response = requests.get(url)
-   print(json.dumps(response.json(), indent=2))
-   ```
+1.  **Inspect API Responses**
 
-2. **Test Individual Functions**
-   ```python
-   # Test payload construction
-   test_item = {...}  # Sample Omeka item
-   payload = construct_payload(test_item, "sgb_OBJECT", "project_iri", [], "", "")
-   print(json.dumps(payload, indent=2))
-   ```
+    ``` python
+    import json
 
-3. **Validate Data Transformations**
-   ```python
-   # Check property extraction
-   props = item.get("dcterms:subject", [])
-   subjects = extract_combined_values(props)
-   print(f"Extracted subjects: {subjects}")
-   ```
+    # Pretty print API responses
+    response = requests.get(url)
+    print(json.dumps(response.json(), indent=2))
+    ```
+
+2.  **Test Individual Functions**
+
+    ``` python
+    # Test payload construction
+    test_item = {...}  # Sample Omeka item
+    payload = construct_payload(test_item, "sgb_OBJECT", "project_iri", [], "", "")
+    print(json.dumps(payload, indent=2))
+    ```
+
+3.  **Validate Data Transformations**
+
+    ``` python
+    # Check property extraction
+    props = item.get("dcterms:subject", [])
+    subjects = extract_combined_values(props)
+    print(f"Extracted subjects: {subjects}")
+    ```
 
 ### Debug Mode
 
 Add debug mode to main script:
 
-```python
+``` python
 DEBUG_MODE = os.getenv('DEBUG_MODE', 'false').lower() == 'true'
 
 if DEBUG_MODE:
@@ -533,13 +543,13 @@ if DEBUG_MODE:
         json.dump(payload, f, indent=2)
 ```
 
-## Code Style
+## Code Style {#code-style}
 
 ### Python Style Guidelines
 
 Follow PEP 8 with these specific guidelines:
 
-```python
+``` python
 # Imports
 import os
 import logging
@@ -578,7 +588,7 @@ except requests.RequestException as e:
 
 ### Code Formatting Tools
 
-```bash
+``` bash
 # Install formatting tools
 pip install black flake8 isort
 
@@ -595,7 +605,7 @@ pre-commit run --all-files
 
 ### Documentation Standards
 
-```python
+``` python
 def complex_function(param1: str, param2: Optional[Dict] = None) -> List[str]:
     """Brief description of function purpose.
     
@@ -622,11 +632,11 @@ def complex_function(param1: str, param2: Optional[Dict] = None) -> List[str]:
     pass
 ```
 
-## Release Process
+## Release Process {#release-process}
 
 ### Version Management
 
-```bash
+``` bash
 # Update version in setup files
 # Follow semantic versioning: MAJOR.MINOR.PATCH
 
@@ -637,17 +647,17 @@ git push origin v1.2.0
 
 ### Release Checklist
 
-- [ ] All tests pass
-- [ ] Documentation updated
-- [ ] CHANGELOG.md updated
-- [ ] Version numbers updated
-- [ ] Security review completed
-- [ ] Performance benchmarks run
-- [ ] Migration tested on staging
+-   [ ] All tests pass
+-   [ ] Documentation updated
+-   [ ] CHANGELOG.md updated
+-   [ ] Version numbers updated
+-   [ ] Security review completed
+-   [ ] Performance benchmarks run
+-   [ ] Migration tested on staging
 
 ### Deployment
 
-```bash
+``` bash
 # Production deployment checklist
 - [ ] Backup current production data
 - [ ] Deploy to staging environment

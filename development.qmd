@@ -5,4 +5,4 @@ format:
     toc: true
 ---
 
-{{< include docs/guides/development.md >}}
+{{< include docs/guides/development.qmd >}}
