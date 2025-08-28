@@ -1,0 +1,536 @@
+# Usage Guide
+
+Complete guide for running data migrations with the omeka2dsp system.
+
+## Table of Contents
+
+1. [Quick Start](#quick-start)
+2. [Processing Modes](#processing-modes)
+3. [Command Line Usage](#command-line-usage)
+4. [Monitoring Migration Progress](#monitoring-migration-progress)
+5. [Data Synchronization](#data-synchronization)
+6. [File Handling](#file-handling)
+7. [Troubleshooting Common Issues](#troubleshooting-common-issues)
+8. [Best Practices](#best-practices)
+
+## Quick Start
+
+### Pre-flight Checklist
+
+Before running a migration, verify:
+
+- [ ] Environment variables are configured in `.env`
+- [ ] DSP project and data model exist
+- [ ] Omeka collection is accessible
+- [ ] You have sufficient permissions on both systems
+- [ ] Network connectivity is stable
+
+### Basic Migration
+
+Run a complete migration of your Omeka collection:
+
+```bash
+# Navigate to project directory
+cd omeka2dsp
+
+# Run full migration
+python scripts/data_2_dasch.py
+
+# Or explicitly specify all_data mode
+python scripts/data_2_dasch.py -m all_data
+```
+
+Expected output:
+```
+2024-01-15 10:30:15 - INFO - Login successful
+2024-01-15 10:30:16 - INFO - project Iri: http://rdfh.ch/projects/IbwoJlv8SEa6L13vXyCzMg
+2024-01-15 10:30:17 - INFO - Got Lists from project
+2024-01-15 10:30:18 - INFO - Processing item: abb13025
+2024-01-15 10:30:19 - INFO - Resource created successfully
+2024-01-15 10:30:20 - INFO - Uploaded media: image.jpg
+...
+```
+
+## Processing Modes
+
+The system supports three processing modes to handle different use cases:
+
+### 1. All Data Mode (Production)
+
+Processes the entire Omeka collection.
+
+```bash
+python scripts/data_2_dasch.py -m all_data
+```
+
+**Use Cases**:
+- Production migrations
+- Complete data transfers
+- Initial system setup
+
+**Considerations**:
+- Can take several hours for large collections
+- Requires stable network connection
+- Monitor disk space for media downloads
+
+### 2. Sample Data Mode (Testing)
+
+Processes a random sample of items for testing purposes.
+
+```bash
+python scripts/data_2_dasch.py -m sample_data
+```
+
+**Configuration**: 
+Edit `NUMBER_RANDOM_OBJECTS` in `data_2_dasch.py`:
+
+```python
+NUMBER_RANDOM_OBJECTS = 10  # Process 10 random items
+```
+
+**Use Cases**:
+- Testing configuration changes
+- Validating data transformations
+- Performance testing with smaller datasets
+
+### 3. Test Data Mode (Development)
+
+Processes specific predefined items for development and debugging.
+
+```bash
+python scripts/data_2_dasch.py -m test_data
+```
+
+**Configuration**:
+Edit `TEST_DATA` set in `data_2_dasch.py`:
+
+```python
+TEST_DATA = {
+    'abb13025',  # Specific item identifier
+    'abb14375',  # Another item identifier
+    'abb41033'   # Add more as needed
+}
+```
+
+**Use Cases**:
+- Debugging specific items
+- Testing edge cases
+- Development workflow
+
+## Command Line Usage
+
+### Basic Syntax
+
+```bash
+python scripts/data_2_dasch.py [OPTIONS]
+```
+
+### Available Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `-m, --mode` | Processing mode: `all_data`, `sample_data`, `test_data` | `all_data` |
+| `-h, --help` | Show help message and exit | - |
+
+### Examples
+
+```bash
+# Process all data (default)
+python scripts/data_2_dasch.py
+
+# Process sample data with explicit mode
+python scripts/data_2_dasch.py --mode sample_data
+
+# Process test data
+python scripts/data_2_dasch.py -m test_data
+
+# Show help
+python scripts/data_2_dasch.py --help
+```
+
+## Monitoring Migration Progress
+
+### Real-time Monitoring
+
+The script provides real-time progress information through console output:
+
+```bash
+# Run with output to terminal and file
+python scripts/data_2_dasch.py 2>&1 | tee migration.log
+```
+
+### Log Files
+
+Monitor detailed progress in log files:
+
+```bash
+# Watch log file in real-time
+tail -f data_2_dasch.log
+
+# Search for errors
+grep "ERROR" data_2_dasch.log
+
+# Count successful creations
+grep "Resource created successfully" data_2_dasch.log | wc -l
+```
+
+### Progress Indicators
+
+Monitor these key indicators:
+
+#### Successful Operations
+```
+INFO - Resource created successfully
+INFO - Resource updated successfully  
+INFO - Uploaded media: filename.jpg
+INFO - Media linked to parent resource
+```
+
+#### Warning Indicators
+```
+WARNING - Resource already exists, checking for updates
+WARNING - Media file not found: missing.jpg
+WARNING - List value not found for: unknown_value
+```
+
+#### Error Indicators
+```
+ERROR - Authentication failed
+ERROR - Failed to create resource
+ERROR - File upload failed
+ERROR - Network timeout
+```
+
+### Performance Metrics
+
+Track performance metrics:
+
+```bash
+# Count total items processed
+grep "Processing item:" data_2_dasch.log | wc -l
+
+# Average processing time per item
+grep "Processing time:" data_2_dasch.log | awk '{sum+=$4; count++} END {print sum/count}'
+
+# Failed operations
+grep "FAILED" data_2_dasch.log | wc -l
+```
+
+## Data Synchronization
+
+The system automatically handles synchronization between Omeka and DSP:
+
+### Initial Migration
+
+For new resources:
+1. System checks if resource exists in DSP
+2. If not found, creates new resource
+3. Uploads and links associated media files
+4. Logs creation success
+
+### Incremental Updates
+
+For existing resources:
+1. System retrieves current DSP data
+2. Compares with current Omeka data
+3. Identifies differences (additions, deletions, changes)
+4. Applies only necessary updates
+5. Logs synchronization results
+
+### Synchronization Process Flow
+
+```mermaid
+flowchart TD
+    A[Process Omeka Item] --> B[Check DSP Resource Exists]
+    B -->|Not Found| C[Create New Resource]
+    B -->|Found| D[Compare Data]
+    
+    C --> E[Upload Media Files]
+    D --> F{Has Changes?}
+    F -->|Yes| G[Update Resource]
+    F -->|No| H[Skip - No Changes]
+    
+    G --> I[Apply Updates]
+    I --> E
+    E --> J[Link Media to Resource]
+    H --> K[Process Next Item]
+    J --> K
+    
+    style C fill:#e3f2fd
+    style G fill:#fff8e1
+    style H fill:#e8f5e8
+```
+
+### Conflict Resolution
+
+The system handles common conflicts:
+
+#### Value Changes
+- **Omeka has new value, DSP has old**: Updates DSP value
+- **Omeka removes value, DSP has value**: Deletes DSP value
+- **Both systems have different values**: Omeka value takes precedence
+
+#### Array Properties
+- **Omeka adds item**: Creates new value in DSP
+- **Omeka removes item**: Deletes value from DSP
+- **Complex changes**: Calculates minimal set of operations
+
+#### Media Files
+- **File changed in Omeka**: Re-uploads file to DSP
+- **File removed from Omeka**: Logs warning (manual review needed)
+- **File corrupted**: Skips file, logs error
+
+## File Handling
+
+### Media Processing Workflow
+
+```mermaid
+sequenceDiagram
+    participant S as Script
+    participant O as Omeka
+    participant T as Temp Storage
+    participant D as DSP
+    
+    S->>O: Request media file
+    O->>S: Return file URL
+    S->>O: Download file stream
+    O->>T: Stream file data
+    T->>S: Temporary file created
+    
+    S->>S: Determine file type
+    S->>S: Check if compression needed
+    
+    alt File > 10MB
+        S->>T: Create ZIP archive
+        T->>S: Compressed file ready
+    end
+    
+    S->>D: Upload file (multipart)
+    D->>S: Return internal filename
+    S->>S: Update resource with filename
+    S->>T: Clean up temporary files
+```
+
+### Supported File Types
+
+| Category | MIME Types | DSP Class |
+|----------|------------|-----------|
+| **Images** | `image/jpeg`, `image/png`, `image/gif`, `image/tiff` | `sgb_MEDIA_IMAGE` |
+| **Documents** | `application/pdf`, `text/plain`, `text/html` | `sgb_MEDIA_ARCHIV` |
+| **Archives** | `application/zip`, `application/x-tar` | `sgb_MEDIA_ARCHIV` |
+| **Other** | All other types | `sgb_MEDIA_ARCHIV` (default) |
+
+### File Processing Options
+
+Configure file handling behavior:
+
+```python
+# Edit in data_2_dasch.py
+FILE_PROCESSING_CONFIG = {
+    'max_file_size': 100 * 1024 * 1024,  # 100MB
+    'compression_threshold': 10 * 1024 * 1024,  # 10MB
+    'supported_formats': [
+        'image/jpeg', 'image/png', 'application/pdf'
+    ],
+    'skip_large_files': False,  # Skip files exceeding max size
+    'create_thumbnails': False  # Generate thumbnails (if supported)
+}
+```
+
+## Troubleshooting Common Issues
+
+### Authentication Problems
+
+**Issue**: Login failed or token expired
+
+```bash
+# Test authentication
+python -c "
+from scripts.data_2_dasch import login
+import os
+try:
+    token = login(os.getenv('DSP_USER'), os.getenv('DSP_PWD'))
+    print('Authentication successful')
+except Exception as e:
+    print(f'Authentication failed: {e}')
+"
+```
+
+**Solutions**:
+- Verify username and password
+- Check if account is locked
+- Ensure API endpoints are correct
+
+### Network Issues
+
+**Issue**: Connection timeouts or failures
+
+```bash
+# Test network connectivity
+curl -v https://api.dasch.swiss/health
+ping api.dasch.swiss
+```
+
+**Solutions**:
+- Check internet connection
+- Verify firewall settings
+- Consider proxy configuration
+
+### Data Validation Errors
+
+**Issue**: Invalid payload or data format errors
+
+```bash
+# Check specific item data
+python -c "
+from scripts.process_data_from_omeka import get_items_from_collection
+items = get_items_from_collection('$ITEM_SET_ID')
+problem_item = next(item for item in items if item['o:id'] == 'PROBLEM_ID')
+print(json.dumps(problem_item, indent=2))
+"
+```
+
+**Solutions**:
+- Verify data model compatibility
+- Check required field presence
+- Validate list value mappings
+
+### File Upload Failures
+
+**Issue**: Media files fail to upload
+
+```bash
+# Check file accessibility
+curl -I "https://omeka.example.com/files/original/problematic-file.jpg"
+```
+
+**Solutions**:
+- Verify file exists and is accessible
+- Check file size limits
+- Ensure stable network connection
+- Retry upload for temporary failures
+
+## Best Practices
+
+### Pre-Migration Planning
+
+1. **Data Assessment**
+   ```bash
+   # Count items in collection
+   python -c "
+   from scripts.process_data_from_omeka import get_items_from_collection
+   items = get_items_from_collection('$ITEM_SET_ID')
+   print(f'Total items: {len(items)}')
+   
+   # Estimate processing time (1-2 items per second)
+   estimated_minutes = len(items) / 60
+   print(f'Estimated time: {estimated_minutes:.1f} minutes')
+   "
+   ```
+
+2. **Test Run**
+   ```bash
+   # Always start with sample data
+   python scripts/data_2_dasch.py -m sample_data
+   ```
+
+3. **Backup Strategy**
+   ```bash
+   # Create backup of current DSP state
+   # (Use DSP export tools if available)
+   ```
+
+### During Migration
+
+1. **Monitor Progress**
+   ```bash
+   # Run in screen/tmux for long migrations
+   screen -S migration
+   python scripts/data_2_dasch.py 2>&1 | tee migration_$(date +%Y%m%d_%H%M%S).log
+   ```
+
+2. **Resource Management**
+   ```bash
+   # Monitor system resources
+   htop
+   df -h  # Check disk space
+   ```
+
+3. **Error Handling**
+   ```bash
+   # Monitor for errors in real-time
+   tail -f data_2_dasch.log | grep -E "(ERROR|FAILED)"
+   ```
+
+### Post-Migration
+
+1. **Validation**
+   ```bash
+   # Count migrated resources
+   grep "Resource created successfully" data_2_dasch.log | wc -l
+   grep "Resource updated successfully" data_2_dasch.log | wc -l
+   ```
+
+2. **Quality Assurance**
+   ```bash
+   # Check for missing media
+   grep "Media file not found" data_2_dasch.log
+   
+   # Check for validation errors
+   grep "Validation failed" data_2_dasch.log
+   ```
+
+3. **Documentation**
+   ```bash
+   # Create migration report
+   echo "Migration completed on $(date)" > migration_report.txt
+   echo "Items processed: $(grep 'Processing item:' data_2_dasch.log | wc -l)" >> migration_report.txt
+   echo "Resources created: $(grep 'Resource created successfully' data_2_dasch.log | wc -l)" >> migration_report.txt
+   echo "Resources updated: $(grep 'Resource updated successfully' data_2_dasch.log | wc -l)" >> migration_report.txt
+   echo "Errors encountered: $(grep 'ERROR' data_2_dasch.log | wc -l)" >> migration_report.txt
+   ```
+
+### Performance Optimization
+
+1. **Batch Processing**
+   - Process large collections in smaller batches
+   - Use `sample_data` mode with increasing sample sizes
+
+2. **Network Optimization**
+   - Ensure stable, high-speed internet connection
+   - Consider running on server closer to DSP infrastructure
+
+3. **Resource Management**
+   - Monitor memory usage for large files
+   - Clean temporary files regularly
+   - Use SSD storage for better I/O performance
+
+### Error Recovery
+
+1. **Resuming Interrupted Migrations**
+   ```bash
+   # The system automatically skips existing resources
+   # Simply re-run the same command
+   python scripts/data_2_dasch.py -m all_data
+   ```
+
+2. **Selective Re-processing**
+   ```bash
+   # Process specific problematic items
+   # Edit TEST_DATA with failed identifiers
+   python scripts/data_2_dasch.py -m test_data
+   ```
+
+3. **Clean Up and Retry**
+   ```bash
+   # Clean temporary files
+   rm -rf /tmp/omeka2dsp_*
+   
+   # Clear logs for fresh start
+   rm data_2_dasch.log
+   
+   # Retry migration
+   python scripts/data_2_dasch.py
+   ```
+
+This usage guide provides comprehensive instructions for successfully running data migrations with the omeka2dsp system. Follow the best practices and monitoring guidelines to ensure smooth and reliable data transfers.

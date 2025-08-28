@@ -9,62 +9,88 @@ The script transfers the metadata and the associated media files from the SGB Om
 [![GitHub stars](https://img.shields.io/github/stars/koilebeit/omeka2dsp.svg)](https://github.com/koilebeit/omeka2dsp/stargazers)
 [![GitHub license](https://img.shields.io/github/license/koilebeit/omeka2dsp.svg)](https://github.com/koilebeit/omeka2dsp/blob/main/LICENSE.md)
 
-## Installation
+## 📚 Documentation
 
-Use the package manager [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) to install all dependencies.
+Comprehensive documentation is available in the [`docs/`](docs/) directory:
+
+- **[📖 Complete Documentation](docs/README.md)** - Start here for full system documentation
+- **[🏗️ Architecture Overview](docs/architecture/README.md)** - System design and components
+- **[🔄 Workflows](docs/workflows/README.md)** - Data migration workflows with Mermaid diagrams
+- **[🔧 API Reference](docs/api/README.md)** - Detailed Python function documentation
+
+### 🚀 Quick Start Guides
+
+- **[⚡ Installation & Setup](docs/guides/installation.md)** - Get up and running quickly
+- **[⚙️ Configuration](docs/guides/configuration.md)** - Environment setup and customization
+- **[📋 Usage Guide](docs/guides/usage.md)** - How to run migrations
+- **[🛠️ Development](docs/guides/development.md)** - Contributing and extending
+- **[🔍 Troubleshooting](docs/guides/troubleshooting.md)** - Common issues and solutions
+
+## ⚡ Quick Installation
 
 ```bash
-npm install
+# Clone repository
+git clone https://github.com/Stadt-Geschichte-Basel/omeka2dsp.git
+cd omeka2dsp
+
+# Install dependencies
+npm install  # For development tools
+pip install requests  # For Python dependencies
+
+# Configure environment
+cp example.env .env
+# Edit .env with your credentials
+
+# Test installation
+python scripts/api_get_project.py
 ```
 
-## Usage
+## 🚀 Quick Usage
 
-### Preconditions
+```bash
+# Run sample data migration (recommended for first test)
+python scripts/data_2_dasch.py -m sample_data
 
-You need an already created project with the provided [data model](data/data_model_dasch.json) on a DSP instance. If this needs to be created, this can be done using the [DSP-Tools](https://docs.dasch.swiss/latest/DSP-TOOLS/) like this:
+# Run full migration
+python scripts/data_2_dasch.py -m all_data
 
-```
-dsp-tools create -s 0.0.0.0:3333 -u root@example.com -p test data/data_model_dasch.json
-```
-
-(note: this requires system administrator rights on the DSP instance)
-
-### Setting the environment variables
-
-The following environment variables must be set:
-|Environment variable | Description |
-|---------------------|----------------|
-|OMEKA_API_URL |URL of the Omeka API |
-|KEY_IDENTITY |Your Omeka API identity |
-|KEY_CREDENTIAL |Your Omeka API credential |
-|ITEM_SET_ID |The itemset id of your Omeka collection |
-|PROJECT_SHORT_CODE |Shortcode of your DSP project |
-|API_HOST |URL of the DSP API |
-|INGEST_HOST |URL of the DaSCH ingest host |
-|DSP_USER |Your DSP username |
-|DSP_PWD |Your DSP password |
-|PREFIX |Prefix of your ontology (Default: StadtGeschichteBasel_v1) |
-
-### Run the script
-
-```
-python scripts/data_2_dasch.py [-m]
+# Run test data migration
+python scripts/data_2_dasch.py -m test_data
 ```
 
-- `-m all_data` process all data of the omeka instance (same as without -m)
+### Processing Modes
 
-- `-m sample_data` process a random selection of data from omeka
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| `all_data` | Process entire collection | Production migrations |
+| `sample_data` | Process random subset | Testing and validation |
+| `test_data` | Process predefined items | Development and debugging |
 
-- `-m test_data`process only selected data of the omeka instance
+## 🏗️ System Architecture
 
-### Configuration
-
-You can configure the number of random data and specify the test data by adjusting the following variables in the [script](scripts/data_2_dasch.py):
-
-```python
-NUMBER_RANDOM_OBJECTS = 2
-TEST_DATA = {'abb13025', 'abb14375', 'abb41033', 'abb11536', 'abb28998'}
+```mermaid
+graph LR
+    A[Omeka API] --> B[Data Extraction]
+    B --> C[Data Transformation]
+    C --> D[DSP Upload]
+    D --> E[DSP API]
+    
+    F[Configuration] --> B
+    F --> C
+    F --> D
+    
+    style A fill:#e1f5fe
+    style E fill:#e8f5e8
+    style B fill:#fff3e0
+    style C fill:#fff3e0
+    style D fill:#fff3e0
 ```
+
+The system transfers cultural heritage data from Omeka to the DaSCH Service Platform with:
+- ✅ **Automated synchronization** - Detects and applies only necessary changes
+- ✅ **Media file handling** - Transfers and processes associated files
+- ✅ **Data validation** - Ensures data integrity throughout the process
+- ✅ **Error recovery** - Robust error handling and retry mechanisms
 
 ## Support
 

@@ -1,0 +1,406 @@
+# System Architecture
+
+## Overview
+
+The omeka2dsp system is designed as a data migration and synchronization pipeline that transfers cultural heritage data from Omeka (a digital collections platform) to the DaSCH Service Platform (DSP) for long-term preservation.
+
+## High-Level Architecture
+
+```mermaid
+graph TB
+    subgraph "Source System"
+        A[Omeka Instance]
+        A1[Items API]
+        A2[Media API]
+        A3[Collections API]
+    end
+    
+    subgraph "Migration Pipeline"
+        B[Data Extraction]
+        C[Data Transformation]
+        D[Data Validation]
+        E[Upload & Sync]
+    end
+    
+    subgraph "Target System"
+        F[DSP Instance]
+        F1[Resources API]
+        F2[Files API]
+        F3[Lists API]
+        F4[Projects API]
+    end
+    
+    subgraph "Storage"
+        G[Local File Cache]
+        H[Configuration Files]
+        I[Log Files]
+    end
+    
+    A1 --> B
+    A2 --> B
+    A3 --> B
+    
+    B --> C
+    C --> D
+    D --> E
+    
+    E --> F1
+    E --> F2
+    E --> F3
+    
+    H --> B
+    H --> C
+    H --> E
+    
+    E --> I
+    
+    style A fill:#e1f5fe
+    style F fill:#e8f5e8
+    style B fill:#fff3e0
+    style C fill:#fff3e0
+    style D fill:#fff3e0
+    style E fill:#fff3e0
+```
+
+## Core Components
+
+### 1. Data Extraction Layer (`process_data_from_omeka.py`)
+
+**Purpose**: Interfaces with Omeka API to retrieve items, media, and metadata.
+
+**Key Functions**:
+- `get_items_from_collection()` - Retrieves paginated items from collections
+- `get_media()` - Fetches media files associated with items
+- `extract_property()` - Extracts specific metadata properties
+- `extract_combined_values()` - Combines multiple property values
+
+**Architecture Pattern**: Repository pattern with API abstraction
+
+```mermaid
+classDiagram
+    class OmekaExtractor {
+        +get_items_from_collection(collection_id)
+        +get_media(item_id)
+        +extract_property(props, prop_id)
+        +extract_combined_values(props)
+        +get_paginated_items(url, params)
+    }
+    
+    class APIClient {
+        +make_request(endpoint, params)
+        +handle_pagination()
+        +validate_response()
+    }
+    
+    OmekaExtractor --> APIClient
+```
+
+### 2. Data Transformation Layer (`data_2_dasch.py` - transformation functions)
+
+**Purpose**: Converts Omeka data structures to DSP-compatible formats.
+
+**Key Functions**:
+- `construct_payload()` - Builds DSP resource payloads
+- `extract_listvalueiri_from_value()` - Maps values to DSP list nodes
+- `specify_mediaclass()` - Determines appropriate DSP media classes
+
+**Architecture Pattern**: Builder pattern with strategy pattern for different resource types
+
+```mermaid
+classDiagram
+    class PayloadBuilder {
+        +construct_payload(item, type, project_iri, lists)
+        +build_metadata_section(item)
+        +build_media_section(item, filename)
+        +map_to_dsp_properties(omeka_properties)
+    }
+    
+    class PropertyMapper {
+        +map_dublin_core(property)
+        +map_custom_properties(property)
+        +extract_list_values(property, lists)
+    }
+    
+    class ResourceTypeStrategy {
+        <<interface>>
+        +build_specific_fields(item)
+    }
+    
+    class ObjectStrategy {
+        +build_specific_fields(item)
+    }
+    
+    class MediaStrategy {
+        +build_specific_fields(item)
+    }
+    
+    PayloadBuilder --> PropertyMapper
+    PayloadBuilder --> ResourceTypeStrategy
+    ResourceTypeStrategy <|-- ObjectStrategy
+    ResourceTypeStrategy <|-- MediaStrategy
+```
+
+### 3. Synchronization Layer (`data_2_dasch.py` - sync functions)
+
+**Purpose**: Handles incremental updates and conflict resolution between systems.
+
+**Key Functions**:
+- `check_values()` - Compares Omeka and DSP data for differences
+- `sync_value()` - Synchronizes single-value properties
+- `sync_array_value()` - Synchronizes multi-value properties
+- `update_value()` - Performs actual API updates
+
+**Architecture Pattern**: Strategy pattern with command pattern for updates
+
+```mermaid
+classDiagram
+    class SyncManager {
+        +check_values(dasch_item, omeka_item, lists)
+        +sync_resource(resource_iri, omeka_data)
+        +generate_sync_plan(differences)
+    }
+    
+    class ValueComparator {
+        +compare_text_values(dasch_val, omeka_val)
+        +compare_list_values(dasch_val, omeka_val)
+        +compare_array_values(dasch_arr, omeka_arr)
+    }
+    
+    class UpdateCommand {
+        <<interface>>
+        +execute()
+        +rollback()
+    }
+    
+    class CreateValueCommand {
+        +execute()
+        +rollback()
+    }
+    
+    class DeleteValueCommand {
+        +execute()
+        +rollback()
+    }
+    
+    class UpdateValueCommand {
+        +execute()
+        +rollback()
+    }
+    
+    SyncManager --> ValueComparator
+    SyncManager --> UpdateCommand
+    UpdateCommand <|-- CreateValueCommand
+    UpdateCommand <|-- DeleteValueCommand
+    UpdateCommand <|-- UpdateValueCommand
+```
+
+### 4. Upload & File Management Layer (`data_2_dasch.py` - file functions)
+
+**Purpose**: Manages file uploads and media processing for DSP.
+
+**Key Functions**:
+- `upload_file_from_url()` - Downloads and uploads files to DSP
+- `create_resource()` - Creates new DSP resources
+- `get_full_resource()` - Retrieves complete resource data
+
+## Data Flow Architecture
+
+### Processing Pipeline
+
+```mermaid
+flowchart TD
+    Start([Start Migration]) --> Config[Load Configuration]
+    Config --> Auth[Authenticate with DSP]
+    Auth --> FetchOmeka[Fetch Omeka Data]
+    
+    FetchOmeka --> FilterMode{Processing Mode?}
+    FilterMode -->|All Data| AllItems[Process All Items]
+    FilterMode -->|Sample| SampleItems[Process Sample Items]
+    FilterMode -->|Test| TestItems[Process Test Items]
+    
+    AllItems --> ProcessItem[Process Individual Item]
+    SampleItems --> ProcessItem
+    TestItems --> ProcessItem
+    
+    ProcessItem --> CheckExists{Resource Exists in DSP?}
+    
+    CheckExists -->|No| CreateNew[Create New Resource]
+    CheckExists -->|Yes| CompareData[Compare Data]
+    
+    CreateNew --> ProcessMedia[Process Media Files]
+    CompareData --> HasChanges{Has Changes?}
+    
+    HasChanges -->|Yes| UpdateExisting[Update Resource]
+    HasChanges -->|No| ProcessMedia
+    UpdateExisting --> ProcessMedia
+    
+    ProcessMedia --> MoreItems{More Items?}
+    MoreItems -->|Yes| ProcessItem
+    MoreItems -->|No| Complete[Migration Complete]
+    
+    style Start fill:#e8f5e8
+    style Complete fill:#e8f5e8
+    style ProcessItem fill:#fff3e0
+    style CreateNew fill:#e3f2fd
+    style UpdateExisting fill:#fff8e1
+```
+
+### Data Transformation Flow
+
+```mermaid
+sequenceDiagram
+    participant O as Omeka API
+    participant E as Extractor
+    participant T as Transformer
+    participant V as Validator
+    participant D as DSP API
+    
+    E->>O: Get Items from Collection
+    O->>E: Return Item Data
+    
+    loop For each item
+        E->>O: Get Media for Item
+        O->>E: Return Media Data
+        
+        E->>T: Extract & Transform Data
+        T->>T: Map Dublin Core Properties
+        T->>T: Build DSP Payload
+        T->>V: Validate Payload Structure
+        
+        V->>D: Check if Resource Exists
+        D->>V: Return Existing Data
+        
+        alt Resource doesn't exist
+            V->>D: Create New Resource
+            D->>V: Return Created Resource
+        else Resource exists with changes
+            V->>D: Update Resource
+            D->>V: Return Updated Resource
+        end
+        
+        T->>D: Upload Media Files
+        D->>T: Confirm Upload
+    end
+```
+
+## Configuration Architecture
+
+### Environment-Based Configuration
+
+The system uses environment variables for configuration, following the 12-factor app methodology:
+
+```mermaid
+graph LR
+    subgraph "Configuration Sources"
+        A[Environment Variables]
+        B[.env File]
+        C[example.env Template]
+    end
+    
+    subgraph "Configuration Categories"
+        D[Omeka API Config]
+        E[DSP API Config]
+        F[Processing Config]
+        G[Authentication Config]
+    end
+    
+    A --> D
+    A --> E
+    A --> F
+    A --> G
+    
+    B --> A
+    C --> B
+    
+    style A fill:#e1f5fe
+    style D fill:#fff3e0
+    style E fill:#e8f5e8
+    style F fill:#fff8e1
+    style G fill:#ffebee
+```
+
+### Configuration Categories
+
+| Category | Variables | Purpose |
+|----------|-----------|---------|
+| **Omeka API** | `OMEKA_API_URL`, `KEY_IDENTITY`, `KEY_CREDENTIAL`, `ITEM_SET_ID` | Connect to source Omeka instance |
+| **DSP API** | `PROJECT_SHORT_CODE`, `API_HOST`, `INGEST_HOST` | Connect to target DSP instance |
+| **Authentication** | `DSP_USER`, `DSP_PWD` | Authenticate with DSP |
+| **Processing** | `PREFIX`, `NUMBER_RANDOM_OBJECTS`, `TEST_DATA` | Control processing behavior |
+
+## Error Handling Architecture
+
+### Logging Strategy
+
+```mermaid
+graph TD
+    A[Application Events] --> B[Logger]
+    B --> C[Console Handler]
+    B --> D[File Handler]
+    
+    C --> E[Real-time Monitoring]
+    D --> F[data_2_dasch.log]
+    
+    G[Error Events] --> H[Error Handler]
+    H --> I[Log Error Details]
+    H --> J[Continue Processing]
+    H --> K[Fail Fast for Critical Errors]
+    
+    style G fill:#ffebee
+    style H fill:#ffebee
+    style I fill:#ffebee
+```
+
+### Fault Tolerance
+
+1. **API Resilience**: Handles rate limiting, timeouts, and temporary failures
+2. **Data Validation**: Validates data at multiple points in the pipeline
+3. **Partial Recovery**: Can resume processing from where it left off
+4. **Graceful Degradation**: Continues processing other items if one fails
+
+## Performance Architecture
+
+### Optimization Strategies
+
+1. **Pagination**: Efficiently handles large datasets through API pagination
+2. **Caching**: Caches frequently accessed data (projects, lists)
+3. **Batch Processing**: Groups operations where possible
+4. **Streaming**: Streams large files during upload to minimize memory usage
+
+### Scalability Considerations
+
+- **Horizontal Scaling**: Can be containerized and scaled across multiple instances
+- **Rate Limiting**: Respects API rate limits to avoid service degradation
+- **Memory Management**: Processes items individually to maintain low memory footprint
+- **Monitoring**: Comprehensive logging for performance monitoring
+
+## Security Architecture
+
+### Authentication Flow
+
+```mermaid
+sequenceDiagram
+    participant S as Script
+    participant D as DSP API
+    participant O as Omeka API
+    
+    S->>D: Login Request (username/password)
+    D->>S: JWT Token
+    
+    Note over S: Store token for session
+    
+    S->>O: API Request (API keys)
+    O->>S: Data Response
+    
+    S->>D: API Request (Bearer token)
+    D->>S: API Response
+    
+    Note over S: Token expires - re-authenticate
+```
+
+### Security Features
+
+1. **Credential Management**: Environment-based credential storage
+2. **Token Handling**: Secure JWT token management for DSP API
+3. **HTTPS**: All API communications use HTTPS
+4. **Access Control**: Respects API permissions and rate limits

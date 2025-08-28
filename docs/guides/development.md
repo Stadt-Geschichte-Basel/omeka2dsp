@@ -1,0 +1,660 @@
+# Development Guide
+
+Guide for developers contributing to or extending the omeka2dsp system.
+
+## Table of Contents
+
+1. [Development Environment Setup](#development-environment-setup)
+2. [Code Architecture](#code-architecture)
+3. [Contributing Guidelines](#contributing-guidelines)
+4. [Testing](#testing)
+5. [Extending the System](#extending-the-system)
+6. [Debugging](#debugging)
+7. [Code Style](#code-style)
+8. [Release Process](#release-process)
+
+## Development Environment Setup
+
+### Prerequisites
+
+- Python 3.8+
+- Node.js 16+ (for development tools)
+- Git
+- Access to Omeka and DSP test instances
+
+### Initial Setup
+
+```bash
+# Clone repository
+git clone https://github.com/Stadt-Geschichte-Basel/omeka2dsp.git
+cd omeka2dsp
+
+# Create development branch
+git checkout -b feature/your-feature-name
+
+# Setup Python environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt  # If exists
+pip install requests python-dotenv pytest black flake8
+
+# Install development tools
+npm install
+```
+
+### Development Configuration
+
+Create a development environment file:
+
+```bash
+cp example.env .env.dev
+```
+
+Edit `.env.dev` with test instance credentials:
+
+```bash
+# Development configuration
+OMEKA_API_URL=https://test-omeka.example.com/api/
+KEY_IDENTITY=test_key_identity
+KEY_CREDENTIAL=test_key_credential
+ITEM_SET_ID=test_collection_id
+
+# DSP test instance
+PROJECT_SHORT_CODE=TEST
+API_HOST=https://test-api.dasch.swiss
+INGEST_HOST=https://test-ingest.dasch.swiss
+DSP_USER=test@example.com
+DSP_PWD=test_password
+
+# Development settings
+DEBUG_MODE=true
+LOG_LEVEL=DEBUG
+```
+
+## Code Architecture
+
+### Module Structure
+
+```
+scripts/
+├── data_2_dasch.py              # Main migration orchestrator
+├── process_data_from_omeka.py   # Omeka API interface
+├── api_get_project.py           # DSP project utilities
+├── api_get_lists.py            # DSP lists utilities
+└── api_get_lists_detailed.py   # Detailed list utilities
+```
+
+### Key Design Patterns
+
+1. **Repository Pattern**: Data access abstraction
+2. **Builder Pattern**: Payload construction
+3. **Strategy Pattern**: Different resource types
+4. **Command Pattern**: Update operations
+
+### Core Components
+
+```mermaid
+classDiagram
+    class MigrationOrchestrator {
+        +main()
+        +process_items()
+        +handle_item()
+    }
+    
+    class OmekaRepository {
+        +get_items_from_collection()
+        +get_media()
+        +extract_property()
+    }
+    
+    class DSPRepository {
+        +login()
+        +get_project()
+        +get_resource_by_id()
+        +create_resource()
+    }
+    
+    class PayloadBuilder {
+        +construct_payload()
+        +map_properties()
+        +extract_list_values()
+    }
+    
+    class SynchronizationService {
+        +check_values()
+        +sync_resource()
+        +update_value()
+    }
+    
+    MigrationOrchestrator --> OmekaRepository
+    MigrationOrchestrator --> DSPRepository
+    MigrationOrchestrator --> PayloadBuilder
+    MigrationOrchestrator --> SynchronizationService
+```
+
+### Data Flow
+
+```mermaid
+sequenceDiagram
+    participant Main as main()
+    participant Omeka as OmekaRepository
+    participant Builder as PayloadBuilder
+    participant DSP as DSPRepository
+    participant Sync as SyncService
+    
+    Main->>Omeka: get_items_from_collection()
+    Omeka->>Main: items[]
+    
+    loop For each item
+        Main->>Omeka: get_media(item_id)
+        Omeka->>Main: media[]
+        
+        Main->>DSP: get_resource_by_id()
+        DSP->>Main: existing_resource or None
+        
+        alt Resource doesn't exist
+            Main->>Builder: construct_payload()
+            Builder->>Main: payload
+            Main->>DSP: create_resource(payload)
+        else Resource exists
+            Main->>Sync: check_values()
+            Sync->>Main: changes[]
+            Main->>Sync: apply_updates()
+        end
+    end
+```
+
+## Contributing Guidelines
+
+### Git Workflow
+
+1. **Create Feature Branch**
+   ```bash
+   git checkout -b feature/description-of-feature
+   ```
+
+2. **Make Changes**
+   ```bash
+   # Make your changes
+   git add .
+   git commit -m "feat: add new synchronization feature"
+   ```
+
+3. **Update Documentation**
+   ```bash
+   # Update relevant documentation
+   # Add tests for new features
+   ```
+
+4. **Submit Pull Request**
+   ```bash
+   git push origin feature/description-of-feature
+   # Create PR on GitHub
+   ```
+
+### Commit Message Convention
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```bash
+# Types
+feat: new feature
+fix: bug fix
+docs: documentation changes
+style: code style changes
+refactor: code refactoring
+test: test additions/changes
+chore: maintenance tasks
+
+# Examples
+feat: add support for video files
+fix: handle missing media files gracefully
+docs: update API documentation
+refactor: extract payload building to separate module
+```
+
+### Code Review Checklist
+
+- [ ] Code follows style guidelines
+- [ ] Tests are included and pass
+- [ ] Documentation is updated
+- [ ] No sensitive data in commits
+- [ ] Performance impact considered
+- [ ] Error handling included
+- [ ] Logging appropriate
+
+## Testing
+
+### Test Structure
+
+```
+tests/
+├── unit/
+│   ├── test_omeka_repository.py
+│   ├── test_payload_builder.py
+│   └── test_sync_service.py
+├── integration/
+│   ├── test_api_integration.py
+│   └── test_end_to_end.py
+└── fixtures/
+    ├── sample_omeka_data.json
+    └── sample_dsp_response.json
+```
+
+### Unit Testing
+
+Create unit tests for individual components:
+
+```python
+# tests/unit/test_payload_builder.py
+import unittest
+from unittest.mock import Mock
+from scripts.data_2_dasch import construct_payload
+
+class TestPayloadBuilder(unittest.TestCase):
+    
+    def setUp(self):
+        self.sample_omeka_item = {
+            "dcterms:title": [{"@value": "Test Title"}],
+            "dcterms:identifier": [{"@value": "test123"}]
+        }
+        self.sample_lists = []
+    
+    def test_construct_basic_payload(self):
+        """Test basic payload construction"""
+        payload = construct_payload(
+            self.sample_omeka_item,
+            "sgb_OBJECT",
+            "project_iri",
+            self.sample_lists,
+            "",
+            ""
+        )
+        
+        self.assertIn("@context", payload)
+        self.assertIn("@type", payload)
+        self.assertIn("rdfs:label", payload)
+        self.assertEqual(payload["rdfs:label"], "Test Title")
+    
+    def test_handle_missing_title(self):
+        """Test handling of missing required fields"""
+        item_no_title = {"dcterms:identifier": [{"@value": "test123"}]}
+        
+        payload = construct_payload(
+            item_no_title,
+            "sgb_OBJECT", 
+            "project_iri",
+            self.sample_lists,
+            "",
+            ""
+        )
+        
+        # Should handle gracefully
+        self.assertIn("rdfs:label", payload)
+```
+
+### Integration Testing
+
+Test API integrations:
+
+```python
+# tests/integration/test_api_integration.py
+import unittest
+import os
+from scripts.data_2_dasch import login, get_project
+
+class TestAPIIntegration(unittest.TestCase):
+    
+    def setUp(self):
+        self.dsp_user = os.getenv('TEST_DSP_USER')
+        self.dsp_pwd = os.getenv('TEST_DSP_PWD')
+    
+    @unittest.skipIf(not os.getenv('TEST_DSP_USER'), "Test credentials not provided")
+    def test_dsp_authentication(self):
+        """Test DSP API authentication"""
+        token = login(self.dsp_user, self.dsp_pwd)
+        self.assertIsNotNone(token)
+        self.assertIsInstance(token, str)
+        self.assertGreater(len(token), 10)
+    
+    def test_project_retrieval(self):
+        """Test project information retrieval"""
+        project_iri = get_project()
+        self.assertIsNotNone(project_iri)
+        self.assertTrue(project_iri.startswith('http'))
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+python -m pytest tests/
+
+# Run specific test file
+python -m pytest tests/unit/test_payload_builder.py
+
+# Run with coverage
+pip install pytest-cov
+python -m pytest --cov=scripts tests/
+
+# Run integration tests
+python -m pytest tests/integration/ -v
+```
+
+## Extending the System
+
+### Adding New Resource Types
+
+1. **Define Resource Class**
+   ```python
+   # In construct_payload function
+   if type == f"{PREFIX}sgb_NEW_TYPE":
+       payload["specific_field"] = {
+           "@type": "knora-api:TextValue",
+           "knora-api:valueAsString": extract_property(item.get("custom:field", []), 42)
+       }
+   ```
+
+2. **Update Media Class Mapping**
+   ```python
+   def specify_mediaclass(media_type: str) -> str:
+       if media_type.startswith("audio/"):
+           return f"{PREFIX}sgb_MEDIA_AUDIO"
+       # ... existing mappings
+   ```
+
+3. **Add Property Mappings**
+   ```python
+   # Add new property extractors
+   def extract_custom_property(item, prop_name):
+       # Custom extraction logic
+       pass
+   ```
+
+### Adding New Data Sources
+
+Create new repository classes:
+
+```python
+# scripts/new_data_source.py
+class NewDataSourceRepository:
+    
+    def __init__(self, api_url, credentials):
+        self.api_url = api_url
+        self.credentials = credentials
+    
+    def get_items(self, collection_id):
+        """Fetch items from new data source"""
+        # Implementation here
+        pass
+    
+    def transform_to_omeka_format(self, item):
+        """Transform to standardized format"""
+        # Convert to Omeka-like structure
+        pass
+```
+
+### Custom Property Extractors
+
+Add specialized extraction logic:
+
+```python
+def extract_geo_coordinates(props):
+    """Extract geographic coordinates"""
+    for prop in props:
+        value = prop.get('@value', '')
+        if ',' in value:
+            lat, lon = value.split(',')
+            return {
+                'latitude': float(lat.strip()),
+                'longitude': float(lon.strip())
+            }
+    return None
+
+def extract_date_range(props):
+    """Extract date ranges"""
+    for prop in props:
+        value = prop.get('@value', '')
+        if '-' in value:
+            start, end = value.split('-')
+            return {
+                'start_date': start.strip(),
+                'end_date': end.strip()
+            }
+    return None
+
+# Register custom extractors
+CUSTOM_EXTRACTORS = {
+    'geo:coordinates': extract_geo_coordinates,
+    'custom:dateRange': extract_date_range
+}
+```
+
+### Plugin Architecture
+
+Create extensible plugin system:
+
+```python
+# scripts/plugins/base_plugin.py
+class BasePlugin:
+    
+    def __init__(self, config):
+        self.config = config
+    
+    def pre_process_item(self, item):
+        """Called before item processing"""
+        return item
+    
+    def post_process_item(self, item, result):
+        """Called after item processing"""
+        return result
+    
+    def transform_property(self, property_name, value):
+        """Transform specific properties"""
+        return value
+
+# scripts/plugins/image_plugin.py
+class ImageProcessingPlugin(BasePlugin):
+    
+    def pre_process_item(self, item):
+        """Add image metadata"""
+        media = self.extract_image_media(item)
+        if media:
+            item['image_metadata'] = self.extract_image_info(media)
+        return item
+    
+    def extract_image_info(self, media_url):
+        """Extract image dimensions, format, etc."""
+        # Implementation here
+        pass
+```
+
+## Debugging
+
+### Debugging Configuration
+
+```python
+# Enable debug logging
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+# Add debug prints
+def debug_item_processing(item):
+    print(f"Processing item: {item.get('o:id')}")
+    print(f"Title: {extract_property(item.get('dcterms:title', []), 1)}")
+    print(f"Identifier: {extract_property(item.get('dcterms:identifier', []), 10)}")
+```
+
+### Common Debugging Techniques
+
+1. **Inspect API Responses**
+   ```python
+   import json
+   
+   # Pretty print API responses
+   response = requests.get(url)
+   print(json.dumps(response.json(), indent=2))
+   ```
+
+2. **Test Individual Functions**
+   ```python
+   # Test payload construction
+   test_item = {...}  # Sample Omeka item
+   payload = construct_payload(test_item, "sgb_OBJECT", "project_iri", [], "", "")
+   print(json.dumps(payload, indent=2))
+   ```
+
+3. **Validate Data Transformations**
+   ```python
+   # Check property extraction
+   props = item.get("dcterms:subject", [])
+   subjects = extract_combined_values(props)
+   print(f"Extracted subjects: {subjects}")
+   ```
+
+### Debug Mode
+
+Add debug mode to main script:
+
+```python
+DEBUG_MODE = os.getenv('DEBUG_MODE', 'false').lower() == 'true'
+
+if DEBUG_MODE:
+    # Enable verbose logging
+    logging.getLogger().setLevel(logging.DEBUG)
+    
+    # Add debug breakpoints
+    import pdb; pdb.set_trace()
+    
+    # Save intermediate data
+    with open('debug_payload.json', 'w') as f:
+        json.dump(payload, f, indent=2)
+```
+
+## Code Style
+
+### Python Style Guidelines
+
+Follow PEP 8 with these specific guidelines:
+
+```python
+# Imports
+import os
+import logging
+from typing import Dict, List, Optional
+
+# Constants
+MAX_RETRIES = 3
+API_TIMEOUT = 30
+
+# Function definitions
+def extract_property(props: List[Dict], prop_id: int, as_uri: bool = False) -> str:
+    """Extract property value from Omeka property array.
+    
+    Args:
+        props: List of property dictionaries
+        prop_id: Numerical property ID to find
+        as_uri: Return as formatted URI link
+        
+    Returns:
+        Property value as string or empty string if not found
+    """
+    for prop in props:
+        if prop.get("property_id") == prop_id:
+            if as_uri:
+                return f"[{prop.get('o:label', '')}]({prop.get('@id', '')})"
+            return prop.get("@value", "")
+    return ""
+
+# Error handling
+try:
+    result = api_call()
+except requests.RequestException as e:
+    logging.error(f"API call failed: {e}")
+    raise
+```
+
+### Code Formatting Tools
+
+```bash
+# Install formatting tools
+pip install black flake8 isort
+
+# Format code
+black scripts/
+isort scripts/
+
+# Check style
+flake8 scripts/
+
+# Pre-commit hooks (if configured)
+pre-commit run --all-files
+```
+
+### Documentation Standards
+
+```python
+def complex_function(param1: str, param2: Optional[Dict] = None) -> List[str]:
+    """Brief description of function purpose.
+    
+    Detailed description if needed. Explain complex logic,
+    assumptions, and important behaviors.
+    
+    Args:
+        param1: Description of first parameter
+        param2: Description of optional parameter with default behavior
+        
+    Returns:
+        Description of return value and its structure
+        
+    Raises:
+        ValueError: When param1 is invalid
+        RequestException: When API calls fail
+        
+    Example:
+        >>> result = complex_function("test", {"key": "value"})
+        >>> print(result)
+        ['processed', 'values']
+    """
+    # Implementation here
+    pass
+```
+
+## Release Process
+
+### Version Management
+
+```bash
+# Update version in setup files
+# Follow semantic versioning: MAJOR.MINOR.PATCH
+
+# Tag release
+git tag -a v1.2.0 -m "Release version 1.2.0"
+git push origin v1.2.0
+```
+
+### Release Checklist
+
+- [ ] All tests pass
+- [ ] Documentation updated
+- [ ] CHANGELOG.md updated
+- [ ] Version numbers updated
+- [ ] Security review completed
+- [ ] Performance benchmarks run
+- [ ] Migration tested on staging
+
+### Deployment
+
+```bash
+# Production deployment checklist
+- [ ] Backup current production data
+- [ ] Deploy to staging environment
+- [ ] Run integration tests
+- [ ] Monitor staging for 24 hours
+- [ ] Deploy to production
+- [ ] Monitor production deployment
+```
+
+This development guide provides the foundation for contributing to and extending the omeka2dsp system effectively.
