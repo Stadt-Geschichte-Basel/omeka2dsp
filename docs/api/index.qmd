@@ -50,7 +50,7 @@ The main migration script that orchestrates the entire data transfer process fro
 **Example Usage**:
 
 ``` bash
-python scripts/data_2_dasch.py -m sample_data
+uv run python scripts/data_2_dasch.py -m sample_data
 ```
 
 ------------------------------------------------------------------------
@@ -571,7 +571,7 @@ Standalone script to fetch DSP project information.
 ``` bash
 export PROJECT_SHORT_CODE="0123"
 export API_HOST="https://api.dasch.swiss"
-python scripts/api_get_project.py
+uv run python scripts/api_get_project.py
 ```
 
 ------------------------------------------------------------------------
@@ -591,7 +591,7 @@ Standalone script to fetch DSP list configurations.
 **Example Usage**:
 
 ``` bash
-python scripts/api_get_lists.py
+uv run python scripts/api_get_lists.py
 ```
 
 ------------------------------------------------------------------------

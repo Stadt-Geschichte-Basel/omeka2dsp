@@ -15,16 +15,48 @@ Guide for developers contributing to or extending the omeka2dsp system.
 
 ## Development Environment Setup {#development-environment-setup}
 
+We recommend using **[GitHub Codespaces](https://github.com/features/codespaces)** for development.
+
+### For Most Developers: GitHub Codespaces
+
+1. **Fork** this repository to your GitHub account.
+
+2. Click the green **`<> Code`** button and select **"Codespaces"**.
+
+3. Click **"Create codespace on `main`"**. This provides:
+   - ✅ Python with `uv`
+   - ✅ Node.js with `pnpm`
+   - ✅ Pre-configured development environment
+   - ✅ All dependencies pre-installed
+
+4. Create your development configuration:
+
+   ```bash
+   # Create development environment file
+   cp example.env .env.dev
+   # Edit with your test instance credentials
+   ```
+
+5. Create a development branch:
+
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+<details>
+<summary>👩‍💻 <strong>Advanced</strong> Local Development Setup</summary>
+
 ### Prerequisites
 
--   Python 3.8+
--   Node.js 16+ (for development tools)
--   Git
--   Access to Omeka and DSP test instances
+- [uv (Python manager)](https://github.com/astral-sh/uv#installation)
+- [pnpm](https://pnpm.io/installation)
+- [Node.js](https://nodejs.org/en/download/) (latest LTS)
+- Git
+- Access to Omeka and DSP test instances
 
 ### Initial Setup
 
-``` bash
+```bash
 # Clone repository
 git clone https://github.com/Stadt-Geschichte-Basel/omeka2dsp.git
 cd omeka2dsp
@@ -32,29 +64,25 @@ cd omeka2dsp
 # Create development branch
 git checkout -b feature/your-feature-name
 
-# Setup Python environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Setup Python environment with dev dependencies
+uv sync --dev
 
-# Install dependencies
-pip install -r requirements.txt  # If exists
-pip install requests python-dotenv pytest black flake8
-
-# Install development tools
-npm install
+# Install Node.js development tools
+pnpm install
+pnpm run prepare
 ```
 
 ### Development Configuration
 
 Create a development environment file:
 
-``` bash
+```bash
 cp example.env .env.dev
 ```
 
 Edit `.env.dev` with test instance credentials:
 
-``` bash
+```bash
 # Development configuration
 OMEKA_API_URL=https://test-omeka.example.com/api/
 KEY_IDENTITY=test_key_identity
@@ -72,6 +100,8 @@ DSP_PWD=test_password
 DEBUG_MODE=true
 LOG_LEVEL=DEBUG
 ```
+
+</details>
 
 ## Code Architecture {#code-architecture}
 
@@ -334,17 +364,17 @@ class TestAPIIntegration(unittest.TestCase):
 
 ``` bash
 # Run all tests
-python -m pytest tests/
+uv run pytest tests/
 
 # Run specific test file
-python -m pytest tests/unit/test_payload_builder.py
+uv run pytest tests/unit/test_payload_builder.py
 
 # Run with coverage
-pip install pytest-cov
-python -m pytest --cov=scripts tests/
+uv add --dev pytest-cov
+uv run pytest --cov=scripts tests/
 
 # Run integration tests
-python -m pytest tests/integration/ -v
+uv run pytest tests/integration/ -v
 ```
 
 ## Extending the System {#extending-the-system}
@@ -589,18 +619,18 @@ except requests.RequestException as e:
 ### Code Formatting Tools
 
 ``` bash
-# Install formatting tools
-pip install black flake8 isort
+# Development dependencies are managed via uv
+uv sync --dev  # Installs black, flake8, isort if configured
 
 # Format code
-black scripts/
-isort scripts/
+uv run black scripts/
+uv run isort scripts/
 
 # Check style
-flake8 scripts/
+uv run flake8 scripts/
 
-# Pre-commit hooks (if configured)
-pre-commit run --all-files
+# Pre-commit hooks (configured via pnpm)
+pnpm run pre-commit -- run --all-files
 ```
 
 ### Documentation Standards

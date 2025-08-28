@@ -29,21 +29,31 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
 ## ⚡ Quick Installation
 
+We recommend using **[GitHub Codespaces](https://github.com/features/codespaces)** for a reproducible setup.
+
+### GitHub Codespaces (Recommended)
+
+1. Click the green **`<> Code`** button → **"Codespaces"** → **"Create codespace on `main`"**
+2. Configure environment: `cp example.env .env` and edit with your credentials  
+3. Test installation: `uv run python scripts/api_get_project.py`
+
+### Local Installation
+
 ```bash
 # Clone repository
 git clone https://github.com/Stadt-Geschichte-Basel/omeka2dsp.git
 cd omeka2dsp
 
 # Install dependencies
-npm install         # Development tools
-pip install requests # Python dependencies
+pnpm install         # Node.js development tools
+uv sync             # Python dependencies with uv
 
 # Configure environment
 cp example.env .env
 # Edit .env with your credentials
 
 # Test installation
-python scripts/api_get_project.py
+uv run python scripts/api_get_project.py
 ```
 
 ## 🚀 Quick Usage

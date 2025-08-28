@@ -34,10 +34,10 @@ Run a complete migration of your Omeka collection:
 cd omeka2dsp
 
 # Run full migration
-python scripts/data_2_dasch.py
+uv run python scripts/data_2_dasch.py
 
 # Or explicitly specify all_data mode
-python scripts/data_2_dasch.py -m all_data
+uv run python scripts/data_2_dasch.py -m all_data
 ```
 
 Expected output:
@@ -60,7 +60,7 @@ The system supports three processing modes to handle different use cases:
 Processes the entire Omeka collection.
 
 ```bash
-python scripts/data_2_dasch.py -m all_data
+uv run python scripts/data_2_dasch.py -m all_data
 ```
 
 **Use Cases**:
@@ -78,7 +78,7 @@ python scripts/data_2_dasch.py -m all_data
 Processes a random sample of items for testing purposes.
 
 ```bash
-python scripts/data_2_dasch.py -m sample_data
+uv run python scripts/data_2_dasch.py -m sample_data
 ```
 
 **Configuration**: 
@@ -98,7 +98,7 @@ NUMBER_RANDOM_OBJECTS = 10  # Process 10 random items
 Processes specific predefined items for development and debugging.
 
 ```bash
-python scripts/data_2_dasch.py -m test_data
+uv run python scripts/data_2_dasch.py -m test_data
 ```
 
 **Configuration**:
@@ -122,7 +122,7 @@ TEST_DATA = {
 ### Basic Syntax
 
 ```bash
-python scripts/data_2_dasch.py [OPTIONS]
+uv run python scripts/data_2_dasch.py [OPTIONS]
 ```
 
 ### Available Options
@@ -136,16 +136,16 @@ python scripts/data_2_dasch.py [OPTIONS]
 
 ```bash
 # Process all data (default)
-python scripts/data_2_dasch.py
+uv run python scripts/data_2_dasch.py
 
 # Process sample data with explicit mode
-python scripts/data_2_dasch.py --mode sample_data
+uv run python scripts/data_2_dasch.py --mode sample_data
 
 # Process test data
-python scripts/data_2_dasch.py -m test_data
+uv run python scripts/data_2_dasch.py -m test_data
 
 # Show help
-python scripts/data_2_dasch.py --help
+uv run python scripts/data_2_dasch.py --help
 ```
 
 ## Monitoring Migration Progress
@@ -156,7 +156,7 @@ The script provides real-time progress information through console output:
 
 ```bash
 # Run with output to terminal and file
-python scripts/data_2_dasch.py 2>&1 | tee migration.log
+uv run python scripts/data_2_dasch.py 2>&1 | tee migration.log
 ```
 
 ### Log Files
@@ -345,7 +345,7 @@ FILE_PROCESSING_CONFIG = {
 
 ```bash
 # Test authentication
-python -c "
+uv run python -c "
 from scripts.data_2_dasch import login
 import os
 try:
@@ -382,7 +382,7 @@ ping api.dasch.swiss
 
 ```bash
 # Check specific item data
-python -c "
+uv run python -c "
 from scripts.process_data_from_omeka import get_items_from_collection
 items = get_items_from_collection('$ITEM_SET_ID')
 problem_item = next(item for item in items if item['o:id'] == 'PROBLEM_ID')
@@ -417,7 +417,7 @@ curl -I "https://omeka.example.com/files/original/problematic-file.jpg"
 1. **Data Assessment**
    ```bash
    # Count items in collection
-   python -c "
+   uv run python -c "
    from scripts.process_data_from_omeka import get_items_from_collection
    items = get_items_from_collection('$ITEM_SET_ID')
    print(f'Total items: {len(items)}')
@@ -431,7 +431,7 @@ curl -I "https://omeka.example.com/files/original/problematic-file.jpg"
 2. **Test Run**
    ```bash
    # Always start with sample data
-   python scripts/data_2_dasch.py -m sample_data
+   uv run python scripts/data_2_dasch.py -m sample_data
    ```
 
 3. **Backup Strategy**
@@ -446,7 +446,7 @@ curl -I "https://omeka.example.com/files/original/problematic-file.jpg"
    ```bash
    # Run in screen/tmux for long migrations
    screen -S migration
-   python scripts/data_2_dasch.py 2>&1 | tee migration_$(date +%Y%m%d_%H%M%S).log
+   uv run python scripts/data_2_dasch.py 2>&1 | tee migration_$(date +%Y%m%d_%H%M%S).log
    ```
 
 2. **Resource Management**
@@ -511,14 +511,14 @@ curl -I "https://omeka.example.com/files/original/problematic-file.jpg"
    ```bash
    # The system automatically skips existing resources
    # Simply re-run the same command
-   python scripts/data_2_dasch.py -m all_data
+   uv run python scripts/data_2_dasch.py -m all_data
    ```
 
 2. **Selective Re-processing**
    ```bash
    # Process specific problematic items
    # Edit TEST_DATA with failed identifiers
-   python scripts/data_2_dasch.py -m test_data
+   uv run python scripts/data_2_dasch.py -m test_data
    ```
 
 3. **Clean Up and Retry**
@@ -530,7 +530,7 @@ curl -I "https://omeka.example.com/files/original/problematic-file.jpg"
    rm data_2_dasch.log
    
    # Retry migration
-   python scripts/data_2_dasch.py
+   uv run python scripts/data_2_dasch.py
    ```
 
 This usage guide provides comprehensive instructions for successfully running data migrations with the omeka2dsp system. Follow the best practices and monitoring guidelines to ensure smooth and reliable data transfers.

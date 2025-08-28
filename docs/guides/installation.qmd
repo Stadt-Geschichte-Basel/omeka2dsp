@@ -4,14 +4,6 @@ This guide walks you through installing and setting up the omeka2dsp system for 
 
 ## Prerequisites
 
-### System Requirements
-
--   **Python**: Version 3.8 or higher
--   **Operating System**: Linux, macOS, or Windows
--   **Memory**: At least 2GB RAM for processing large datasets
--   **Storage**: Sufficient disk space for temporary file downloads
--   **Network**: Stable internet connection for API operations
-
 ### Access Requirements
 
 Before installation, ensure you have:
@@ -29,75 +21,94 @@ Before installation, ensure you have:
     -   Create/update permissions in DSP project
     -   File upload permissions to DSP storage
 
-## Installation Steps
+## Installation
 
-### 1. Clone the Repository
+We recommend using **[GitHub Codespaces](https://github.com/features/codespaces)** for a reproducible setup.
 
-``` bash
+## Getting Started
+
+### For Most Users: Reproducible Setup with GitHub Codespaces
+
+1. **Fork or clone** this repository to your GitHub account.
+
+2. Click the green **`<> Code`** button at the top right of this repository.
+
+3. Select the **"Codespaces"** tab and click **"Create codespace on `main`"**.
+   GitHub will now build a container that includes:
+   - ✅ Python with `uv`
+   - ✅ Node.js with `pnpm`
+   - ✅ All project dependencies pre-installed
+
+4. Once the Codespace is ready, configure your environment:
+
+   ```bash
+   # Copy example environment file
+   cp example.env .env
+   # Edit .env with your credentials using the built-in editor
+   ```
+
+5. Test the installation:
+
+   ```bash
+   # Test Omeka API access
+   uv run python scripts/api_get_project.py
+   ```
+
+> **Note:** All dependencies (Python via uv, Node.js via pnpm) are pre-installed in the Codespace.
+
+<details>
+<summary>👩‍💻 <strong>Advanced</strong> Local Installation</summary>
+
+### Prerequisites
+
+- [uv (Python manager)](https://github.com/astral-sh/uv#installation)
+- [pnpm](https://pnpm.io/installation)
+- [Node.js](https://nodejs.org/en/download/) (latest LTS)
+
+> _Note: `uv` installs and manages the correct Python version automatically._
+
+### Local Setup Steps
+
+```bash
+# 1. Clone repository
 git clone https://github.com/Stadt-Geschichte-Basel/omeka2dsp.git
 cd omeka2dsp
+
+# 2. Install Node.js dependencies
+pnpm install
+pnpm run prepare
+
+# 3. Setup Python environment
+uv sync
+
+# 4. Configure environment
+cp example.env .env
+# Edit .env with your specific settings
+
+# 5. Test installation
+uv run python scripts/api_get_project.py
 ```
 
-### 2. Python Environment Setup
+</details>
 
-#### Option A: Using Virtual Environment (Recommended)
-
-``` bash
-# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment
-# On Linux/macOS:
-source venv/bin/activate
-# On Windows:
-venv\Scripts\activate
-```
-
-#### Option B: Using Conda
-
-``` bash
-# Create conda environment
-conda create -n omeka2dsp python=3.9
-conda activate omeka2dsp
-```
-
-### 3. Install Dependencies
-
-``` bash
-# Install Python dependencies
-pip install requests
-
-# Verify installation
-python -c "import requests; print('Dependencies installed successfully')"
-```
-
-### 4. Install Node.js Dependencies (Optional)
-
-For development tools and formatting:
-
-``` bash
-# Install Node.js dependencies
-npm install
-
-# Verify installation
-npm run check
-```
+## Configuration
 
 ## Configuration
 
 ### 1. Environment File Setup
 
-Copy the example environment file and customize it:
+Configure your environment variables:
 
-``` bash
+```bash
+# Copy example environment file
 cp example.env .env
 ```
 
-### 2. Configure Environment Variables
+### 2. Edit Environment Variables
 
-Edit the `.env` file with your specific settings:
+Update the `.env` file with your specific settings:
 
-``` bash
+```bash
 # Omeka Configuration
 OMEKA_API_URL=https://your-omeka-instance.com/api/
 KEY_IDENTITY=your_api_key_identity
@@ -119,9 +130,9 @@ PREFIX=StadtGeschichteBasel_v1:
 
 Test your configuration with a simple API call:
 
-``` bash
+```bash
 # Test Omeka API access
-python scripts/api_get_project.py
+uv run python scripts/api_get_project.py
 
 # Expected output: Project information saved to ../data/project_data.json
 ```
@@ -165,10 +176,10 @@ Ensure your project has the required value lists:
 
 ``` bash
 # Fetch current lists
-python scripts/api_get_lists.py
+uv run python scripts/api_get_lists.py
 
 # Get detailed list information
-python scripts/api_get_lists_detailed.py
+uv run python scripts/api_get_lists_detailed.py
 
 # Verify lists in data/data_lists_detail.json
 ```
@@ -212,7 +223,7 @@ mkdir -p logs
 ### 1. Test Omeka Connection
 
 ``` bash
-python -c "
+uv run python -c "
 import os
 import requests
 from scripts.process_data_from_omeka import get_items_from_collection
@@ -232,7 +243,7 @@ except Exception as e:
 ### 2. Test DSP Authentication
 
 ``` bash
-python -c "
+uv run python -c "
 import os
 from scripts.data_2_dasch import login
 
@@ -247,7 +258,7 @@ except Exception as e:
 ### 3. Verify Project Setup
 
 ``` bash
-python -c "
+uv run python -c "
 import os
 from scripts.data_2_dasch import login, get_project, get_lists
 
@@ -270,8 +281,8 @@ except Exception as e:
 **Solution**:
 
 ``` bash
-# Ensure virtual environment is activated
-pip install requests
+# Ensure dependencies are installed via uv
+uv sync
 ```
 
 ### Environment Variable Issues
@@ -330,28 +341,28 @@ For development and contribution:
 
 ``` bash
 # Install pre-commit hooks
-npm install
-npm run prepare
+pnpm install
+pnpm run prepare
 
-# Install Python development tools
-pip install -r requirements-dev.txt  # if available
+# Install Python development tools (if available)
+uv sync --dev
 ```
 
 ### 2. Code Formatting
 
 ``` bash
 # Check code formatting
-npm run check
+pnpm run check
 
 # Auto-format code
-npm run format
+pnpm run format
 ```
 
 ### 3. Commit Standards
 
 ``` bash
 # Use conventional commits
-npm run commit
+pnpm run commit
 
 # Or use git directly with conventional format
 git commit -m "feat: add new synchronization feature"
@@ -365,7 +376,7 @@ For large collections (\>1000 items):
 
 ``` bash
 # Use sample mode for testing
-python scripts/data_2_dasch.py -m sample_data
+uv run python scripts/data_2_dasch.py -m sample_data
 
 # Process in smaller batches
 # Edit NUMBER_RANDOM_OBJECTS in data_2_dasch.py

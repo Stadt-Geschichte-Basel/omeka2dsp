@@ -30,7 +30,7 @@ cp example.env .env
 # Edit .env with your configuration
 
 # Run the migration
-python scripts/data_2_dasch.py
+uv run python scripts/data_2_dasch.py
 ```
 
 ## System Overview
