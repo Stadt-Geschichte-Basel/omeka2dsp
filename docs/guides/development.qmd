@@ -2,16 +2,9 @@
 
 Guide for developers contributing to or extending the omeka2dsp system.
 
-## Table of Contents
+## Development Environment Setup {#development-environment-setup}
 
-1.  [Development Environment Setup](#development-environment-setup)
-2.  [Code Architecture](#code-architecture)
-3.  [Contributing Guidelines](#contributing-guidelines)
-4.  [Testing](#testing)
-5.  [Extending the System](#extending-the-system)
-6.  [Debugging](#debugging)
-7.  [Code Style](#code-style)
-8.  [Release Process](#release-process)
+We recommend using [**GitHub Codespaces**](https://github.com/features/codespaces) for development.
 
 ## Development Environment Setup {#development-environment-setup}
 

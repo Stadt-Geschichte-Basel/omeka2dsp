@@ -2,7 +2,7 @@
 
 Complete documentation for the Omeka to DaSCH Service Platform (DSP) data migration tool.
 
-## Table of Contents
+## 📚 Core Documentation
 
 ### 📚 Core Documentation
 

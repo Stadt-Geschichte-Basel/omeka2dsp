@@ -2,17 +2,6 @@
 
 This document provides comprehensive documentation for all Python modules and functions in the omeka2dsp system.
 
-## Table of Contents
-
-1.  [Module Overview](#module-overview)
-2.  [data_2_dasch.py](#data_2_daschpy)
-3.  [process_data_from_omeka.py](#process_data_from_omekapy)
-4.  [api_get_project.py](#api_get_projectpy)
-5.  [api_get_lists.py](#api_get_listspy)
-6.  [api_get_lists_detailed.py](#api_get_lists_detailedpy)
-7.  [Configuration Constants](#configuration-constants)
-8.  [Error Handling](#error-handling)
-
 ## Module Overview {#module-overview}
 
 The omeka2dsp system consists of five main Python modules:

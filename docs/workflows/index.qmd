@@ -2,17 +2,6 @@
 
 This document describes the various workflows in the omeka2dsp system using Mermaid diagrams to illustrate the data flow and processing steps.
 
-## Table of Contents
-
-1.  [Overview](#overview)
-2.  [Main Migration Workflow](#main-migration-workflow)
-3.  [Data Extraction Workflow](#data-extraction-workflow)
-4.  [Data Transformation Workflow](#data-transformation-workflow)
-5.  [Synchronization Workflow](#synchronization-workflow)
-6.  [File Upload Workflow](#file-upload-workflow)
-7.  [Error Handling Workflow](#error-handling-workflow)
-8.  [API Utility Workflows](#api-utility-workflows)
-
 ## Overview {#overview}
 
 The omeka2dsp system implements several interconnected workflows that work together to migrate and synchronize cultural heritage data between Omeka and DSP platforms.

@@ -1,15 +1,6 @@
 # Configuration Guide
 
-Comprehensive guide to configuring the omeka2dsp system for your specific migration requirements.
-
-## Table of Contents
-
-1.  [Environment Variables](#environment-variables)
-2.  [Processing Configuration](#processing-configuration)
-3.  [Data Mapping Configuration](#data-mapping-configuration)
-4.  [Performance Tuning](#performance-tuning)
-5.  [Security Configuration](#security-configuration)
-6.  [Advanced Configuration](#advanced-configuration)
+Comprehensive guide to configuring the omeka2dsp system for your specific migration requirements. Customize the omeka2dsp system for your project while maintaining security and performance best practices.
 
 ## Environment Variables {#environment-variables}
 

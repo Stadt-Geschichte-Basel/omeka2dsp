@@ -2,18 +2,6 @@
 
 Common issues and solutions for the omeka2dsp system.
 
-## Table of Contents
-
-1.  [Quick Diagnostics](#quick-diagnostics)
-2.  [Authentication Issues](#authentication-issues)
-3.  [Network and Connectivity](#network-and-connectivity)
-4.  [Data Processing Errors](#data-processing-errors)
-5.  [File Upload Problems](#file-upload-problems)
-6.  [Performance Issues](#performance-issues)
-7.  [Configuration Problems](#configuration-problems)
-8.  [DSP-Specific Issues](#dsp-specific-issues)
-9.  [Getting Help](#getting-help)
-
 ## Quick Diagnostics {#quick-diagnostics}
 
 ### System Health Check

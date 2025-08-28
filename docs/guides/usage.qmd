@@ -2,18 +2,7 @@
 
 Complete guide for running data migrations with the omeka2dsp system.
 
-## Table of Contents
-
-1. [Quick Start](#quick-start)
-2. [Processing Modes](#processing-modes)
-3. [Command Line Usage](#command-line-usage)
-4. [Monitoring Migration Progress](#monitoring-migration-progress)
-5. [Data Synchronization](#data-synchronization)
-6. [File Handling](#file-handling)
-7. [Troubleshooting Common Issues](#troubleshooting-common-issues)
-8. [Best Practices](#best-practices)
-
-## Quick Start
+## Quick Start {#quick-start}
 
 ### Pre-flight Checklist
 
