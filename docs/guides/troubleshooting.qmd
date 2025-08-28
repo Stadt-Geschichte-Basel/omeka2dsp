@@ -99,10 +99,12 @@ fi
 
 **Symptoms:**
 
+::: {.callout-important appearance="minimal"}
 ```         
 ERROR - Authentication failed
 ERROR - Failed to retrieve project. Status code: 401
 ```
+:::
 
 **Diagnostic Steps:**
 
@@ -139,10 +141,12 @@ ERROR - Failed to retrieve project. Status code: 401
 
 **Symptoms:**
 
+::: {.callout-important appearance="minimal"}
 ```         
 ERROR - Request failed with status 401
 WARNING - Token may have expired
 ```
+:::
 
 **Solutions:**
 
@@ -180,11 +184,13 @@ WARNING - Token may have expired
 
 **Symptoms:**
 
+::: {.callout-important appearance="minimal"}
 ```         
 ERROR - Connection timeout
 ERROR - Network unreachable
 requests.exceptions.ConnectionError
 ```
+:::
 
 **Diagnostic Steps:**
 
@@ -224,9 +230,12 @@ requests.exceptions.ConnectionError
 
 **Symptoms:**
 
+::: {.callout-important appearance="minimal"}
+
 ```         
 requests.exceptions.SSLError: certificate verify failed
 ```
+:::
 
 **Solutions:**
 
@@ -257,10 +266,12 @@ requests.exceptions.SSLError: certificate verify failed
 
 **Symptoms:**
 
+::: {.callout-important appearance="minimal"}
 ```         
 KeyError: 'dcterms:title'
 ERROR - Required field missing
 ```
+:::
 
 **Diagnostic Steps:**
 
@@ -315,10 +326,12 @@ ERROR - Required field missing
 
 **Symptoms:**
 
+::: {.callout-important appearance="minimal"}
 ```         
 ERROR - Invalid payload structure
 ERROR - Required property missing in DSP
 ```
+:::
 
 **Solutions:**
 
@@ -359,11 +372,13 @@ ERROR - Required property missing in DSP
 
 **Symptoms:**
 
+::: {.callout-important appearance="minimal"}
 ```         
 ERROR - File upload failed
 ERROR - File not found: filename.jpg
 requests.exceptions.RequestException
 ```
+:::
 
 **Diagnostic Steps:**
 
@@ -446,7 +461,14 @@ requests.exceptions.RequestException
 
 ### Issue: Migration running very slowly
 
-**Symptoms:** - Processing takes much longer than expected - High memory usage - Network timeouts - System becomes unresponsive
+**Symptoms:**
+
+::: {.callout-important appearance="minimal"}
+- Processing takes much longer than expected
+- High memory usage
+- Network timeouts
+- System becomes unresponsive
+:::
 
 **Diagnostic Steps:**
 
@@ -532,10 +554,12 @@ requests.exceptions.RequestException
 
 **Symptoms:**
 
+::: {.callout-important appearance="minimal"}
 ```         
 KeyError: 'PROJECT_SHORT_CODE'
 ERROR - Configuration variable not found
 ```
+:::
 
 **Solutions:**
 
@@ -571,10 +595,12 @@ ERROR - Configuration variable not found
 
 **Symptoms:**
 
+::: {.callout-important appearance="minimal"}
 ```         
 ERROR - 404 Not Found
 ERROR - Invalid API endpoint
 ```
+:::
 
 **Solutions:**
 
@@ -652,10 +678,13 @@ ERROR - Invalid API endpoint
 
 **Symptoms:**
 
+::: {.callout-important appearance="minimal"}
+
 ```         
 WARNING - List value not found for: unknown_value
 ERROR - Invalid list node IRI
 ```
+:::
 
 **Solutions:**
 
@@ -734,7 +763,7 @@ When reporting issues, include:
 
 Use this template:
 
-``` markdown
+```` markdown
 ## Bug Description
 Brief description of the issue
 
@@ -766,13 +795,13 @@ Error log contents here
 
 ## Additional Context
 Any other relevant information
-```
+````
 
 ### Support Channels
 
-1.  **GitHub Issues**: For bugs and feature requests
-2.  **Documentation**: Check all documentation first
+1.  [**GitHub Issues**](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues): For bugs and feature requests
+2.  [**Documentation**](/docs/index.qmd): Check all documentation first
 3.  **Community**: DSP community forums
-4.  **Email**: For sensitive security issues only
+4.  **Email**: info\@stadtgeschichtebasel.ch, for sensitive security issues only
 
 This troubleshooting guide should help resolve the most common issues encountered when using the omeka2dsp system.

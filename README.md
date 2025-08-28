@@ -19,7 +19,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 - 🔄 [**Workflows**](docs/workflows/index.qmd) – Data migration workflows with Mermaid diagrams
 - 🔧 [**API Reference**](docs/api/index.qmd) – Python function documentation
 
-### 🚀 Quick Start Guides
+### 📒 Quick Start Guides
 
 - ⚡ [**Installation & Setup**](docs/guides/installation.qmd)
 - ⚙️ [**Configuration**](docs/guides/configuration.qmd)
@@ -29,7 +29,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
 ## ⚡ Quick Installation
 
-We recommend using **[GitHub Codespaces](https://github.com/features/codespaces)** for a reproducible setup.
+We recommend using [**GitHub Codespaces**](https://github.com/features/codespaces) for a reproducible setup.
 
 ### GitHub Codespaces (Recommended)
 

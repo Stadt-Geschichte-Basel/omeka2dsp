@@ -26,12 +26,17 @@ ITEM_SET_ID=10780
 ```
 
 **Getting Omeka Credentials**:
- 1. Log into your Omeka admin panel 2. Navigate to User settings → API keys 3. Create a new API key 4. Copy the Identity and Credential values
+
+1. Log into your Omeka admin panel
+2. Navigate to User settings → API keys
+3. Create a new API key
+4. Copy the Identity and Credential values
 
 **Finding Collection ID**:
- 1. In Omeka admin, go to Item sets 
- 2. Click on your collection 
- 3. The ID is in the URL: `/admin/item-sets/show/{ID}`
+
+1. In Omeka admin, go to Item sets
+2. Click on your collection
+3. The ID is in the URL: `/admin/item-sets/show/{ID}`
 
 #### DSP API Configuration
 
@@ -52,11 +57,15 @@ PREFIX=StadtGeschichteBasel_v1:
 ```
 
 **DSP Configuration Notes**:
- - `PROJECT_SHORT_CODE`: 4-character alphanumeric project identifier - `API_HOST`: Main DSP API endpoint (varies by instance) - `INGEST_HOST`: File upload service endpoint - `PREFIX`: Must match your DSP ontology namespace
+
+- `PROJECT_SHORT_CODE`: 4-character alphanumeric project identifier
+- `API_HOST`: Main DSP API endpoint (varies by instance)
+- `INGEST_HOST`: File upload service endpoint
+- `PREFIX`: Must match your DSP ontology namespace
 
 ### Environment File Template
 
-Create `.env` from template:
+To Create `.env` from template:
 
 ``` bash
 # Copy example configuration
@@ -66,7 +75,7 @@ cp example.env .env
 nano .env
 ```
 
-Complete `.env` template:
+The complete `.env` template will look like this (replace with values for your project):
 
 ``` bash
 # ===========================================
@@ -131,10 +140,10 @@ NUMBER_RANDOM_OBJECTS = 5
 
 # Specific items for test mode
 TEST_DATA = {
-    'abb13025',  # Historic building photo
-    'abb14375',  # Street scene
-    'abb41033',  # Portrait
-    'abb11536',  # Document
+    'abb13025',  # Historic painting
+    'abb14375',  # Map with Geodata
+    'abb41033',  # Map
+    'abb11536',  # Photograph
     'abb28998'   # Map
 }
 ```
@@ -349,9 +358,9 @@ Configure secure API communications:
 
 ``` python
 # Security settings
-VERIFY_SSL = True           # Verify SSL certificates
+VERIFY_SSL = True             # Verify SSL certificates
 USER_AGENT = 'omeka2dsp/1.0'  # Identify requests
-REQUEST_TIMEOUT = 30        # Prevent hanging requests
+REQUEST_TIMEOUT = 30          # Prevent hanging requests
 
 # Headers for security
 SECURITY_HEADERS = {
@@ -456,11 +465,11 @@ Configure error handling behavior:
 ``` python
 # Error handling configuration
 ERROR_CONFIG = {
-    'continue_on_error': True,      # Continue processing after errors
-    'max_errors': 10,               # Stop after N errors
+    'continue_on_error': True,        # Continue processing after errors
+    'max_errors': 10,                 # Stop after N errors
     'error_report_file': 'errors.log',
-    'skip_invalid_items': True,     # Skip items that fail validation
-    'retry_on_network_error': True, # Retry network failures
+    'skip_invalid_items': True,       # Skip items that fail validation
+    'retry_on_network_error': True,   # Retry network failures
     'email_on_critical_error': False  # Email notifications
 }
 ```
@@ -593,5 +602,3 @@ def load_config(config_file='config.json'):
 config = load_config()
 BATCH_SIZE = config['migration_config']['processing']['batch_size']
 ```
-
-This comprehensive configuration guide enables you to customize the omeka2dsp system for your specific requirements while maintaining security and performance best practices.

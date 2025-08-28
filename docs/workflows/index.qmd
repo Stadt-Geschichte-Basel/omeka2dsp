@@ -328,7 +328,7 @@ flowchart TD
     style S fill:#fff8e1
 ```
 
-### Array Value Synchronization Detail
+### Array Value Synchronization Details
 
 ```{mermaid}
 flowchart LR
@@ -525,7 +525,7 @@ flowchart TD
     F --> G[Process Next List ID]
     
     G --> H[URL Encode List ID]
-    H --> I[GET /v2/lists/{encoded_id}]
+    H --> I["GET /v2/lists/{encoded_id}"]
     
     I --> J{Request Successful?}
     J -->|Yes| K[Add to Results Array]
@@ -548,7 +548,7 @@ flowchart TD
 
 ## Workflow Integration
 
-All workflows integrate through the main processing pipeline:
+All workflows integrate through the main processing pipeline, working together to provide a robust, fault-tolerant data migration system that can handle various scenarios from initial bulk migration to ongoing incremental synchronization:
 
 ```{mermaid}
 graph TB
@@ -588,5 +588,3 @@ graph TB
     style B1 fill:#fff3e0
     style C1 fill:#e8f5e8
 ```
-
-These workflows work together to provide a robust, fault-tolerant data migration system that can handle various scenarios from initial bulk migration to ongoing incremental synchronization.

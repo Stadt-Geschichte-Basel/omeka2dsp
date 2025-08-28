@@ -9,50 +9,48 @@ Guide for developers contributing to or extending the omeka2dsp system.
 
 We recommend using [**GitHub Codespaces**](https://github.com/features/codespaces) for development.
 
-## Development Environment Setup {#development-environment-setup}
+::: {.panel-tabset}
 
-We recommend using **[GitHub Codespaces](https://github.com/features/codespaces)** for development.
+### 🚀 Reproducible Setup with GitHub Codespaces (Most Users)
 
-### For Most Developers: GitHub Codespaces
+1.  **Fork** this repository to your GitHub account.
 
-1. **Fork** this repository to your GitHub account.
+2.  Click the green **`<> Code`** button and select **"Codespaces"**.
 
-2. Click the green **`<> Code`** button and select **"Codespaces"**.
+3.  Click **"Create codespace on `main`"**. This provides:
 
-3. Click **"Create codespace on `main`"**. This provides:
-   - ✅ Python with `uv`
-   - ✅ Node.js with `pnpm`
-   - ✅ Pre-configured development environment
-   - ✅ All dependencies pre-installed
+    -   ✅ Python with `uv`
+    -   ✅ Node.js with `pnpm`
+    -   ✅ Pre-configured development environment
+    -   ✅ All dependencies pre-installed
 
-4. Create your development configuration:
+4.  Create your development configuration:
 
-   ```bash
-   # Create development environment file
-   cp example.env .env.dev
-   # Edit with your test instance credentials
-   ```
+    ``` bash
+    # Create development environment file
+    cp example.env .env.dev
+    # Edit with your test instance credentials
+    ```
 
-5. Create a development branch:
+5.  Create a development branch:
 
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
+    ``` bash
+    git checkout -b feature/your-feature-name
+    ```
 
-<details>
-<summary>👩‍💻 <strong>Advanced</strong> Local Development Setup</summary>
+### 👩‍💻 Local Installation (Advanced)
 
-### Prerequisites
+#### Prerequisites
 
-- [uv (Python manager)](https://github.com/astral-sh/uv#installation)
-- [pnpm](https://pnpm.io/installation)
-- [Node.js](https://nodejs.org/en/download/) (latest LTS)
-- Git
-- Access to Omeka and DSP test instances
+-   [uv (Python manager)](https://github.com/astral-sh/uv#installation)
+-   [pnpm](https://pnpm.io/installation)
+-   [Node.js](https://nodejs.org/en/download/) (latest LTS)
+-   Git
+-   Access to Omeka and DSP test instances
 
-### Initial Setup
+#### Initial Setup
 
-```bash
+``` bash
 # Clone repository
 git clone https://github.com/Stadt-Geschichte-Basel/omeka2dsp.git
 cd omeka2dsp
@@ -68,17 +66,17 @@ pnpm install
 pnpm run prepare
 ```
 
-### Development Configuration
+#### Development Configuration
 
 Create a development environment file:
 
-```bash
+``` bash
 cp example.env .env.dev
 ```
 
 Edit `.env.dev` with test instance credentials:
 
-```bash
+``` bash
 # Development configuration
 OMEKA_API_URL=https://test-omeka.example.com/api/
 KEY_IDENTITY=test_key_identity
@@ -97,7 +95,7 @@ DEBUG_MODE=true
 LOG_LEVEL=DEBUG
 ```
 
-</details>
+:::
 
 ## Code Architecture {#code-architecture}
 
@@ -111,6 +109,8 @@ scripts/
 ├── api_get_lists.py            # DSP lists utilities
 └── api_get_lists_detailed.py   # Detailed list utilities
 ```
+
+Also refer to the documentation on the [Pipeline Architecture](/docs/architecture/index.qmd).
 
 ### Key Design Patterns
 
@@ -191,6 +191,8 @@ sequenceDiagram
         end
     end
 ```
+
+Also refer to the documentation on the [Pipeline Workflow](/docs/workflows/index.qmd).
 
 ## Contributing Guidelines {#contributing-guidelines}
 
@@ -692,5 +694,3 @@ git push origin v1.2.0
 - [ ] Deploy to production
 - [ ] Monitor production deployment
 ```
-
-This development guide provides the foundation for contributing to and extending the omeka2dsp system effectively.

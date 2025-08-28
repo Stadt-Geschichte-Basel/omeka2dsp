@@ -26,53 +26,53 @@ Before installation, ensure you have:
 
 ## Installation
 
-We recommend using **[GitHub Codespaces](https://github.com/features/codespaces)** for a reproducible setup.
+We recommend using [**GitHub Codespaces**](https://github.com/features/codespaces) for a reproducible setup.
 
 ## Getting Started
 
-### For Most Users: Reproducible Setup with GitHub Codespaces
+::: panel-tabset
+### 🚀 Reproducible Setup with GitHub Codespaces (Most Users)
 
-1. **Fork or clone** this repository to your GitHub account.
+1.  **Fork or clone** this repository to your GitHub account.
 
-2. Click the green **`<> Code`** button at the top right of this repository.
+2.  Click the green **`<> Code`** button at the top right of this repository.
 
-3. Select the **"Codespaces"** tab and click **"Create codespace on `main`"**.
-   GitHub will now build a container that includes:
-   - ✅ Python with `uv`
-   - ✅ Node.js with `pnpm`
-   - ✅ All project dependencies pre-installed
+3.  Select the **"Codespaces"** tab and click **"Create codespace on `main`"**. GitHub will now build a container that includes:
 
-4. Once the Codespace is ready, configure your environment:
+    -   ✅ Python with `uv`
+    -   ✅ Node.js with `pnpm`
+    -   ✅ All project dependencies pre-installed
 
-   ```bash
-   # Copy example environment file
-   cp example.env .env
-   # Edit .env with your credentials using the built-in editor
-   ```
+4.  Once the Codespace is ready, configure your environment:
 
-5. Test the installation:
+    ``` bash
+    # Copy example environment file
+    cp example.env .env
+    # Edit .env with your credentials using the built-in editor
+    ```
 
-   ```bash
-   # Test Omeka API access
-   uv run python scripts/api_get_project.py
-   ```
+5.  Test the installation:
+
+    ``` bash
+    # Test Omeka API access
+    uv run python scripts/api_get_project.py
+    ```
 
 > **Note:** All dependencies (Python via uv, Node.js via pnpm) are pre-installed in the Codespace.
 
-<details>
-<summary>👩‍💻 <strong>Advanced</strong> Local Installation</summary>
+### 👩‍💻 Local Installation (Advanced)
 
-### Prerequisites
+#### Prerequisites
 
-- [uv (Python manager)](https://github.com/astral-sh/uv#installation)
-- [pnpm](https://pnpm.io/installation)
-- [Node.js](https://nodejs.org/en/download/) (latest LTS)
+-   [uv (Python manager)](https://github.com/astral-sh/uv#installation)
+-   [pnpm](https://pnpm.io/installation)
+-   [Node.js](https://nodejs.org/en/download/) (latest LTS)
 
-> _Note: `uv` installs and manages the correct Python version automatically._
+> *Note: `uv` installs and manages the correct Python version automatically.*
 
-### Local Setup Steps
+#### Local Setup Steps
 
-```bash
+``` bash
 # 1. Clone repository
 git clone https://github.com/Stadt-Geschichte-Basel/omeka2dsp.git
 cd omeka2dsp
@@ -93,8 +93,7 @@ uv run python scripts/api_get_project.py
 ```
 
 </details>
-
-## Configuration
+:::
 
 ## Configuration
 
@@ -102,7 +101,7 @@ uv run python scripts/api_get_project.py
 
 Configure your environment variables:
 
-```bash
+``` bash
 # Copy example environment file
 cp example.env .env
 ```
@@ -111,7 +110,7 @@ cp example.env .env
 
 Update the `.env` file with your specific settings:
 
-```bash
+``` bash
 # Omeka Configuration
 OMEKA_API_URL=https://your-omeka-instance.com/api/
 KEY_IDENTITY=your_api_key_identity
@@ -133,7 +132,7 @@ PREFIX=StadtGeschichteBasel_v1:
 
 Test your configuration with a simple API call:
 
-```bash
+``` bash
 # Test Omeka API access
 uv run python scripts/api_get_project.py
 
@@ -187,7 +186,11 @@ uv run python scripts/api_get_lists_detailed.py
 # Verify lists in data/data_lists_detail.json
 ```
 
-Required lists include: - **DCMI Type Vocabulary**: For resource types - **Internet Media Type**: For file formats - **ISO 639 Language Codes**: For languages
+Required lists include:
+
+-   **DCMI Type Vocabulary**: For resource types
+-   **Internet Media Type**: For file formats
+-   **ISO 639 Language Codes**: For languages
 
 ## Directory Structure Setup
 
@@ -203,18 +206,18 @@ omeka2dsp/
 │   └── media_files/               # Downloaded media cache
 ├── docs/                          # Documentation
 ├── scripts/                       # Python scripts
-│   ├── data_2_dasch.py           # Main migration script
+│   ├── data_2_dasch.py            # Main migration script
 │   ├── process_data_from_omeka.py # Omeka API utilities
-│   ├── api_get_project.py        # Project info fetcher
-│   ├── api_get_lists.py          # Lists fetcher
-│   └── api_get_lists_detailed.py # Detailed lists fetcher
-├── .env                          # Environment configuration
-├── .gitignore                    # Git ignore rules
-├── README.md                     # Basic documentation
-└── requirements.txt              # Python dependencies (if created)
+│   ├── api_get_project.py         # Project info fetcher
+│   ├── api_get_lists.py           # Lists fetcher
+│   └── api_get_lists_detailed.py  # Detailed lists fetcher
+├── .env                           # Environment configuration
+├── .gitignore                     # Git ignore rules
+├── README.md                      # Basic documentation
+└── requirements.txt               # Python dependencies (if created)
 ```
 
-Create any missing directories:
+Create any missing directories, e.g.:
 
 ``` bash
 mkdir -p data/media_files
@@ -279,11 +282,9 @@ except Exception as e:
 
 ### Python Import Errors
 
-**Issue**:
- `ModuleNotFoundError: No module named 'requests'`
+**Issue**: `ModuleNotFoundError: No module named 'requests'`
 
 **Solution**:
-
 
 ``` bash
 # Ensure dependencies are installed via uv
@@ -292,11 +293,9 @@ uv sync
 
 ### Environment Variable Issues
 
-**Issue**:
- `KeyError: 'PROJECT_SHORT_CODE'`
+**Issue**: `KeyError: 'PROJECT_SHORT_CODE'`
 
 **Solution**:
-
 
 ``` bash
 # Check .env file exists and contains required variables
@@ -308,11 +307,9 @@ export $(cat .env | xargs)
 
 ### API Connection Issues
 
-**Issue**:
- Connection timeouts or SSL errors
+**Issue**: Connection timeouts or SSL errors
 
 **Solutions**:
-
 
 ``` bash
 # Test basic connectivity
@@ -325,19 +322,19 @@ export HTTPS_PROXY=https://proxy.example.com:8080
 
 ### Permission Issues
 
-**Issue**:
- DSP API returns 403 Forbidden
+**Issue**: DSP API returns 403 Forbidden
 
 **Solution**:
- - Verify user account has correct project permissions - Check if user account is active and not locked - Confirm API endpoints are correct
+
+-   Verify user account has correct project permissions
+-   Check if user account is active and not locked
+-   Confirm API endpoints are correct
 
 ### File System Permissions
 
-**Issue**:
- Cannot write to data directory
+**Issue**: Cannot write to data directory
 
 **Solution**:
-
 
 ``` bash
 # Fix directory permissions

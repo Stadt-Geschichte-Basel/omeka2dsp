@@ -67,16 +67,22 @@ graph TB
 
 ## Core Components
 
-### 1. Data Extraction Layer (`process_data_from_omeka.py`)
+### 1. Data Extraction Layer
 
-**Purpose**:
- Interfaces with Omeka API to retrieve items, media, and metadata.
+**Module**: `process_data_from_omeka.py`
+
+**Purpose**: Interfaces with Omeka API to retrieve items, media, and metadata.
 
 **Key Functions**:
- - `get_items_from_collection()` - Retrieves paginated items from collections - `get_media()` - Fetches media files associated with items - `extract_property()` - Extracts specific metadata properties - `extract_combined_values()` - Combines multiple property values
 
-**Architecture Pattern**:
- Repository pattern with API abstraction
+- `get_items_from_collection()` -- Retrieves paginated items from collections
+- `get_media()` -- Fetches media files associated with items
+- `extract_property()` -- Extracts specific metadata properties
+- `extract_combined_values()` -- Combines multiple property values  
+
+Refer to the [API Documentation](/docs/api/index.qmd#process_data_from_omeka.py) for more details on these functions.
+
+**Architecture Pattern**: Repository pattern with API abstraction
 
 ```{mermaid}
 classDiagram
@@ -97,16 +103,22 @@ classDiagram
     OmekaExtractor --> APIClient
 ```
 
-### 2. Data Transformation Layer (`data_2_dasch.py` - transformation functions)
+### 2. Data Transformation Layer
 
-**Purpose**:
- Converts Omeka data structures to DSP-compatible formats.
+**Module**: `data_2_dasch.py` Transformation Functions
+
+**Purpose**: Converts Omeka data structures to DSP-compatible formats.
 
 **Key Functions**:
- - `construct_payload()` - Builds DSP resource payloads - `extract_listvalueiri_from_value()` - Maps values to DSP list nodes - `specify_mediaclass()` - Determines appropriate DSP media classes
 
-**Architecture Pattern**:
- Builder pattern with strategy pattern for different resource types
+- `construct_payload()` -- Builds DSP resource payloads
+- `extract_listvalueiri_from_value()` -- Maps values to DSP list nodes
+- `specify_mediaclass()` -- Determines appropriate DSP media classes
+
+Refer to the [API Documentation](/docs/api/index.qmd#data_2_dasch.py) for more details on these functions.
+
+
+**Architecture Pattern**: Builder pattern with strategy pattern for different resource types
 
 ```{mermaid}
 classDiagram
@@ -142,16 +154,23 @@ classDiagram
     ResourceTypeStrategy <|-- MediaStrategy
 ```
 
-### 3. Synchronization Layer (`data_2_dasch.py` - sync functions)
+### 3. Synchronization Layer (`data_2_dasch.py`)
 
-**Purpose**:
- Handles incremental updates and conflict resolution between systems.
+**Module**: `data_2_dasch.py` Sync Functions
+
+**Purpose**: Handles incremental updates and conflict resolution between systems.
 
 **Key Functions**:
- - `check_values()` - Compares Omeka and DSP data for differences - `sync_value()` - Synchronizes single-value properties - `sync_array_value()` - Synchronizes multi-value properties - `update_value()` - Performs actual API updates
 
-**Architecture Pattern**:
- Strategy pattern with command pattern for updates
+- `check_values()` -- Compares Omeka and DSP data for differences
+- `sync_value()` -- Synchronizes single-value properties
+- `sync_array_value()` -- Synchronizes multi-value properties
+- `update_value()` -- Performs actual API updates
+
+Refer to the [API Documentation](/docs/api/index.qmd#data_2_dasch.py) for more details on these functions.
+
+
+**Architecture Pattern**: Strategy pattern with command pattern for updates
 
 ```{mermaid}
 classDiagram
@@ -195,13 +214,19 @@ classDiagram
     UpdateCommand <|-- UpdateValueCommand
 ```
 
-### 4. Upload & File Management Layer (`data_2_dasch.py` - file functions)
+### 4. Upload & File Management Layer
 
-**Purpose**:
- Manages file uploads and media processing for DSP.
+**Module**: `data_2_dasch.py` File Functions
+
+**Purpose**: Manages file uploads and media processing for DSP.
 
 **Key Functions**:
- - `upload_file_from_url()` - Downloads and uploads files to DSP - `create_resource()` - Creates new DSP resources - `get_full_resource()` - Retrieves complete resource data
+
+- `upload_file_from_url()` -- Downloads and uploads files to DSP
+- `create_resource()` -- Creates new DSP resources
+- `get_full_resource()` -- Retrieves complete resource data
+
+Refer to the [API Documentation](/docs/api/index.qmd#data_2_dasch.py.py) for more details on these functions.
 
 ## Data Flow Architecture
 
