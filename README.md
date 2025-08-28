@@ -116,7 +116,7 @@ This repository follows the [_Turing Way_ advanced structure](https://the-turing
 - `project-management/` – project management documents
 - `src/` – source code (migration scripts, utilities)
 - `test/` – test suite
-- `report.md` – report describing the analysis of the data
+- `report.qmd` – report describing the analysis of the data
 
 ## 📊 Data Description
 
