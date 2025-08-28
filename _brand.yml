@@ -1,0 +1,9 @@
+meta:
+  name: omeka2dsp
+  link:
+    home: https://Stadt-Geschichte-Basel.github.io/omeka2dsp
+    github: https://github.com/Stadt-Geschichte-Basel
+  description: |
+    Pipeline to ingest SGB Omeka S collection into DaSCH.
+
+# Go to https://quarto.org/docs/authoring/brand.html to learn more about multiformat branding with brand.yml
