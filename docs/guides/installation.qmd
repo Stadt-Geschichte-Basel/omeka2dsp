@@ -1,4 +1,7 @@
-# Installation & Setup Guide
+---
+title: Installation & Setup Guide
+date-modified: last-modified
+---
 
 This guide walks you through installing and setting up the omeka2dsp system for data migration from Omeka to DSP.
 

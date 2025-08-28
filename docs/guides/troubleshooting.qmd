@@ -1,4 +1,7 @@
-# Troubleshooting Guide
+---
+title: Troubleshooting Guide
+date-modified: last-modified
+---
 
 Common issues and solutions for the omeka2dsp system.
 

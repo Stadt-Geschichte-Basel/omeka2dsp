@@ -1,4 +1,7 @@
-# Usage Guide
+---
+title: Usage Guide
+date-modified: last-modified
+---
 
 Complete guide for running data migrations with the omeka2dsp system.
 

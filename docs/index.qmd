@@ -1,4 +1,7 @@
-# omeka2dsp Documentation
+---
+title: omeka2dsp Documentation
+date-modified: last-modified
+---
 
 Complete documentation for the Omeka to DaSCH Service Platform (DSP) data migration tool.
 

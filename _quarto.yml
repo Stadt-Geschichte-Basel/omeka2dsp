@@ -99,6 +99,8 @@ format:
     theme:
       - brand
       - cosmo
+    mermaid:
+      theme: neutral
     css: styles.css
     code-copy: true
     code-overflow: wrap

@@ -1,4 +1,7 @@
-# System Architecture
+---
+title: System Architecture
+date-modified: last-modified
+---
 
 ## Overview
 

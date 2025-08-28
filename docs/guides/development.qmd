@@ -1,4 +1,7 @@
-# Development Guide
+---
+title: Development Guide
+date-modified: last-modified
+---
 
 Guide for developers contributing to or extending the omeka2dsp system.
 

@@ -1,4 +1,7 @@
-# Workflows Documentation
+---
+title: Workflows Documentation
+date-modified: last-modified
+---
 
 This document describes the various workflows in the omeka2dsp system using Mermaid diagrams to illustrate the data flow and processing steps.
 

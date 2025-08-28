@@ -1,4 +1,7 @@
-# API Reference Documentation
+---
+title: API Reference Documentation
+date-modified: last-modified
+---
 
 This document provides comprehensive documentation for all Python modules and functions in the omeka2dsp system.
 
