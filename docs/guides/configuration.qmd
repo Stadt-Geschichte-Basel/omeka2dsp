@@ -86,8 +86,8 @@ The complete `.env` template will look like this (replace with values for your p
 OMEKA_API_URL=https://omeka.unibe.ch/api/
 
 # Omeka API credentials (from User Settings > API Keys)
-KEY_IDENTITY=AbCdEfGhIjKlMnOpQrStUvWxYz123456
-KEY_CREDENTIAL=XyZaBcDeFgHiJkLmNoPqRsTuVwXyZ789
+KEY_IDENTITY=your_api_key_identity
+KEY_CREDENTIAL=your_api_key_identity_credential
 
 # Item Set ID to migrate (numeric ID from Omeka)
 ITEM_SET_ID=10780
