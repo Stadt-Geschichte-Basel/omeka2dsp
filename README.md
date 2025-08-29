@@ -112,7 +112,7 @@ This repository follows the [_Turing Way_ advanced structure](https://the-turing
 - `assets/` – images, logos, etc.
 - `build/` – build scripts and notebooks
 - `data/` – data files
-- `documentation/` – documentation of the repository and data
+- `docs/` – documentation of the repository and data
 - `project-management/` – project management documents
 - `src/` – source code (migration scripts, utilities)
 - `test/` – test suite

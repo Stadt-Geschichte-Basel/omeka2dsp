@@ -37,6 +37,8 @@ website:
             href: docs/workflows/index.qmd
           - text: API Reference
             href: docs/api/index.qmd
+          - text: Data Model
+            href: docs/datamodel/index.qmd
           - text: '---'
           - text: Installation
             href: docs/guides/installation.qmd
@@ -48,8 +50,8 @@ website:
             href: docs/guides/development.qmd
           - text: Troubleshooting
             href: docs/guides/troubleshooting.qmd
-      - text: Report
-        href: report.qmd
+      - text: About
+        href: project-management/about.qmd
 
   sidebar:
     contents:
@@ -90,9 +92,15 @@ website:
             href: docs/guides/development.qmd
           - text: Troubleshooting
             href: docs/guides/troubleshooting.qmd
-      - href: report.qmd
-        contents: project-management/*
-
+      - section: About
+        href: project-management/about.qmd
+        contents:
+          - text: Communication
+            href: project-management/communication.qmd
+          - text: People
+            href: project-management/people.qmd
+          - text: Report
+            href: report.qmd
 format:
   html:
     toc: true
