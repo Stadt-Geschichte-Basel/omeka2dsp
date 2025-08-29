@@ -15,15 +15,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features
 
 - Initial version
-
-## [0.0.2](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/compare/v0.0.1...v0.0.2) - 2020-02-26
-
-### Documentation
-
-- ...
-
-## [0.0.1](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/releases/tag/v0.0.1) - 2020-01-13
-
-### Features
-
-- ...
