@@ -14,10 +14,11 @@ It enables the transfer of metadata and media files from the SGB Omeka S instanc
 
 Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
-- 📖 [**Complete Documentation**](docs/index.qmd) – Full system documentation
-- 🏗️ [**Architecture Overview**](docs/architecture/index.qmd) – System design and components
-- 🔄 [**Workflows**](docs/workflows/index.qmd) – Data migration workflows with Mermaid diagrams
-- 🔧 [**API Reference**](docs/api/index.qmd) – Python function documentation
+- 📖 [**Complete Documentation**](docs/index.qmd) -- Full system documentation
+- 🏗️ [**Architecture Overview**](docs/architecture/index.qmd) -- System design and components
+- 🔄 [**Workflows**](docs/workflows/index.qmd) -- Data migration workflows with Mermaid diagrams
+- 🔧 [**API Reference**](docs/api/index.qmd) -- Python function documentation
+- 🧩 [**Data Model**](/docs/datamodel/index.qmd) -- Data model documentation
 
 ### 📒 Quick Start Guides
 

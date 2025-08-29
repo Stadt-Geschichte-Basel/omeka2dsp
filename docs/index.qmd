@@ -10,6 +10,7 @@ Complete documentation for the Omeka to DaSCH Service Platform (DSP) data migrat
 -   🏗️ [**System Architecture**](architecture/index.qmd) -- Overview of system components, design patterns, and data flow architecture with class diagrams illustrating core components and their interactions.
 -   🔄 [**Data Migration Workflows**](workflows/index.qmd) -- Complete workflow documentation with Mermaid diagrams covering the main migration workflow (end-to-end process), data extraction workflow (Omeka API interaction), data transformation workflow (format conversion), synchronization workflow (incremental updates), file upload workflow (media processing) and error handling workflow (recovery and retry)
 -   🔧 [**API Reference**](api/index.qmd) -- Comprehensive documentation of all 5 Python modules with 50+ functions
+- 🧩 [**Data Model**](/docs/datamodel/index.qmd) -- Data model documentation
 
 ## 📒 Guides
 
