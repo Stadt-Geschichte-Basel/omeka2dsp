@@ -108,14 +108,11 @@ graph LR
 
 This repository follows the [_Turing Way_ advanced structure](https://the-turing-way.netlify.app/project-design/project-repo/project-repo-advanced.html):
 
-- `analysis/` – analysis scripts and notebooks
 - `assets/` – images, logos, etc.
-- `build/` – build scripts and notebooks
 - `data/` – data files
 - `docs/` – documentation of the repository and data
 - `project-management/` – project management documents
-- `src/` – source code (migration scripts, utilities)
-- `test/` – test suite
+- `scripts/` – source code (migration scripts, utilities)
 - `report.qmd` – report describing the analysis of the data
 
 ## 📊 Data Description
