@@ -116,18 +116,22 @@ This repository follows the [_Turing Way_ advanced structure](https://the-turing
 - `scripts/` – source code (migration scripts, utilities)
 - `report.qmd` – report describing the analysis of the data
 
-## 📊 Data Description
+## 📊 Data Model
 
-<!-- TODO -->Metadata for the project data are provided in accordance with the data model developed by the research data management team at Stadt.Geschichte.Basel in order to meet the requirements of the diverse sources used in the project. The data model (and the subsequent annotation process) follow the [manual for creating non-discriminatory metadata for historical sources and research data](https://maehr.github.io/diskriminierungsfreie-metadaten/).
+The omeka2dsp system transforms data from Omeka's metadata structure to the DaSCH Service Platform (DSP) using a specialized data model developed by Stadt.Geschichte.Basel's research data management team.
 
-<!-- TODO
-Zenodo provides a [REST & OAI-PMH API](https://developers.zenodo.org/) to access published versions:
+### Key Components
 
-```bash
-curl -i https://zenodo.org/api/records/ZENODO_RECORD
-```
+- **Resource Classes**: Maps Omeka item types to DSP ontology classes (e.g., `sgb_PHOTO`, `sgb_DOCUMENT`)
+- **Property Mappings**: Converts Omeka metadata fields to DSP property values with appropriate data types
+- **Value Transformations**: Handles text values, URIs, dates, and linked resources according to DSP specifications
+- **Media Integration**: Processes and uploads associated files while maintaining metadata relationships
 
-Citation formats are available in [CITATION.cff](CITATION.cff) and via Zenodo (BibTeX, CSL, DataCite, DCAT, JSON, JSON-LD, GeoJSON, MARCXML). -->
+### Standards Compliance
+
+The data model follows the [manual for creating non-discriminatory metadata for historical sources and research data](https://maehr.github.io/diskriminierungsfreie-metadaten/), ensuring inclusive and accessible metadata practices.
+
+For detailed data model documentation, see [Data Model Reference](/docs/datamodel/).
 
 ## 🛠️ Support
 
