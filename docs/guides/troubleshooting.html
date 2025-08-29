@@ -1,0 +1,1244 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.33">
+
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+
+
+<title>Troubleshooting Guide – omeka2dsp</title>
+<style>code{white-space:pre-wrap}span.smallcaps{font-variant:small-caps}div.columns{gap:min(4vw,1.5em);display:flex}div.column{flex:auto;overflow-x:auto}div.hanging-indent{text-indent:-1.5em;margin-left:1.5em}ul.task-list{list-style:none}ul.task-list li input[type=checkbox]{vertical-align:middle;width:.8em;margin:0 .8em .2em -1em}html{-webkit-text-size-adjust:100%}pre>code.sourceCode{white-space:pre;position:relative}pre>code.sourceCode>span{line-height:1.25;display:inline-block}pre>code.sourceCode>span:empty{height:1.2em}.sourceCode{overflow:visible}code.sourceCode>span{color:inherit;-webkit-text-decoration:inherit;text-decoration:inherit}div.sourceCode{margin:1em 0}pre.sourceCode{margin:0}@media screen{div.sourceCode{overflow:auto}}@media print{pre>code.sourceCode{white-space:pre-wrap}pre>code.sourceCode>span{text-indent:-5em;padding-left:5em}}pre.numberSource code{counter-reset:source-line 0}pre.numberSource code>span{counter-increment:source-line;position:relative;left:-4em}pre.numberSource code>span>a:first-child:before{content:counter(source-line);text-align:right;vertical-align:baseline;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-khtml-user-select:none;border:none;width:4em;padding:0 4px;display:inline-block;position:relative;left:-1em}pre.numberSource{margin-left:3em;padding-left:4px}@media screen{pre>code.sourceCode>span>a:first-child:before{text-decoration:underline}}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../project-management/about.html" rel="next">
+<link href="../../docs/guides/development.html" rel="prev">
+<link href="../../android-chrome-512x512.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-6527f0f6f1a49fae8767c07d481ee51a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": true,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Troubleshooting Guide – omeka2dsp">
+<meta property="og:description" content="">
+<meta property="og:site_name" content="omeka2dsp">
+<meta name="twitter:title" content="Troubleshooting Guide – omeka2dsp">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="floating nav-fixed nav-sidebar quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="fixed-top headroom">
+    <nav class="navbar navbar-expand-lg" data-bs-theme="dark">
+      <div class="container-fluid navbar-container">
+      <div class="mx-auto navbar-brand-container">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../android-chrome-512x512.webp" alt="" class="navbar-logo" fetchpriority="high" decoding="async" width="512" height="512">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">omeka2dsp</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="me-auto navbar-nav navbar-nav-scroll">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../index.html" aria-current="page"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-documentation" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Documentation</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-documentation">    
+        <li>
+    <a class="dropdown-item" href="../../docs/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../docs/architecture/index.html">
+ <span class="dropdown-text">Architecture</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/workflows/index.html">
+ <span class="dropdown-text">Workflows</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/api/index.html">
+ <span class="dropdown-text">API Reference</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/datamodel/index.html">
+ <span class="dropdown-text">Data Model</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/installation.html">
+ <span class="dropdown-text">Installation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/configuration.html">
+ <span class="dropdown-text">Configuration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/usage.html">
+ <span class="dropdown-text">Usage</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/development.html">
+ <span class="dropdown-text">Development</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/troubleshooting.html">
+ <span class="dropdown-text">Troubleshooting</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../project-management/about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/" title="" class="px-1 quarto-navigation-tool" aria-label=""><i class="bi bi-github"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="d-flex container-fluid">
+      <button type="button" class="btn quarto-btn-toggle" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <a class="flex-grow-1 no-decor" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">      
+          <h1 class="quarto-secondary-nav-title">Troubleshooting Guide</h1>
+        </a>     
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="page-columns page-layout-article page-navbar page-rows-contents quarto-container">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="collapse collapse-horizontal floating overflow-auto quarto-sidebar-collapse-item sidebar sidebar-navigation">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">omeka2dsp</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CHANGELOG.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Changelog</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CODE_OF_CONDUCT.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Code of Conduct</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CONTRIBUTING.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contributing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../LICENSE-CCBY.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">License (Data)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../LICENSE-AGPL.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">License (Code)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../SECURITY.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Security</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Documentation</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/architecture/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">System Architecture</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/workflows/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Workflows</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">API Reference</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Guides</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/installation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installation &amp; Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/configuration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Configuration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/usage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Usage Guide</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/development.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Development Guide</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/troubleshooting.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Troubleshooting</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../project-management/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../project-management/communication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Communication</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../project-management/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">People</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="margin-sidebar sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#quick-diagnostics" id="toc-quick-diagnostics" class="nav-link active" data-scroll-target="#quick-diagnostics">Quick Diagnostics</a>
+  <ul class="collapse">
+  <li><a href="#system-health-check" id="toc-system-health-check" class="nav-link" data-scroll-target="#system-health-check">System Health Check</a></li>
+  <li><a href="#log-analysis-script" id="toc-log-analysis-script" class="nav-link" data-scroll-target="#log-analysis-script">Log Analysis Script</a></li>
+  </ul></li>
+  <li><a href="#authentication-issues" id="toc-authentication-issues" class="nav-link" data-scroll-target="#authentication-issues">Authentication Issues</a>
+  <ul class="collapse">
+  <li><a href="#issue-authentication-failed-or-login-unsuccessful" id="toc-issue-authentication-failed-or-login-unsuccessful" class="nav-link" data-scroll-target="#issue-authentication-failed-or-login-unsuccessful">Issue: “Authentication failed” or “Login unsuccessful”</a></li>
+  <li><a href="#issue-token-expired-during-migration" id="toc-issue-token-expired-during-migration" class="nav-link" data-scroll-target="#issue-token-expired-during-migration">Issue: “Token expired” during migration</a></li>
+  </ul></li>
+  <li><a href="#network-and-connectivity" id="toc-network-and-connectivity" class="nav-link" data-scroll-target="#network-and-connectivity">Network and Connectivity</a>
+  <ul class="collapse">
+  <li><a href="#issue-connection-timeouts-or-network-errors" id="toc-issue-connection-timeouts-or-network-errors" class="nav-link" data-scroll-target="#issue-connection-timeouts-or-network-errors">Issue: Connection timeouts or network errors</a></li>
+  <li><a href="#issue-ssl-certificate-verification-failed" id="toc-issue-ssl-certificate-verification-failed" class="nav-link" data-scroll-target="#issue-ssl-certificate-verification-failed">Issue: SSL Certificate Verification Failed</a></li>
+  </ul></li>
+  <li><a href="#data-processing-errors" id="toc-data-processing-errors" class="nav-link" data-scroll-target="#data-processing-errors">Data Processing Errors</a>
+  <ul class="collapse">
+  <li><a href="#issue-keyerror-or-missing-property-errors" id="toc-issue-keyerror-or-missing-property-errors" class="nav-link" data-scroll-target="#issue-keyerror-or-missing-property-errors">Issue: “KeyError” or missing property errors</a></li>
+  <li><a href="#issue-invalid-payload-or-validation-errors" id="toc-issue-invalid-payload-or-validation-errors" class="nav-link" data-scroll-target="#issue-invalid-payload-or-validation-errors">Issue: Invalid payload or validation errors</a></li>
+  </ul></li>
+  <li><a href="#file-upload-problems" id="toc-file-upload-problems" class="nav-link" data-scroll-target="#file-upload-problems">File Upload Problems</a>
+  <ul class="collapse">
+  <li><a href="#issue-media-files-fail-to-upload" id="toc-issue-media-files-fail-to-upload" class="nav-link" data-scroll-target="#issue-media-files-fail-to-upload">Issue: Media files fail to upload</a></li>
+  <li><a href="#issue-file-format-not-supported" id="toc-issue-file-format-not-supported" class="nav-link" data-scroll-target="#issue-file-format-not-supported">Issue: File format not supported</a></li>
+  </ul></li>
+  <li><a href="#performance-issues" id="toc-performance-issues" class="nav-link" data-scroll-target="#performance-issues">Performance Issues</a>
+  <ul class="collapse">
+  <li><a href="#issue-migration-running-very-slowly" id="toc-issue-migration-running-very-slowly" class="nav-link" data-scroll-target="#issue-migration-running-very-slowly">Issue: Migration running very slowly</a></li>
+  </ul></li>
+  <li><a href="#configuration-problems" id="toc-configuration-problems" class="nav-link" data-scroll-target="#configuration-problems">Configuration Problems</a>
+  <ul class="collapse">
+  <li><a href="#issue-environment-variables-not-loading" id="toc-issue-environment-variables-not-loading" class="nav-link" data-scroll-target="#issue-environment-variables-not-loading">Issue: Environment variables not loading</a></li>
+  <li><a href="#issue-incorrect-api-endpoints" id="toc-issue-incorrect-api-endpoints" class="nav-link" data-scroll-target="#issue-incorrect-api-endpoints">Issue: Incorrect API endpoints</a></li>
+  </ul></li>
+  <li><a href="#dsp-specific-issues" id="toc-dsp-specific-issues" class="nav-link" data-scroll-target="#dsp-specific-issues">DSP-Specific Issues</a>
+  <ul class="collapse">
+  <li><a href="#issue-project-not-found-or-invalid-project-shortcode" id="toc-issue-project-not-found-or-invalid-project-shortcode" class="nav-link" data-scroll-target="#issue-project-not-found-or-invalid-project-shortcode">Issue: “Project not found” or invalid project shortcode</a></li>
+  <li><a href="#issue-list-value-mapping-failures" id="toc-issue-list-value-mapping-failures" class="nav-link" data-scroll-target="#issue-list-value-mapping-failures">Issue: List value mapping failures</a></li>
+  </ul></li>
+  <li><a href="#getting-help" id="toc-getting-help" class="nav-link" data-scroll-target="#getting-help">Getting Help</a>
+  <ul class="collapse">
+  <li><a href="#log-information-to-include" id="toc-log-information-to-include" class="nav-link" data-scroll-target="#log-information-to-include">Log Information to Include</a></li>
+  <li><a href="#creating-effective-bug-reports" id="toc-creating-effective-bug-reports" class="nav-link" data-scroll-target="#creating-effective-bug-reports">Creating Effective Bug Reports</a></li>
+  <li><a href="#support-channels" id="toc-support-channels" class="nav-link" data-scroll-target="#support-channels">Support Channels</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/edit/main/docs/guides/troubleshooting.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="default quarto-title-block">
+<div class="quarto-title">
+<h1 class="d-lg-block d-none title">Troubleshooting Guide</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">August 29, 2025</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Common issues and solutions for the omeka2dsp system.</p>
+<section id="quick-diagnostics" class="level2">
+<h2 class="anchored" data-anchor-id="quick-diagnostics">Quick Diagnostics</h2>
+<section id="system-health-check" class="level3">
+<h3 class="anchored" data-anchor-id="system-health-check">System Health Check</h3>
+<p>Run this comprehensive health check to identify common issues:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># health_check.sh</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"=== omeka2dsp Health Check ==="</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Check Python version</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Python version:"</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">--version</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Check required modules</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="at">-e</span> <span class="st">"\nChecking Python modules:"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-c</span> <span class="st">"import requests; print('✓ requests module available')"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"✗ requests module missing"</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-c</span> <span class="st">"import json; print('✓ json module available')"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"✗ json module missing"</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Check environment file</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="at">-e</span> <span class="st">"\nChecking configuration:"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-f</span> <span class="st">".env"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"✓ .env file exists"</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check required variables</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">source</span> .env</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">[</span> <span class="ot">-n</span> <span class="st">"</span><span class="va">$OMEKA_API_URL</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"✓ OMEKA_API_URL set"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"✗ OMEKA_API_URL missing"</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">[</span> <span class="ot">-n</span> <span class="st">"</span><span class="va">$DSP_USER</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"✓ DSP_USER set"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"✗ DSP_USER missing"</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">[</span> <span class="ot">-n</span> <span class="st">"</span><span class="va">$PROJECT_SHORT_CODE</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"✓ PROJECT_SHORT_CODE set"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"✗ PROJECT_SHORT_CODE missing"</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"✗ .env file missing"</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Check network connectivity</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="at">-e</span> <span class="st">"\nChecking network connectivity:"</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> <span class="at">--connect-timeout</span> 5 https://api.dasch.swiss/health <span class="op">&gt;</span> /dev/null <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"✓ DSP API reachable"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"✗ DSP API not reachable"</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Check directory structure</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="at">-e</span> <span class="st">"\nChecking directory structure:"</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-d</span> <span class="st">"data"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"✓ data directory exists"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"✗ data directory missing"</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-d</span> <span class="st">"scripts"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"✓ scripts directory exists"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"✗ scripts directory missing"</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Check permissions</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="at">-e</span> <span class="st">"\nChecking permissions:"</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-w</span> <span class="st">"."</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"✓ Current directory writable"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"✗ Current directory not writable"</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-w</span> <span class="st">"data"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"✓ Data directory writable"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"✗ Data directory not writable"</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="at">-e</span> <span class="st">"\n=== Health Check Complete ==="</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Run the health check:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x health_check.sh</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./health_check.sh</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="log-analysis-script" class="level3">
+<h3 class="anchored" data-anchor-id="log-analysis-script">Log Analysis Script</h3>
+<p>Quickly analyze log files for common issues:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># analyze_logs.sh</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"=== Log Analysis ==="</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-f</span> <span class="st">"data_2_dasch.log"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Errors found:"</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grep</span> <span class="at">-c</span> <span class="st">"ERROR"</span> data_2_dasch.log</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="at">-e</span> <span class="st">"\nMost recent errors:"</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grep</span> <span class="st">"ERROR"</span> data_2_dasch.log <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-5</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="at">-e</span> <span class="st">"\nSuccess statistics:"</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Items processed: </span><span class="va">$(</span><span class="fu">grep</span> <span class="at">-c</span> <span class="st">'Processing item:'</span> data_2_dasch.log<span class="va">)</span><span class="st">"</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Resources created: </span><span class="va">$(</span><span class="fu">grep</span> <span class="at">-c</span> <span class="st">'Resource created successfully'</span> data_2_dasch.log<span class="va">)</span><span class="st">"</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Resources updated: </span><span class="va">$(</span><span class="fu">grep</span> <span class="at">-c</span> <span class="st">'Resource updated successfully'</span> data_2_dasch.log<span class="va">)</span><span class="st">"</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="at">-e</span> <span class="st">"\nCommon issues:"</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grep</span> <span class="at">-c</span> <span class="st">"Authentication failed"</span> data_2_dasch.log <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"- Authentication failures detected"</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grep</span> <span class="at">-c</span> <span class="st">"Network timeout"</span> data_2_dasch.log <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"- Network timeout issues detected"</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grep</span> <span class="at">-c</span> <span class="st">"File not found"</span> data_2_dasch.log <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"- Missing file issues detected"</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"No log file found (data_2_dasch.log)"</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="authentication-issues" class="level2">
+<h2 class="anchored" data-anchor-id="authentication-issues">Authentication Issues</h2>
+<section id="issue-authentication-failed-or-login-unsuccessful" class="level3">
+<h3 class="anchored" data-anchor-id="issue-authentication-failed-or-login-unsuccessful">Issue: “Authentication failed” or “Login unsuccessful”</h3>
+<p><strong>Symptoms:</strong></p>
+<div class="no-icon callout callout-important callout-style-simple">
+<div class="d-flex callout-body">
+<div class="callout-icon-container">
+<i class="no-icon callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<pre><code>ERROR - Authentication failed
+ERROR - Failed to retrieve project. Status code: 401</code></pre>
+</div>
+</div>
+</div>
+<p><strong>Diagnostic Steps:</strong></p>
+<ol type="1">
+<li><p><strong>Verify Credentials</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test credentials manually</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-c</span> <span class="st">"</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="st">import os, requests</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="st">response = requests.post('</span><span class="va">$API_HOST</span><span class="st">/v2/authentication', </span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">    json={'email': '</span><span class="va">$DSP_USER</span><span class="st">', 'password': '</span><span class="va">$DSP_PWD</span><span class="st">'})</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="st">print(f'Status: {response.status_code}')</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="st">print(f'Response: {response.text}')</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Check Account Status</strong></p>
+<ul>
+<li>Verify account is not locked</li>
+<li>Confirm account has necessary permissions</li>
+<li>Check if password has expired</li>
+</ul></li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width:36%">
+<col style="width:63%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Problem</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Invalid credentials</td>
+<td>Update <code>.env</code> with correct username/password</td>
+</tr>
+<tr class="even">
+<td>Account locked</td>
+<td>Contact DSP administrator to unlock</td>
+</tr>
+<tr class="odd">
+<td>Password expired</td>
+<td>Reset password through DSP interface</td>
+</tr>
+<tr class="even">
+<td>Insufficient permissions</td>
+<td>Request project access from administrator</td>
+</tr>
+<tr class="odd">
+<td>Wrong API endpoint</td>
+<td>Verify <code>API_HOST</code> in configuration</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="issue-token-expired-during-migration" class="level3">
+<h3 class="anchored" data-anchor-id="issue-token-expired-during-migration">Issue: “Token expired” during migration</h3>
+<p><strong>Symptoms:</strong></p>
+<div class="no-icon callout callout-important callout-style-simple">
+<div class="d-flex callout-body">
+<div class="callout-icon-container">
+<i class="no-icon callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<pre><code>ERROR - Request failed with status 401
+WARNING - Token may have expired</code></pre>
+</div>
+</div>
+</div>
+<p><strong>Solutions:</strong></p>
+<ol type="1">
+<li><p><strong>Increase Token Lifetime</strong> (if possible)</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add token refresh logic to data_2_dasch.py</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> refresh_token_if_needed(token):</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check token expiration</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Re-authenticate if necessary</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Implement Auto-Retry</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add retry with re-authentication</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> api_call_with_retry(url, token, max_retries<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> attempt <span class="kw">in</span> <span class="bu">range</span>(max_retries):</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>            response <span class="op">=</span> requests.get(url, headers<span class="op">=</span>{<span class="st">'Authorization'</span>: <span class="ss">f'Bearer </span><span class="sc">{</span>token<span class="sc">}</span><span class="ss">'</span>})</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> response.status_code <span class="op">==</span> <span class="dv">401</span> <span class="kw">and</span> attempt <span class="op">&lt;</span> max_retries <span class="op">-</span> <span class="dv">1</span>:</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                token <span class="op">=</span> login(DSP_USER, DSP_PWD)  <span class="co"># Re-authenticate</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                <span class="cf">continue</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> response</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> attempt <span class="op">==</span> max_retries <span class="op">-</span> <span class="dv">1</span>:</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                <span class="cf">raise</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">None</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+</section>
+</section>
+<section id="network-and-connectivity" class="level2">
+<h2 class="anchored" data-anchor-id="network-and-connectivity">Network and Connectivity</h2>
+<section id="issue-connection-timeouts-or-network-errors" class="level3">
+<h3 class="anchored" data-anchor-id="issue-connection-timeouts-or-network-errors">Issue: Connection timeouts or network errors</h3>
+<p><strong>Symptoms:</strong></p>
+<div class="no-icon callout callout-important callout-style-simple">
+<div class="d-flex callout-body">
+<div class="callout-icon-container">
+<i class="no-icon callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<pre><code>ERROR - Connection timeout
+ERROR - Network unreachable
+requests.exceptions.ConnectionError</code></pre>
+</div>
+</div>
+</div>
+<p><strong>Diagnostic Steps:</strong></p>
+<ol type="1">
+<li><p><strong>Test Basic Connectivity</strong></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test DSP API</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-v</span> https://api.dasch.swiss/health</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Test Omeka API</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-v</span> <span class="st">"</span><span class="va">$OMEKA_API_URL</span><span class="st">"</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check DNS resolution</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="ex">nslookup</span> api.dasch.swiss</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Test API Endpoints</strong></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test specific endpoints</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST https://api.dasch.swiss/v2/authentication <span class="dt">\</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">"Content-Type: application/json"</span> <span class="dt">\</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">'{"email":"test","password":"test"}'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width:47%">
+<col style="width:52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Problem</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Firewall blocking</td>
+<td>Configure firewall to allow HTTPS (443)</td>
+</tr>
+<tr class="even">
+<td>Proxy issues</td>
+<td>Set HTTP_PROXY and HTTPS_PROXY variables</td>
+</tr>
+<tr class="odd">
+<td>DNS issues</td>
+<td>Use IP addresses or different DNS servers</td>
+</tr>
+<tr class="even">
+<td>SSL certificate problems</td>
+<td>Update certificates or bypass verification (testing only)</td>
+</tr>
+<tr class="odd">
+<td>Network instability</td>
+<td>Increase timeout values, implement retry logic</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="issue-ssl-certificate-verification-failed" class="level3">
+<h3 class="anchored" data-anchor-id="issue-ssl-certificate-verification-failed">Issue: SSL Certificate Verification Failed</h3>
+<p><strong>Symptoms:</strong></p>
+<div class="no-icon callout callout-important callout-style-simple">
+<div class="d-flex callout-body">
+<div class="callout-icon-container">
+<i class="no-icon callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<pre><code>requests.exceptions.SSLError: certificate verify failed</code></pre>
+</div>
+</div>
+</div>
+<p><strong>Solutions:</strong></p>
+<ol type="1">
+<li><p><strong>Update Certificates</strong></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Update system certificates</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt-get update <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> apt-get install ca-certificates</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Or on macOS</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install ca-certificates</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Temporary Bypass</strong> (development only)</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add SSL verification bypass</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>requests.packages.urllib3.disable_warnings()</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># In API calls, add verify=False</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> requests.get(url, verify<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+</section>
+</section>
+<section id="data-processing-errors" class="level2">
+<h2 class="anchored" data-anchor-id="data-processing-errors">Data Processing Errors</h2>
+<section id="issue-keyerror-or-missing-property-errors" class="level3">
+<h3 class="anchored" data-anchor-id="issue-keyerror-or-missing-property-errors">Issue: “KeyError” or missing property errors</h3>
+<p><strong>Symptoms:</strong></p>
+<div class="no-icon callout callout-important callout-style-simple">
+<div class="d-flex callout-body">
+<div class="callout-icon-container">
+<i class="no-icon callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<pre><code>KeyError: 'dcterms:title'
+ERROR - Required field missing</code></pre>
+</div>
+</div>
+</div>
+<p><strong>Diagnostic Steps:</strong></p>
+<ol type="1">
+<li><p><strong>Inspect Problematic Item</strong></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Debug specific item</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scripts.process_data_from_omeka <span class="im">import</span> get_items_from_collection</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>items <span class="op">=</span> get_items_from_collection(<span class="st">'10780'</span>) <span class="co"># SGB Item Set ID</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>problem_item <span class="op">=</span> items[<span class="dv">0</span>]  <span class="co"># Adjust index as needed</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(json.dumps(problem_item, indent<span class="op">=</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Check Property Mappings</strong></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify property structure</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>item <span class="op">=</span> get_problem_item()</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Available properties:"</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> key <span class="kw">in</span> item.keys():</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> key.startswith(<span class="st">'dcterms:'</span>):</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>key<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>item[key]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<ol type="1">
+<li><p><strong>Add Null Checks</strong></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Defensive programming</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> safe_extract_property(item, property_name, property_id):</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    props <span class="op">=</span> item.get(property_name, [])</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> props:</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">""</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> extract_property(props, property_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Update Property Mappings</strong></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Handle different property structures</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> flexible_property_extract(item, property_names, property_id):</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> prop_name <span class="kw">in</span> property_names:</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> prop_name <span class="kw">in</span> item <span class="kw">and</span> item[prop_name]:</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> extract_property(item[prop_name], property_id)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+</section>
+<section id="issue-invalid-payload-or-validation-errors" class="level3">
+<h3 class="anchored" data-anchor-id="issue-invalid-payload-or-validation-errors">Issue: Invalid payload or validation errors</h3>
+<p><strong>Symptoms:</strong></p>
+<div class="no-icon callout callout-important callout-style-simple">
+<div class="d-flex callout-body">
+<div class="callout-icon-container">
+<i class="no-icon callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<pre><code>ERROR - Invalid payload structure
+ERROR - Required property missing in DSP</code></pre>
+</div>
+</div>
+</div>
+<p><strong>Solutions:</strong></p>
+<ol type="1">
+<li><p><strong>Payload Validation</strong></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> validate_payload(payload):</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    required_fields <span class="op">=</span> [<span class="st">'@context'</span>, <span class="st">'@type'</span>, <span class="st">'rdfs:label'</span>]</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> field <span class="kw">in</span> required_fields:</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> field <span class="kw">not</span> <span class="kw">in</span> payload:</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="ss">f"Missing required field: </span><span class="sc">{</span>field<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Validate field types</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(payload.get(<span class="st">'rdfs:label'</span>), <span class="bu">str</span>):</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"rdfs:label must be a string"</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Schema Compliance</strong></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure payload matches DSP expectations</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ensure_dsp_compliance(payload):</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove empty fields</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    cleaned_payload <span class="op">=</span> {k: v <span class="cf">for</span> k, v <span class="kw">in</span> payload.items() <span class="cf">if</span> v}</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ensure required structure</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">'@context'</span> <span class="kw">not</span> <span class="kw">in</span> cleaned_payload:</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>        cleaned_payload[<span class="st">'@context'</span>] <span class="op">=</span> get_default_context()</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> cleaned_payload</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+</section>
+</section>
+<section id="file-upload-problems" class="level2">
+<h2 class="anchored" data-anchor-id="file-upload-problems">File Upload Problems</h2>
+<section id="issue-media-files-fail-to-upload" class="level3">
+<h3 class="anchored" data-anchor-id="issue-media-files-fail-to-upload">Issue: Media files fail to upload</h3>
+<p><strong>Symptoms:</strong></p>
+<div class="no-icon callout callout-important callout-style-simple">
+<div class="d-flex callout-body">
+<div class="callout-icon-container">
+<i class="no-icon callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<pre><code>ERROR - File upload failed
+ERROR - File not found: filename.jpg
+requests.exceptions.RequestException</code></pre>
+</div>
+</div>
+</div>
+<p><strong>Diagnostic Steps:</strong></p>
+<ol type="1">
+<li><p><strong>Test File Accessibility</strong></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test file URL directly</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-I</span> <span class="st">"https://omeka.unibe.ch/files/original/98d8559515187ec4a710347c7b9e6cda0bdd58d2.tif"</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check file size</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-sI</span> <span class="st">"URL"</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-i</span> content-length</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Test Upload Process</strong></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test file download and upload separately</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Download test</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> requests.get(file_url)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Download status: </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Content length: </span><span class="sc">{</span><span class="bu">len</span>(response.content)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Upload test</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>files <span class="op">=</span> {<span class="st">'file'</span>: (<span class="st">'test.jpg'</span>, response.content, <span class="st">'image/jpeg'</span>)}</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>upload_response <span class="op">=</span> requests.post(upload_url, files<span class="op">=</span>files, headers<span class="op">=</span>headers)</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Upload status: </span><span class="sc">{</span>upload_response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width:31%">
+<col style="width:68%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Problem</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>File not accessible</td>
+<td>Check Omeka permissions and URL</td>
+</tr>
+<tr class="even">
+<td>File too large</td>
+<td>Implement file compression or chunked upload</td>
+</tr>
+<tr class="odd">
+<td>Timeout during upload</td>
+<td>Increase timeout, implement retry logic</td>
+</tr>
+<tr class="even">
+<td>Unsupported format</td>
+<td>Add format conversion or skip unsupported files</td>
+</tr>
+<tr class="odd">
+<td>Insufficient storage</td>
+<td>Clean up temporary files, check disk space</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="issue-file-format-not-supported" class="level3">
+<h3 class="anchored" data-anchor-id="issue-file-format-not-supported">Issue: File format not supported</h3>
+<p><strong>Solutions:</strong></p>
+<ol type="1">
+<li><p><strong>Add Format Support</strong></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> specify_mediaclass(media_type: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Enhanced media type detection"""</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    type_mapping <span class="op">=</span> {</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">'image/jpeg'</span>: <span class="ss">f'</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_MEDIA_IMAGE'</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">'image/png'</span>: <span class="ss">f'</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_MEDIA_IMAGE'</span>,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'image/gif'</span>: <span class="ss">f'</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_MEDIA_IMAGE'</span>,</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'image/tiff'</span>: <span class="ss">f'</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_MEDIA_IMAGE'</span>,</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">'application/pdf'</span>: <span class="ss">f'</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_MEDIA_ARCHIV'</span>,</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">'text/plain'</span>: <span class="ss">f'</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_MEDIA_ARCHIV'</span>,</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">'audio/mpeg'</span>: <span class="ss">f'</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_MEDIA_AUDIO'</span>,  <span class="co"># New</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">'video/mp4'</span>: <span class="ss">f'</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_MEDIA_VIDEO'</span>    <span class="co"># New</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> type_mapping.get(media_type, <span class="ss">f'</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_MEDIA_ARCHIV'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Format Conversion</strong></p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> convert_image_format(file_path, target_format<span class="op">=</span><span class="st">'JPEG'</span>):</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Convert image to supported format"""</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> Image.<span class="bu">open</span>(file_path) <span class="im">as</span> img:</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> img.<span class="bu">format</span> <span class="op">!=</span> target_format:</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>            converted_path <span class="op">=</span> file_path.replace(img.<span class="bu">format</span>.lower(), target_format.lower())</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>            img.convert(<span class="st">'RGB'</span>).save(converted_path, target_format)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> converted_path</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> file_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+</section>
+</section>
+<section id="performance-issues" class="level2">
+<h2 class="anchored" data-anchor-id="performance-issues">Performance Issues</h2>
+<section id="issue-migration-running-very-slowly" class="level3">
+<h3 class="anchored" data-anchor-id="issue-migration-running-very-slowly">Issue: Migration running very slowly</h3>
+<p><strong>Symptoms:</strong></p>
+<div class="no-icon callout callout-important callout-style-simple">
+<div class="d-flex callout-body">
+<div class="callout-icon-container">
+<i class="no-icon callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<ul>
+<li>Processing takes much longer than expected</li>
+<li>High memory usage</li>
+<li>Network timeouts</li>
+<li>System becomes unresponsive</li>
+</ul>
+</div>
+</div>
+</div>
+<p><strong>Diagnostic Steps:</strong></p>
+<ol type="1">
+<li><p><strong>Performance Monitoring</strong></p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Monitor system resources</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="ex">htop</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Monitor network usage</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="ex">iftop</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check disk I/O</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="ex">iostat</span> <span class="at">-x</span> 1</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Monitor Python process</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="ex">py-spy</span> top <span class="at">--pid</span> <span class="va">$(</span><span class="ex">pgrep</span> <span class="at">-f</span> data_2_dasch.py<span class="va">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Profile the Code</strong></p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cProfile</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pstats</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Profile the migration</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>cProfile.run(<span class="st">'main()'</span>, <span class="st">'migration_profile.prof'</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Analyze results</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>stats <span class="op">=</span> pstats.Stats(<span class="st">'migration_profile.prof'</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>stats.sort_stats(<span class="st">'cumulative'</span>).print_stats(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<ol type="1">
+<li><p><strong>Batch Processing</strong></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_items_in_batches(items, batch_size<span class="op">=</span><span class="dv">50</span>):</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Process items in smaller batches"""</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(items), batch_size):</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>        batch <span class="op">=</span> items[i:i<span class="op">+</span>batch_size]</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> item <span class="kw">in</span> batch:</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>            process_item(item)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Small delay between batches</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="dv">1</span>)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Memory cleanup</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>        <span class="im">import</span> gc</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>        gc.collect()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Optimize API Calls</strong></p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> requests.adapters <span class="im">import</span> HTTPAdapter</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> urllib3.util.retry <span class="im">import</span> Retry</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_optimized_session():</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    session <span class="op">=</span> requests.Session()</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Connection pooling</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    adapter <span class="op">=</span> HTTPAdapter(</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>        pool_connections<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>        pool_maxsize<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>        max_retries<span class="op">=</span>Retry(</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>            total<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>            backoff_factor<span class="op">=</span><span class="fl">0.3</span>,</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>            status_forcelist<span class="op">=</span>[<span class="dv">500</span>, <span class="dv">502</span>, <span class="dv">504</span>]</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>    session.mount(<span class="st">'http://'</span>, adapter)</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>    session.mount(<span class="st">'https://'</span>, adapter)</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> session</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+</section>
+</section>
+<section id="configuration-problems" class="level2">
+<h2 class="anchored" data-anchor-id="configuration-problems">Configuration Problems</h2>
+<section id="issue-environment-variables-not-loading" class="level3">
+<h3 class="anchored" data-anchor-id="issue-environment-variables-not-loading">Issue: Environment variables not loading</h3>
+<p><strong>Symptoms:</strong></p>
+<div class="no-icon callout callout-important callout-style-simple">
+<div class="d-flex callout-body">
+<div class="callout-icon-container">
+<i class="no-icon callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<pre><code>KeyError: 'PROJECT_SHORT_CODE'
+ERROR - Configuration variable not found</code></pre>
+</div>
+</div>
+</div>
+<p><strong>Solutions:</strong></p>
+<ol type="1">
+<li><p><strong>Verify .env File</strong></p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check file exists and has content</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-la</span> .env</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> .env</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for hidden characters</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hexdump</span> <span class="at">-C</span> .env <span class="kw">|</span> <span class="fu">head</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Load Environment Explicitly</strong></p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add explicit environment loading</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load .env file</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify variables</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>required_vars <span class="op">=</span> [<span class="st">'OMEKA_API_URL'</span>, <span class="st">'DSP_USER'</span>, <span class="st">'PROJECT_SHORT_CODE'</span>]</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> var <span class="kw">in</span> required_vars:</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> os.getenv(var):</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">EnvironmentError</span>(<span class="ss">f"Required environment variable </span><span class="sc">{</span>var<span class="sc">}</span><span class="ss"> not set"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+</section>
+<section id="issue-incorrect-api-endpoints" class="level3">
+<h3 class="anchored" data-anchor-id="issue-incorrect-api-endpoints">Issue: Incorrect API endpoints</h3>
+<p><strong>Symptoms:</strong></p>
+<div class="no-icon callout callout-important callout-style-simple">
+<div class="d-flex callout-body">
+<div class="callout-icon-container">
+<i class="no-icon callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<pre><code>ERROR - 404 Not Found
+ERROR - Invalid API endpoint</code></pre>
+</div>
+</div>
+</div>
+<p><strong>Solutions:</strong></p>
+<ol type="1">
+<li><p><strong>Endpoint Validation</strong></p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> validate_endpoints():</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Validate API endpoints are reachable"""</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    endpoints <span class="op">=</span> {</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">'DSP API'</span>: <span class="ss">f"</span><span class="sc">{</span>API_HOST<span class="sc">}</span><span class="ss">/health"</span>,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Omeka API'</span>: <span class="ss">f"</span><span class="sc">{</span>OMEKA_API_URL<span class="sc">}</span><span class="ss">items?per_page=1"</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> name, url <span class="kw">in</span> endpoints.items():</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>            response <span class="op">=</span> requests.get(url, timeout<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"✓ </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"✗ </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Dynamic Endpoint Discovery</strong></p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> discover_api_version():</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Discover correct API version"""</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    base_url <span class="op">=</span> API_HOST.rstrip(<span class="st">'/'</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    versions <span class="op">=</span> [<span class="st">'/v2'</span>, <span class="st">'/v1'</span>, <span class="st">''</span>]</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> version <span class="kw">in</span> versions:</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>            url <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>base_url<span class="sc">}{</span>version<span class="sc">}</span><span class="ss">/health"</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>            response <span class="op">=</span> requests.get(url, timeout<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> response.status_code <span class="op">==</span> <span class="dv">200</span>:</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="ss">f"</span><span class="sc">{</span>base_url<span class="sc">}{</span>version<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span>:</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">Exception</span>(<span class="st">"No valid API endpoint found"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+</section>
+</section>
+<section id="dsp-specific-issues" class="level2">
+<h2 class="anchored" data-anchor-id="dsp-specific-issues">DSP-Specific Issues</h2>
+<section id="issue-project-not-found-or-invalid-project-shortcode" class="level3">
+<h3 class="anchored" data-anchor-id="issue-project-not-found-or-invalid-project-shortcode">Issue: “Project not found” or invalid project shortcode</h3>
+<p><strong>Solutions:</strong></p>
+<ol type="1">
+<li><p><strong>Verify Project Information</strong></p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test project endpoint</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-H</span> <span class="st">"Authorization: Bearer </span><span class="va">$TOKEN</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="va">$API_HOST</span><span class="st">/admin/projects/shortcode/</span><span class="va">$PROJECT_SHORT_CODE</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>List Available Projects</strong></p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> list_available_projects(token):</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""List projects user has access to"""</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.get(</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"</span><span class="sc">{</span>API_HOST<span class="sc">}</span><span class="ss">/admin/projects"</span>,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>        headers<span class="op">=</span>{<span class="st">'Authorization'</span>: <span class="ss">f'Bearer </span><span class="sc">{</span>token<span class="sc">}</span><span class="ss">'</span>}</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> response.status_code <span class="op">==</span> <span class="dv">200</span>:</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>        projects <span class="op">=</span> response.json().get(<span class="st">'projects'</span>, [])</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> project <span class="kw">in</span> projects:</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"Shortcode: </span><span class="sc">{</span>project[<span class="st">'shortcode'</span>]<span class="sc">}</span><span class="ss">, Name: </span><span class="sc">{</span>project[<span class="st">'shortname'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Failed to fetch projects: </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+</section>
+<section id="issue-list-value-mapping-failures" class="level3">
+<h3 class="anchored" data-anchor-id="issue-list-value-mapping-failures">Issue: List value mapping failures</h3>
+<p><strong>Symptoms:</strong></p>
+<div class="no-icon callout callout-important callout-style-simple">
+<div class="d-flex callout-body">
+<div class="callout-icon-container">
+<i class="no-icon callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<pre><code>WARNING - List value not found for: unknown_value
+ERROR - Invalid list node IRI</code></pre>
+</div>
+</div>
+</div>
+<p><strong>Solutions:</strong></p>
+<ol type="1">
+<li><p><strong>Debug List Mappings</strong></p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> debug_list_mappings(lists, search_value):</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Debug list value mappings"""</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Searching for: </span><span class="sc">{</span>search_value<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> list_obj <span class="kw">in</span> lists:</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>        list_name <span class="op">=</span> list_obj[<span class="st">'listinfo'</span>][<span class="st">'name'</span>]</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">List: </span><span class="sc">{</span>list_name<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>        nodes <span class="op">=</span> list_obj[<span class="st">'list'</span>][<span class="st">'children'</span>]</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> node <span class="kw">in</span> nodes:</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>            labels <span class="op">=</span> node[<span class="st">'labels'</span>]</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> label <span class="kw">in</span> labels:</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> search_value.lower() <span class="kw">in</span> label[<span class="st">'value'</span>].lower():</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="ss">f"  Found match: </span><span class="sc">{</span>label[<span class="st">'value'</span>]<span class="sc">}</span><span class="ss"> -&gt; </span><span class="sc">{</span>node[<span class="st">'id'</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Fuzzy Matching</strong></p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> difflib <span class="im">import</span> get_close_matches</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_closest_list_value(value, list_values, cutoff<span class="op">=</span><span class="fl">0.6</span>):</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Find closest matching list value"""</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    matches <span class="op">=</span> get_close_matches(value, list_values, n<span class="op">=</span><span class="dv">1</span>, cutoff<span class="op">=</span>cutoff)</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> matches:</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Fuzzy match: '</span><span class="sc">{</span>value<span class="sc">}</span><span class="ss">' -&gt; '</span><span class="sc">{</span>matches[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">'"</span>)</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> matches[<span class="dv">0</span>]</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">None</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+</section>
+</section>
+<section id="getting-help" class="level2">
+<h2 class="anchored" data-anchor-id="getting-help">Getting Help</h2>
+<section id="log-information-to-include" class="level3">
+<h3 class="anchored" data-anchor-id="log-information-to-include">Log Information to Include</h3>
+<p>When reporting issues, include:</p>
+<ol type="1">
+<li><p><strong>System Information</strong></p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">--version</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">uname</span> <span class="at">-a</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> list <span class="kw">|</span> <span class="fu">grep</span> requests</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Configuration (sanitized)</strong></p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove sensitive data first</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sed</span> <span class="st">'s/PASSWORD=.*/PASSWORD=***/'</span> .env</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Error Logs</strong></p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Last 50 lines of log</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-50</span> data_2_dasch.log</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co"># All error messages</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"ERROR"</span> data_2_dasch.log</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Network Diagnostics</strong></p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-v</span> https://api.dasch.swiss/health</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="ex">nslookup</span> api.dasch.swiss</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+</section>
+<section id="creating-effective-bug-reports" class="level3">
+<h3 class="anchored" data-anchor-id="creating-effective-bug-reports">Creating Effective Bug Reports</h3>
+<p>Use this template:</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode code-with-copy markdown"><code class="sourceCode markdown"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Bug Description</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>Brief description of the issue</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="fu">## Steps to Reproduce</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Step 1</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Step 2</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Error occurs</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Expected Behavior</span></span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>What should happen</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## Actual Behavior</span></span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>What actually happens</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment</span></span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Python version: 3.9.0</span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>OS: Ubuntu 20.04</span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Network: Corporate/Home/University</span>
+<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a><span class="fu">## Configuration</span></span>
+<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>(Sanitized .env contents)</span>
+<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-23"><a href="#cb47-23" aria-hidden="true" tabindex="-1"></a><span class="fu">## Logs</span></span>
+<span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb47-25"><a href="#cb47-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-26"><a href="#cb47-26" aria-hidden="true" tabindex="-1"></a><span class="in">Error log contents here</span></span>
+<span id="cb47-27"><a href="#cb47-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-28"><a href="#cb47-28" aria-hidden="true" tabindex="-1"></a><span class="in">```</span>         </span>
+<span id="cb47-29"><a href="#cb47-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-30"><a href="#cb47-30" aria-hidden="true" tabindex="-1"></a><span class="fu">## Additional Context</span></span>
+<span id="cb47-31"><a href="#cb47-31" aria-hidden="true" tabindex="-1"></a>Any other relevant information</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="support-channels" class="level3">
+<h3 class="anchored" data-anchor-id="support-channels">Support Channels</h3>
+<ol type="1">
+<li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues"><strong>GitHub Issues</strong></a>: For bugs and feature requests</li>
+<li><a href="../../docs/index.html"><strong>Documentation</strong></a>: Check all documentation first</li>
+<li><strong>Community</strong>: DSP community forums</li>
+<li><strong>Email</strong>: info@stadtgeschichtebasel.ch, for sensitive security issues only</li>
+</ol>
+<p>This troubleshooting guide should help resolve the most common issues encountered when using the omeka2dsp system.</p>
+
+
+</section>
+</section>
+
+<a onclick="return window.scrollTo(0,0),!1;
+" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">window.document.addEventListener("DOMContentLoaded",function(N){const T="\uE9CB",w=new window.AnchorJS;w.options={placement:"right",icon:T},w.add(".anchored");const M=o=>{for(const t of o.classList)if(t.startsWith("code-annotation-"))return!0;return!1},b=function(o){const t=o.trigger;t.blur(),t.classList.add("code-copy-button-checked");var e=t.getAttribute("title");t.setAttribute("title","Copied!");let n;window.bootstrap&&(t.setAttribute("data-bs-toggle","tooltip"),t.setAttribute("data-bs-placement","left"),t.setAttribute("data-bs-title","Copied!"),n=new bootstrap.Tooltip(t,{trigger:"manual",customClass:"code-copy-button-tooltip",offset:[0,-8]}),n.show()),setTimeout(function(){n&&(n.hide(),t.removeAttribute("data-bs-title"),t.removeAttribute("data-bs-toggle"),t.removeAttribute("data-bs-placement")),t.setAttribute("title",e),t.classList.remove("code-copy-button-checked")},1e3),o.clearSelection()},y=function(o){const t=o.previousElementSibling.cloneNode(!0);for(const e of t.children)M(e)&&e.remove();return t.innerText};new window.ClipboardJS(".code-copy-button:not([data-in-quarto-modal])",{text:y}).on("success",b),window.document.getElementById("quarto-embedded-source-code-modal")&&new window.ClipboardJS(".code-copy-button[data-in-quarto-modal]",{text:y,container:window.document.getElementById("quarto-embedded-source-code-modal")}).on("success",b);for(var q=new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//),I=new RegExp(/^mailto:/),k=new RegExp("https://dokumentation.stadtgeschichtebasel.ch/omeka2dsp/"),H=o=>k.test(o)||q.test(o)||I.test(o),v=window.document.querySelectorAll("a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)"),r=0;r<v.length;r++){const o=v[r];H(o.href)||o.dataset.originalHref!==void 0&&(o.href=o.dataset.originalHref)}function p(o,t,e,n){const i={allowHTML:!0,maxWidth:500,delay:100,arrow:!1,appendTo:function(l){return l.parentElement},interactive:!0,interactiveBorder:10,theme:"quarto",placement:"bottom-start"};t&&(i.content=t),e&&(i.onTrigger=e),n&&(i.onUntrigger=n),window.tippy(o,i)}const E=window.document.querySelectorAll('a[role="doc-noteref"]');for(var r=0;r<E.length;r++){const t=E[r];p(t,function(){let e=t.getAttribute("data-footnote-href")||t.getAttribute("href");try{e=new URL(e).hash}catch{}const n=e.replace(/^#\/?/,""),i=window.document.getElementById(n);return i?i.innerHTML:""})}const A=window.document.querySelectorAll("a.quarto-xref"),g=(o,t)=>{const e=n=>{if(n.classList.remove("page-full","page-columns"),n.children)for(const i of n.children)e(i)};if(e(t),o===null||o.startsWith("sec-")){const n=document.createElement("div");if(t.children&&t.children.length>2){n.appendChild(t.children[0].cloneNode(!0));for(let i=1;i<t.children.length;i++){const l=t.children[i];if(!(l.tagName==="P"&&l.innerText==="")){n.appendChild(l.cloneNode(!0));break}}return window.Quarto?.typesetMath&&window.Quarto.typesetMath(n),n.innerHTML}else return window.Quarto?.typesetMath&&window.Quarto.typesetMath(t),t.innerHTML}else{const n=t.querySelector("a.anchorjs-link");return n&&n.remove(),window.Quarto?.typesetMath&&window.Quarto.typesetMath(t),t.classList.contains("callout")?t.outerHTML:t.innerHTML}};for(var r=0;r<A.length;r++){const t=A[r];p(t,void 0,function(e){e.disable();let n=t.getAttribute("href"),i;if(n.startsWith("#"))i=n;else try{i=new URL(n).hash}catch{}if(i){const l=i.replace(/^#\/?/,""),c=window.document.getElementById(l);if(c!==null)try{const s=g(l,c.cloneNode(!0));e.setContent(s)}finally{e.enable(),e.show()}else fetch(n.split("#")[0]).then(s=>s.text()).then(s=>{const u=new DOMParser().parseFromString(s,"text/html").getElementById(l);if(u!==null){const a=g(l,u);e.setContent(a)}}).finally(()=>{e.enable(),e.show()})}else fetch(n).then(l=>l.text()).then(l=>{const d=new DOMParser().parseFromString(l,"text/html").querySelector("main.content");if(d!==null){d.children.length>0&&d.children[0].tagName==="HEADER"&&d.children[0].remove();const f=g(null,d);e.setContent(f)}}).finally(()=>{e.enable(),e.show()})},function(e){})}let m;const B=(o,t)=>{let e='data-code-cell="'+o+'"',n='data-code-annotation="'+t+'"';return"span["+e+"]["+n+"]"},L=o=>{const t=window.document,e=o.getAttribute("data-target-cell"),n=o.getAttribute("data-target-annotation"),c=window.document.querySelector(B(e,n)).getAttribute("data-code-lines").split(",").map(u=>e+"-"+u);let s=null,d=null,f=null;if(c.length>0){const u=window.document.getElementById(c[0]);if(s=u.offsetTop,d=u.offsetHeight,f=u.parentElement.parentElement,c.length>1){const a=window.document.getElementById(c[c.length-1]);d=a.offsetTop+a.offsetHeight-s}if(s!==null&&d!==null&&f!==null){let a=window.document.getElementById("code-annotation-line-highlight");a===null&&(a=window.document.createElement("div"),a.setAttribute("id","code-annotation-line-highlight"),a.style.position="absolute",f.appendChild(a)),a.style.top=s-2+"px",a.style.height=d+4+"px",a.style.left=0;let h=window.document.getElementById("code-annotation-line-highlight-gutter");h===null&&(h=window.document.createElement("div"),h.setAttribute("id","code-annotation-line-highlight-gutter"),h.style.position="absolute",window.document.getElementById(e).querySelector(".code-annotation-gutter").appendChild(h)),h.style.top=s-2+"px",h.style.height=d+4+"px"}m=o}},C=()=>{["code-annotation-line-highlight","code-annotation-line-highlight-gutter"].forEach(t=>{const e=window.document.getElementById(t);e&&e.remove()}),m=void 0};window.addEventListener("resize",D(()=>{elRect=void 0,m&&L(m)},10));function D(o,t){let e=!1,n;return(...i)=>{e?(n&&clearTimeout(n),n=setTimeout(()=>{o.apply(this,i),n=e=!1},t)):(o.apply(this,i),e=!0)}}const R=window.document.querySelectorAll("dt[data-target-cell]");for(const o of R)o.addEventListener("click",t=>{const e=t.target;if(e!==m){C();const n=window.document.querySelector("dt[data-target-cell].code-annotation-active");n&&n.classList.remove("code-annotation-active"),L(e),e.classList.add("code-annotation-active")}else C(),e.classList.remove("code-annotation-active")});const x=o=>{const t=o.parentElement;if(t){const e=t.dataset.cites;return e?{el:o,cites:e.split(" ")}:x(o.parentElement)}else return};for(var S=window.document.querySelectorAll('a[role="doc-biblioref"]'),r=0;r<S.length;r++){const t=S[r],e=x(t);e&&p(e.el,function(){var n=window.document.createElement("div");return e.cites.forEach(function(i){var l=window.document.createElement("div");l.classList.add("hanging-indent"),l.classList.add("csl-entry");var c=window.document.getElementById("ref-"+i);c&&(l.innerHTML=c.innerHTML),n.appendChild(l)}),n.innerHTML})}});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../docs/guides/development.html" class="pagination-link" aria-label="Development Guide">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Development Guide</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../project-management/about.html" class="pagination-link" aria-label="About">
+        <span class="nav-page-text">About</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-md-none d-sm-block"><ul><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/edit/main/docs/guides/troubleshooting.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

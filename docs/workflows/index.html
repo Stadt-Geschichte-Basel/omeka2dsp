@@ -1,0 +1,1152 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.33">
+
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+
+
+<title>Workflows Documentation – omeka2dsp</title>
+<style>code{white-space:pre-wrap}span.smallcaps{font-variant:small-caps}div.columns{gap:min(4vw,1.5em);display:flex}div.column{flex:auto;overflow-x:auto}div.hanging-indent{text-indent:-1.5em;margin-left:1.5em}ul.task-list{list-style:none}ul.task-list li input[type=checkbox]{vertical-align:middle;width:.8em;margin:0 .8em .2em -1em}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../docs/api/index.html" rel="next">
+<link href="../../docs/architecture/index.html" rel="prev">
+<link href="../../android-chrome-512x512.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-6527f0f6f1a49fae8767c07d481ee51a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": true,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="mermaid-theme" content="neutral">
+<script src="../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Workflows Documentation – omeka2dsp">
+<meta property="og:description" content="">
+<meta property="og:site_name" content="omeka2dsp">
+<meta name="twitter:title" content="Workflows Documentation – omeka2dsp">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="floating nav-fixed nav-sidebar quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="fixed-top headroom">
+    <nav class="navbar navbar-expand-lg" data-bs-theme="dark">
+      <div class="container-fluid navbar-container">
+      <div class="mx-auto navbar-brand-container">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../android-chrome-512x512.webp" alt="" class="navbar-logo" fetchpriority="high" decoding="async" width="512" height="512">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">omeka2dsp</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="me-auto navbar-nav navbar-nav-scroll">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../index.html" aria-current="page"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-documentation" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Documentation</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-documentation">    
+        <li>
+    <a class="dropdown-item" href="../../docs/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../docs/architecture/index.html">
+ <span class="dropdown-text">Architecture</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/workflows/index.html">
+ <span class="dropdown-text">Workflows</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/api/index.html">
+ <span class="dropdown-text">API Reference</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/datamodel/index.html">
+ <span class="dropdown-text">Data Model</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/installation.html">
+ <span class="dropdown-text">Installation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/configuration.html">
+ <span class="dropdown-text">Configuration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/usage.html">
+ <span class="dropdown-text">Usage</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/development.html">
+ <span class="dropdown-text">Development</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/troubleshooting.html">
+ <span class="dropdown-text">Troubleshooting</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../project-management/about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/" title="" class="px-1 quarto-navigation-tool" aria-label=""><i class="bi bi-github"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="btn quarto-btn-toggle" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <a class="flex-grow-1 no-decor" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">      
+          <h1 class="quarto-secondary-nav-title">Workflows Documentation</h1>
+        </a>     
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="page-columns page-layout-article page-navbar page-rows-contents quarto-container">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="collapse collapse-horizontal floating overflow-auto quarto-sidebar-collapse-item sidebar sidebar-navigation">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">omeka2dsp</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CHANGELOG.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Changelog</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CODE_OF_CONDUCT.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Code of Conduct</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CONTRIBUTING.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contributing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../LICENSE-CCBY.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">License (Data)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../LICENSE-AGPL.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">License (Code)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../SECURITY.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Security</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Documentation</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/architecture/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">System Architecture</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/workflows/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Data Workflows</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">API Reference</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Guides</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/installation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installation &amp; Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/configuration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Configuration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/usage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Usage Guide</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/development.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Development Guide</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/troubleshooting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Troubleshooting</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../project-management/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../project-management/communication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Communication</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../project-management/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">People</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="margin-sidebar sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#main-migration-workflow" id="toc-main-migration-workflow" class="nav-link" data-scroll-target="#main-migration-workflow">Main Migration Workflow</a>
+  <ul class="collapse">
+  <li><a href="#processing-mode-details" id="toc-processing-mode-details" class="nav-link" data-scroll-target="#processing-mode-details">Processing Mode Details</a></li>
+  </ul></li>
+  <li><a href="#data-extraction-workflow" id="toc-data-extraction-workflow" class="nav-link" data-scroll-target="#data-extraction-workflow">Data Extraction Workflow</a>
+  <ul class="collapse">
+  <li><a href="#property-extraction-details" id="toc-property-extraction-details" class="nav-link" data-scroll-target="#property-extraction-details">Property Extraction Details</a></li>
+  </ul></li>
+  <li><a href="#data-transformation-workflow" id="toc-data-transformation-workflow" class="nav-link" data-scroll-target="#data-transformation-workflow">Data Transformation Workflow</a>
+  <ul class="collapse">
+  <li><a href="#list-value-mapping" id="toc-list-value-mapping" class="nav-link" data-scroll-target="#list-value-mapping">List Value Mapping</a></li>
+  </ul></li>
+  <li><a href="#synchronization-workflow" id="toc-synchronization-workflow" class="nav-link" data-scroll-target="#synchronization-workflow">Synchronization Workflow</a>
+  <ul class="collapse">
+  <li><a href="#array-value-synchronization-details" id="toc-array-value-synchronization-details" class="nav-link" data-scroll-target="#array-value-synchronization-details">Array Value Synchronization Details</a></li>
+  </ul></li>
+  <li><a href="#file-upload-workflow" id="toc-file-upload-workflow" class="nav-link" data-scroll-target="#file-upload-workflow">File Upload Workflow</a>
+  <ul class="collapse">
+  <li><a href="#media-type-classification" id="toc-media-type-classification" class="nav-link" data-scroll-target="#media-type-classification">Media Type Classification</a></li>
+  </ul></li>
+  <li><a href="#error-handling-workflow" id="toc-error-handling-workflow" class="nav-link" data-scroll-target="#error-handling-workflow">Error Handling Workflow</a></li>
+  <li><a href="#api-utility-workflows" id="toc-api-utility-workflows" class="nav-link" data-scroll-target="#api-utility-workflows">API Utility Workflows</a>
+  <ul class="collapse">
+  <li><a href="#project-information-workflow-api_get_project.py" id="toc-project-information-workflow-api_get_project.py" class="nav-link" data-scroll-target="#project-information-workflow-api_get_project.py">Project Information Workflow (<code>api_get_project.py</code>)</a></li>
+  <li><a href="#lists-retrieval-workflow-api_get_lists.py" id="toc-lists-retrieval-workflow-api_get_lists.py" class="nav-link" data-scroll-target="#lists-retrieval-workflow-api_get_lists.py">Lists Retrieval Workflow (<code>api_get_lists.py</code>)</a></li>
+  <li><a href="#detailed-lists-workflow-api_get_lists_detailed.py" id="toc-detailed-lists-workflow-api_get_lists_detailed.py" class="nav-link" data-scroll-target="#detailed-lists-workflow-api_get_lists_detailed.py">Detailed Lists Workflow (<code>api_get_lists_detailed.py</code>)</a></li>
+  </ul></li>
+  <li><a href="#workflow-integration" id="toc-workflow-integration" class="nav-link" data-scroll-target="#workflow-integration">Workflow Integration</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/edit/main/docs/workflows/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="default quarto-title-block">
+<div class="quarto-title">
+<h1 class="d-lg-block d-none title">Workflows Documentation</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">August 29, 2025</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This document describes the various workflows in the omeka2dsp system using Mermaid diagrams to illustrate the data flow and processing steps.</p>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>The omeka2dsp system implements several interconnected workflows that work together to migrate and synchronize cultural heritage data between Omeka and DSP platforms.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TB
+    subgraph "Primary Workflows"
+        A[Main Migration Workflow]
+        B[Data Extraction Workflow]
+        C[Data Transformation Workflow]
+        D[Synchronization Workflow]
+        E[File Upload Workflow]
+    end
+    
+    subgraph "Supporting Workflows"
+        F[Configuration Setup]
+        G[Authentication]
+        H[Error Handling]
+        I[Logging]
+    end
+    
+    A --&gt; B
+    A --&gt; C
+    A --&gt; D
+    A --&gt; E
+    
+    F --&gt; A
+    G --&gt; A
+    H --&gt; A
+    I --&gt; A
+
+    click A href "#main-migration-workflow"
+    click B href "#data-extraction-workflow"
+    click C href "#data-transformation-workflow"
+    click D href "#synchronization-workflow"
+    click E href "#file-upload-workflow"
+    
+    style A fill:#e3f2fd
+    style B fill:#fff3e0
+    style C fill:#fff3e0
+    style D fill:#fff3e0
+    style E fill:#fff3e0
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="main-migration-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="main-migration-workflow">Main Migration Workflow</h2>
+<p>This is the primary workflow executed when running <code>data_2_dasch.py</code>. It orchestrates all other workflows.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    Start([Start Script]) --&gt; ParseArgs[Parse Command Line Arguments]
+    ParseArgs --&gt; LoadConfig[Load Environment Configuration]
+    LoadConfig --&gt; ValidateConfig{Configuration Valid?}
+    
+    ValidateConfig --&gt;|No| ConfigError[Exit with Configuration Error]
+    ValidateConfig --&gt;|Yes| SetMode[Determine Processing Mode]
+    
+    SetMode --&gt; ModeChoice{Processing Mode?}
+    ModeChoice --&gt;|all_data| FetchAll[Fetch All Items from Collection]
+    ModeChoice --&gt;|sample_data| FetchSample[Fetch Random Sample]
+    ModeChoice --&gt;|test_data| FetchTest[Fetch Test Data]
+    
+    FetchAll --&gt; Authenticate
+    FetchSample --&gt; Authenticate
+    FetchTest --&gt; Authenticate
+    
+    Authenticate[Authenticate with DSP] --&gt; AuthCheck{Authentication Successful?}
+    AuthCheck --&gt;|No| AuthError[Exit with Auth Error]
+    AuthCheck --&gt;|Yes| GetProject[Get Project Information]
+    
+    GetProject --&gt; GetLists[Fetch DSP Lists]
+    GetLists --&gt; StartProcessing[Start Item Processing Loop]
+    
+    StartProcessing --&gt; MoreItems{More Items to Process?}
+    MoreItems --&gt;|No| Complete[Migration Complete]
+    MoreItems --&gt;|Yes| ProcessItem[Process Next Item]
+    
+    ProcessItem --&gt; ExtractID[Extract Item Identifier]
+    ExtractID --&gt; CheckExists[Check if Resource Exists in DSP]
+    
+    CheckExists --&gt; ExistsChoice{Resource Exists?}
+    ExistsChoice --&gt;|No| CreateFlow[Create New Resource]
+    ExistsChoice --&gt;|Yes| SyncFlow[Synchronize Existing Resource]
+    
+    CreateFlow --&gt; TransformData[Transform Omeka Data to DSP Format]
+    TransformData --&gt; CreateResource[Create Resource in DSP]
+    CreateResource --&gt; ProcessMedia[Process Associated Media]
+    
+    SyncFlow --&gt; CompareData[Compare Omeka vs DSP Data]
+    CompareData --&gt; HasChanges{Data Has Changed?}
+    HasChanges --&gt;|No| ProcessMedia
+    HasChanges --&gt;|Yes| UpdateResource[Update Resource in DSP]
+    UpdateResource --&gt; ProcessMedia
+    
+    ProcessMedia --&gt; MediaComplete{All Media Processed?}
+    MediaComplete --&gt;|No| ProcessNextMedia[Process Next Media Item]
+    MediaComplete --&gt;|Yes| LogProgress[Log Processing Results]
+    
+    ProcessNextMedia --&gt; UploadMedia[Upload Media to DSP]
+    UploadMedia --&gt; LinkMedia[Link Media to Parent Resource]
+    LinkMedia --&gt; MediaComplete
+    
+    LogProgress --&gt; MoreItems
+    
+    Complete --&gt; GenerateReport[Generate Final Report]
+    GenerateReport --&gt; End([End Script])
+    
+    ConfigError --&gt; End
+    AuthError --&gt; End
+    
+    style Start fill:#e8f5e8
+    style End fill:#e8f5e8
+    style ProcessItem fill:#fff3e0
+    style CreateFlow fill:#e3f2fd
+    style SyncFlow fill:#fff8e1
+    style ProcessMedia fill:#f3e5f5
+    style Complete fill:#e8f5e8
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<section id="processing-mode-details" class="level3">
+<h3 class="anchored" data-anchor-id="processing-mode-details">Processing Mode Details</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    subgraph "Processing Modes"
+        A[all_data] --&gt; A1[Process entire collection]
+        B[sample_data] --&gt; B1[Process random sample]
+        C[test_data] --&gt; C1[Process predefined test items]
+    end
+    
+    A1 --&gt; Config1[Uses ITEM_SET_ID from config]
+    B1 --&gt; Config2[Uses NUMBER_RANDOM_OBJECTS variable]
+    C1 --&gt; Config3[Uses TEST_DATA array]
+    
+    style A fill:#e3f2fd
+    style B fill:#fff8e1
+    style C fill:#ffebee
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="data-extraction-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="data-extraction-workflow">Data Extraction Workflow</h2>
+<p>Handles the extraction of data from the Omeka API, implemented primarily in <code>process_data_from_omeka.py</code>.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant Script as Main Script
+    participant Extractor as Data Extractor
+    participant OmekaAPI as Omeka API
+    participant Cache as Local Cache
+    
+    Script-&gt;&gt;Extractor: get_items_from_collection(collection_id)
+    
+    loop Paginated Request
+        Extractor-&gt;&gt;OmekaAPI: GET /items?item_set_id={id}&amp;page={n}
+        OmekaAPI-&gt;&gt;Extractor: Items page + pagination links
+        Extractor-&gt;&gt;Cache: Store items temporarily
+    end
+    
+    Extractor-&gt;&gt;Script: Return all collected items
+    
+    loop For each item
+        Script-&gt;&gt;Extractor: get_media(item_id)
+        
+        loop Paginated Media Request
+            Extractor-&gt;&gt;OmekaAPI: GET /media?item_id={id}&amp;page={n}
+            OmekaAPI-&gt;&gt;Extractor: Media page + pagination links
+        end
+        
+        Extractor-&gt;&gt;Script: Return media for item
+        
+        Script-&gt;&gt;Extractor: extract_property(properties, prop_id)
+        Extractor-&gt;&gt;Script: Return extracted property value
+        
+        Script-&gt;&gt;Extractor: extract_combined_values(properties)
+        Extractor-&gt;&gt;Script: Return combined values array
+    end
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<section id="property-extraction-details" class="level3">
+<h3 class="anchored" data-anchor-id="property-extraction-details">Property Extraction Details</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A[Raw Omeka Property Array] --&gt; B[extract_property Function]
+    B --&gt; C{Property ID Match?}
+    C --&gt;|No| D[Try Next Property]
+    C --&gt;|Yes| E{Request Type?}
+    
+    E --&gt;|as_uri| F[Return formatted URI link]
+    E --&gt;|only_label| G[Return label only]
+    E --&gt;|default| H[Return @value]
+    
+    D --&gt; I{More Properties?}
+    I --&gt;|Yes| C
+    I --&gt;|No| J[Return Empty String]
+    
+    F --&gt; K[Formatted Result]
+    G --&gt; K
+    H --&gt; K
+    J --&gt; K
+    
+    style A fill:#e1f5fe
+    style K fill:#e8f5e8
+    style B fill:#fff3e0
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="data-transformation-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="data-transformation-workflow">Data Transformation Workflow</h2>
+<p>Converts Omeka data structures into DSP-compatible formats, primarily handled by the <code>construct_payload()</code> function.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A[Omeka Item Data] --&gt; B[construct_payload Function]
+    B --&gt; C[Initialize Base Payload Structure]
+    
+    C --&gt; D[Set Context &amp; Type Information]
+    D --&gt; E[Extract Basic Metadata]
+    
+    E --&gt; F[Process Dublin Core Properties]
+    F --&gt; F1[dcterms:title → rdfs:label]
+    F --&gt; F2[dcterms:identifier → identifier]
+    F --&gt; F3[dcterms:description → description]
+    F --&gt; F4[dcterms:creator → creator]
+    F --&gt; F5[dcterms:date → date]
+    
+    F1 --&gt; G[Process Custom Properties]
+    F2 --&gt; G
+    F3 --&gt; G
+    F4 --&gt; G
+    F5 --&gt; G
+    
+    G --&gt; G1[dcterms:subject → subject]
+    G --&gt; G2[dcterms:language → language]
+    G --&gt; G3[dcterms:rights → rights]
+    G --&gt; G4[dcterms:license → license]
+    
+    G1 --&gt; H[Map List Values]
+    G2 --&gt; H
+    G3 --&gt; H
+    G4 --&gt; H
+    
+    H --&gt; I{Resource Type?}
+    I --&gt;|Object| J[Add Object-Specific Fields]
+    I --&gt;|Media| K[Add Media-Specific Fields]
+    
+    J --&gt; L[Add Collection References]
+    K --&gt; M[Add File Information]
+    
+    L --&gt; N[Validate Payload Structure]
+    M --&gt; N
+    
+    N --&gt; O{Validation Passed?}
+    O --&gt;|No| P[Log Validation Errors]
+    O --&gt;|Yes| Q[Return Complete Payload]
+    
+    P --&gt; R[Return Null/Error]
+    
+    style A fill:#e1f5fe
+    style Q fill:#e8f5e8
+    style R fill:#ffebee
+    style B fill:#fff3e0
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<section id="list-value-mapping" class="level3">
+<h3 class="anchored" data-anchor-id="list-value-mapping">List Value Mapping</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant T as Transformer
+    participant M as Mapper
+    participant L as DSP Lists
+    
+    T-&gt;&gt;M: extract_listvalueiri_from_value(value, list_label, lists)
+    M-&gt;&gt;L: Find list by label
+    L-&gt;&gt;M: Return list structure
+    
+    loop For each list node
+        M-&gt;&gt;L: Check if node label matches value
+        L-&gt;&gt;M: Return match result
+    end
+    
+    alt Match found
+        M-&gt;&gt;T: Return node IRI
+    else No match found
+        M-&gt;&gt;T: Return null
+        T-&gt;&gt;T: Log unmapped value warning
+    end
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="synchronization-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="synchronization-workflow">Synchronization Workflow</h2>
+<p>Handles incremental updates by comparing existing DSP data with current Omeka data.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A[Resource Exists in DSP] --&gt; B[get_full_resource]
+    B --&gt; C[Extract Current DSP Values]
+    C --&gt; D[Extract Current Omeka Values]
+    
+    D --&gt; E[check_values Function]
+    E --&gt; F[Compare Each Property]
+    
+    F --&gt; G{Property Type?}
+    G --&gt;|Single Value| H[sync_value]
+    G --&gt;|Array Value| I[sync_array_value]
+    
+    H --&gt; J[Compare Values]
+    J --&gt; K{Values Different?}
+    K --&gt;|No| L[No Action Needed]
+    K --&gt;|Yes| M[Queue Update Operation]
+    
+    I --&gt; N[Compare Arrays]
+    N --&gt; O[Calculate Additions &amp; Deletions]
+    O --&gt; P[Queue Create/Delete Operations]
+    
+    L --&gt; Q[Process Next Property]
+    M --&gt; Q
+    P --&gt; Q
+    
+    Q --&gt; R{More Properties?}
+    R --&gt;|Yes| F
+    R --&gt;|No| S[Execute Queued Operations]
+    
+    S --&gt; T[Apply Updates via DSP API]
+    T --&gt; U[Log Synchronization Results]
+    
+    style A fill:#e1f5fe
+    style U fill:#e8f5e8
+    style E fill:#fff3e0
+    style S fill:#fff8e1
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<section id="array-value-synchronization-details" class="level3">
+<h3 class="anchored" data-anchor-id="array-value-synchronization-details">Array Value Synchronization Details</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    A[DSP Array: a,b,c] --&gt; C[Comparison Logic]
+    B[Omeka Array: b,c,d] --&gt; C
+    
+    C --&gt; D[Calculate Differences]
+    D --&gt; E[To Create: d]
+    D --&gt; F[To Delete: a]
+    D --&gt; G[Unchanged: b,c]
+    
+    E --&gt; H[Create Operations]
+    F --&gt; I[Delete Operations]
+    G --&gt; J[No Action]
+    
+    H --&gt; K[Execute via DSP API]
+    I --&gt; K
+    
+    style C fill:#fff3e0
+    style K fill:#e8f5e8
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="file-upload-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="file-upload-workflow">File Upload Workflow</h2>
+<p>Manages the transfer of media files from Omeka to DSP storage.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant Script as Main Script
+    participant Uploader as File Uploader
+    participant OmekaAPI as Omeka API
+    participant TempStorage as Temporary Storage
+    participant DSPAPI as DSP API
+    participant DSPStorage as DSP File Storage
+    
+    Script-&gt;&gt;Uploader: upload_file_from_url(file_url, token)
+    
+    Uploader-&gt;&gt;OmekaAPI: GET file_url
+    OmekaAPI-&gt;&gt;Uploader: File stream
+    
+    Uploader-&gt;&gt;TempStorage: Write to temporary file
+    TempStorage-&gt;&gt;Uploader: Temporary file path
+    
+    alt ZIP file
+        Uploader-&gt;&gt;Uploader: Create ZIP archive
+    end
+    
+    Uploader-&gt;&gt;DSPAPI: POST /v2/files (multipart upload)
+    DSPAPI-&gt;&gt;DSPStorage: Store file
+    DSPStorage-&gt;&gt;DSPAPI: File stored confirmation
+    DSPAPI-&gt;&gt;Uploader: Internal filename
+    
+    Uploader-&gt;&gt;TempStorage: Clean up temporary files
+    Uploader-&gt;&gt;Script: Return internal filename
+    
+    Script-&gt;&gt;Script: Update resource payload with filename
+    Script-&gt;&gt;DSPAPI: Create/Update resource with file reference
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<section id="media-type-classification" class="level3">
+<h3 class="anchored" data-anchor-id="media-type-classification">Media Type Classification</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TD
+    A[Media MIME Type] --&gt; B[specify_mediaclass Function]
+    
+    B --&gt; C{MIME Type?}
+    C --&gt;|image/*| D[sgb_MEDIA_IMAGE]
+    C --&gt;|application/pdf| E[sgb_MEDIA_ARCHIV]
+    C --&gt;|text/*| E
+    C --&gt;|application/zip| E
+    C --&gt;|Other| F[sgb_MEDIA_ARCHIV - Default]
+    
+    D --&gt; G[StillImageFileValue]
+    E --&gt; H[ArchiveFileValue]
+    F --&gt; H
+    
+    G --&gt; I[Configure Image-specific Fields]
+    H --&gt; J[Configure Archive-specific Fields]
+    
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style G fill:#e3f2fd
+    style H fill:#f3e5f5
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="error-handling-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="error-handling-workflow">Error Handling Workflow</h2>
+<p>Comprehensive error handling and recovery mechanisms throughout the system.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A[Operation Attempted] --&gt; B{Operation Successful?}
+    
+    B --&gt;|Yes| C[Continue Processing]
+    B --&gt;|No| D[Capture Error Details]
+    
+    D --&gt; E[Log Error Information]
+    E --&gt; F{Error Type?}
+    
+    F --&gt;|Authentication Error| G[Re-authenticate]
+    F --&gt;|Rate Limit Error| H[Wait and Retry]
+    F --&gt;|Network Error| I[Retry with Backoff]
+    F --&gt;|Data Validation Error| J[Skip Item, Log Warning]
+    F --&gt;|Critical System Error| K[Fail Fast]
+    
+    G --&gt; L{Re-auth Successful?}
+    L --&gt;|Yes| M[Retry Original Operation]
+    L --&gt;|No| K
+    
+    H --&gt; N[Sleep for Rate Limit Period]
+    N --&gt; M
+    
+    I --&gt; O[Exponential Backoff Delay]
+    O --&gt; P{Max Retries Reached?}
+    P --&gt;|No| M
+    P --&gt;|Yes| Q[Mark as Failed, Continue]
+    
+    J --&gt; Q
+    K --&gt; R[Exit with Error Code]
+    
+    M --&gt; A
+    Q --&gt; S[Continue with Next Item]
+    C --&gt; S
+    
+    S --&gt; T[Processing Complete]
+    
+    style A fill:#e1f5fe
+    style T fill:#e8f5e8
+    style K fill:#ffebee
+    style R fill:#ffebee
+    style E fill:#fff8e1
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="api-utility-workflows" class="level2">
+<h2 class="anchored" data-anchor-id="api-utility-workflows">API Utility Workflows</h2>
+<p>Supporting scripts that prepare the environment and fetch configuration data.</p>
+<section id="project-information-workflow-api_get_project.py" class="level3">
+<h3 class="anchored" data-anchor-id="project-information-workflow-api_get_project.py">Project Information Workflow (<code>api_get_project.py</code>)</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant Script as api_get_project.py
+    participant DSPAPI as DSP API
+    participant FileSystem as Local Storage
+    
+    Script-&gt;&gt;Script: Load PROJECT_SHORT_CODE from env
+    Script-&gt;&gt;Script: Load API_HOST from env
+    
+    Script-&gt;&gt;DSPAPI: GET /admin/projects/shortcode/{shortcode}
+    
+    alt Success
+        DSPAPI-&gt;&gt;Script: Project data (JSON)
+        Script-&gt;&gt;FileSystem: Save to ../data/project_data.json
+        Script-&gt;&gt;Script: Log success message
+    else Failure
+        DSPAPI-&gt;&gt;Script: Error response
+        Script-&gt;&gt;Script: Log error details
+    end
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="lists-retrieval-workflow-api_get_lists.py" class="level3">
+<h3 class="anchored" data-anchor-id="lists-retrieval-workflow-api_get_lists.py">Lists Retrieval Workflow (<code>api_get_lists.py</code>)</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant Script as api_get_lists.py
+    participant DSPAPI as DSP API
+    participant FileSystem as Local Storage
+    
+    Script-&gt;&gt;Script: Set project_iri (hardcoded)
+    Script-&gt;&gt;Script: URL encode project IRI
+    
+    Script-&gt;&gt;DSPAPI: GET /admin/lists/?projectIri={encoded_iri}
+    
+    alt Success
+        DSPAPI-&gt;&gt;Script: Lists summary (JSON)
+        Script-&gt;&gt;FileSystem: Save to ../data/data_lists.json
+        Script-&gt;&gt;Script: Log success message
+    else Failure
+        DSPAPI-&gt;&gt;Script: Error response
+        Script-&gt;&gt;Script: Log error details
+    end
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="detailed-lists-workflow-api_get_lists_detailed.py" class="level3">
+<h3 class="anchored" data-anchor-id="detailed-lists-workflow-api_get_lists_detailed.py">Detailed Lists Workflow (<code>api_get_lists_detailed.py</code>)</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A[Start Script] --&gt; B[Load data_lists.json]
+    B --&gt; C{File Loaded?}
+    C --&gt;|No| D[Exit with Error]
+    C --&gt;|Yes| E[Extract List IDs]
+    
+    E --&gt; F[Initialize Empty Results Array]
+    F --&gt; G[Process Next List ID]
+    
+    G --&gt; H[URL Encode List ID]
+    H --&gt; I["GET /v2/lists/{encoded_id}"]
+    
+    I --&gt; J{Request Successful?}
+    J --&gt;|Yes| K[Add to Results Array]
+    J --&gt;|No| L[Log Error, Continue]
+    
+    K --&gt; M{More Lists?}
+    L --&gt; M
+    M --&gt;|Yes| G
+    M --&gt;|No| N[Save All Results to data_lists_detail.json]
+    
+    N --&gt; O[Log Completion]
+    O --&gt; P[End Script]
+    D --&gt; P
+    
+    style A fill:#e8f5e8
+    style P fill:#e8f5e8
+    style B fill:#fff3e0
+    style I fill:#e3f2fd
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="workflow-integration" class="level2">
+<h2 class="anchored" data-anchor-id="workflow-integration">Workflow Integration</h2>
+<p>All workflows integrate through the main processing pipeline, working together to provide a robust, fault-tolerant data migration system that can handle various scenarios from initial bulk migration to ongoing incremental synchronization:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TB
+    subgraph "Initialization Phase"
+        A1[Configuration Loading]
+        A2[Authentication]
+        A3[Project &amp; Lists Retrieval]
+    end
+    
+    subgraph "Processing Phase"
+        B1[Data Extraction]
+        B2[Data Transformation]
+        B3[Synchronization Check]
+        B4[File Upload]
+    end
+    
+    subgraph "Completion Phase"
+        C1[Result Logging]
+        C2[Cleanup]
+        C3[Report Generation]
+    end
+    
+    A1 --&gt; A2
+    A2 --&gt; A3
+    A3 --&gt; B1
+    
+    B1 --&gt; B2
+    B2 --&gt; B3
+    B3 --&gt; B4
+    B4 --&gt; B1
+    
+    B4 --&gt; C1
+    C1 --&gt; C2
+    C2 --&gt; C3
+    
+    style A1 fill:#e1f5fe
+    style B1 fill:#fff3e0
+    style C1 fill:#e8f5e8
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+
+
+</section>
+
+<a onclick="return window.scrollTo(0,0),!1;
+" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">window.document.addEventListener("DOMContentLoaded",function(N){const T="\uE9CB",w=new window.AnchorJS;w.options={placement:"right",icon:T},w.add(".anchored");const M=o=>{for(const t of o.classList)if(t.startsWith("code-annotation-"))return!0;return!1},b=function(o){const t=o.trigger;t.blur(),t.classList.add("code-copy-button-checked");var e=t.getAttribute("title");t.setAttribute("title","Copied!");let n;window.bootstrap&&(t.setAttribute("data-bs-toggle","tooltip"),t.setAttribute("data-bs-placement","left"),t.setAttribute("data-bs-title","Copied!"),n=new bootstrap.Tooltip(t,{trigger:"manual",customClass:"code-copy-button-tooltip",offset:[0,-8]}),n.show()),setTimeout(function(){n&&(n.hide(),t.removeAttribute("data-bs-title"),t.removeAttribute("data-bs-toggle"),t.removeAttribute("data-bs-placement")),t.setAttribute("title",e),t.classList.remove("code-copy-button-checked")},1e3),o.clearSelection()},y=function(o){const t=o.previousElementSibling.cloneNode(!0);for(const e of t.children)M(e)&&e.remove();return t.innerText};new window.ClipboardJS(".code-copy-button:not([data-in-quarto-modal])",{text:y}).on("success",b),window.document.getElementById("quarto-embedded-source-code-modal")&&new window.ClipboardJS(".code-copy-button[data-in-quarto-modal]",{text:y,container:window.document.getElementById("quarto-embedded-source-code-modal")}).on("success",b);for(var q=new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//),I=new RegExp(/^mailto:/),k=new RegExp("https://dokumentation.stadtgeschichtebasel.ch/omeka2dsp/"),H=o=>k.test(o)||q.test(o)||I.test(o),v=window.document.querySelectorAll("a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)"),r=0;r<v.length;r++){const o=v[r];H(o.href)||o.dataset.originalHref!==void 0&&(o.href=o.dataset.originalHref)}function p(o,t,e,n){const i={allowHTML:!0,maxWidth:500,delay:100,arrow:!1,appendTo:function(l){return l.parentElement},interactive:!0,interactiveBorder:10,theme:"quarto",placement:"bottom-start"};t&&(i.content=t),e&&(i.onTrigger=e),n&&(i.onUntrigger=n),window.tippy(o,i)}const E=window.document.querySelectorAll('a[role="doc-noteref"]');for(var r=0;r<E.length;r++){const t=E[r];p(t,function(){let e=t.getAttribute("data-footnote-href")||t.getAttribute("href");try{e=new URL(e).hash}catch{}const n=e.replace(/^#\/?/,""),i=window.document.getElementById(n);return i?i.innerHTML:""})}const A=window.document.querySelectorAll("a.quarto-xref"),g=(o,t)=>{const e=n=>{if(n.classList.remove("page-full","page-columns"),n.children)for(const i of n.children)e(i)};if(e(t),o===null||o.startsWith("sec-")){const n=document.createElement("div");if(t.children&&t.children.length>2){n.appendChild(t.children[0].cloneNode(!0));for(let i=1;i<t.children.length;i++){const l=t.children[i];if(!(l.tagName==="P"&&l.innerText==="")){n.appendChild(l.cloneNode(!0));break}}return window.Quarto?.typesetMath&&window.Quarto.typesetMath(n),n.innerHTML}else return window.Quarto?.typesetMath&&window.Quarto.typesetMath(t),t.innerHTML}else{const n=t.querySelector("a.anchorjs-link");return n&&n.remove(),window.Quarto?.typesetMath&&window.Quarto.typesetMath(t),t.classList.contains("callout")?t.outerHTML:t.innerHTML}};for(var r=0;r<A.length;r++){const t=A[r];p(t,void 0,function(e){e.disable();let n=t.getAttribute("href"),i;if(n.startsWith("#"))i=n;else try{i=new URL(n).hash}catch{}if(i){const l=i.replace(/^#\/?/,""),c=window.document.getElementById(l);if(c!==null)try{const s=g(l,c.cloneNode(!0));e.setContent(s)}finally{e.enable(),e.show()}else fetch(n.split("#")[0]).then(s=>s.text()).then(s=>{const u=new DOMParser().parseFromString(s,"text/html").getElementById(l);if(u!==null){const a=g(l,u);e.setContent(a)}}).finally(()=>{e.enable(),e.show()})}else fetch(n).then(l=>l.text()).then(l=>{const d=new DOMParser().parseFromString(l,"text/html").querySelector("main.content");if(d!==null){d.children.length>0&&d.children[0].tagName==="HEADER"&&d.children[0].remove();const f=g(null,d);e.setContent(f)}}).finally(()=>{e.enable(),e.show()})},function(e){})}let m;const B=(o,t)=>{let e='data-code-cell="'+o+'"',n='data-code-annotation="'+t+'"';return"span["+e+"]["+n+"]"},L=o=>{const t=window.document,e=o.getAttribute("data-target-cell"),n=o.getAttribute("data-target-annotation"),c=window.document.querySelector(B(e,n)).getAttribute("data-code-lines").split(",").map(u=>e+"-"+u);let s=null,d=null,f=null;if(c.length>0){const u=window.document.getElementById(c[0]);if(s=u.offsetTop,d=u.offsetHeight,f=u.parentElement.parentElement,c.length>1){const a=window.document.getElementById(c[c.length-1]);d=a.offsetTop+a.offsetHeight-s}if(s!==null&&d!==null&&f!==null){let a=window.document.getElementById("code-annotation-line-highlight");a===null&&(a=window.document.createElement("div"),a.setAttribute("id","code-annotation-line-highlight"),a.style.position="absolute",f.appendChild(a)),a.style.top=s-2+"px",a.style.height=d+4+"px",a.style.left=0;let h=window.document.getElementById("code-annotation-line-highlight-gutter");h===null&&(h=window.document.createElement("div"),h.setAttribute("id","code-annotation-line-highlight-gutter"),h.style.position="absolute",window.document.getElementById(e).querySelector(".code-annotation-gutter").appendChild(h)),h.style.top=s-2+"px",h.style.height=d+4+"px"}m=o}},C=()=>{["code-annotation-line-highlight","code-annotation-line-highlight-gutter"].forEach(t=>{const e=window.document.getElementById(t);e&&e.remove()}),m=void 0};window.addEventListener("resize",D(()=>{elRect=void 0,m&&L(m)},10));function D(o,t){let e=!1,n;return(...i)=>{e?(n&&clearTimeout(n),n=setTimeout(()=>{o.apply(this,i),n=e=!1},t)):(o.apply(this,i),e=!0)}}const R=window.document.querySelectorAll("dt[data-target-cell]");for(const o of R)o.addEventListener("click",t=>{const e=t.target;if(e!==m){C();const n=window.document.querySelector("dt[data-target-cell].code-annotation-active");n&&n.classList.remove("code-annotation-active"),L(e),e.classList.add("code-annotation-active")}else C(),e.classList.remove("code-annotation-active")});const x=o=>{const t=o.parentElement;if(t){const e=t.dataset.cites;return e?{el:o,cites:e.split(" ")}:x(o.parentElement)}else return};for(var S=window.document.querySelectorAll('a[role="doc-biblioref"]'),r=0;r<S.length;r++){const t=S[r],e=x(t);e&&p(e.el,function(){var n=window.document.createElement("div");return e.cites.forEach(function(i){var l=window.document.createElement("div");l.classList.add("hanging-indent"),l.classList.add("csl-entry");var c=window.document.getElementById("ref-"+i);c&&(l.innerHTML=c.innerHTML),n.appendChild(l)}),n.innerHTML})}});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../docs/architecture/index.html" class="pagination-link" aria-label="System Architecture">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">System Architecture</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../docs/api/index.html" class="pagination-link" aria-label="API Reference">
+        <span class="nav-page-text">API Reference</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-md-none d-sm-block"><ul><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/edit/main/docs/workflows/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

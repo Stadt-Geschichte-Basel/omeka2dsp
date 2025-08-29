@@ -1,0 +1,1390 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.33">
+
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+
+
+<title>API Reference Documentation – omeka2dsp</title>
+<style>code{white-space:pre-wrap}span.smallcaps{font-variant:small-caps}div.columns{gap:min(4vw,1.5em);display:flex}div.column{flex:auto;overflow-x:auto}div.hanging-indent{text-indent:-1.5em;margin-left:1.5em}ul.task-list{list-style:none}ul.task-list li input[type=checkbox]{vertical-align:middle;width:.8em;margin:0 .8em .2em -1em}html{-webkit-text-size-adjust:100%}pre>code.sourceCode{white-space:pre;position:relative}pre>code.sourceCode>span{line-height:1.25;display:inline-block}pre>code.sourceCode>span:empty{height:1.2em}.sourceCode{overflow:visible}code.sourceCode>span{color:inherit;-webkit-text-decoration:inherit;text-decoration:inherit}div.sourceCode{margin:1em 0}pre.sourceCode{margin:0}@media screen{div.sourceCode{overflow:auto}}@media print{pre>code.sourceCode{white-space:pre-wrap}pre>code.sourceCode>span{text-indent:-5em;padding-left:5em}}pre.numberSource code{counter-reset:source-line 0}pre.numberSource code>span{counter-increment:source-line;position:relative;left:-4em}pre.numberSource code>span>a:first-child:before{content:counter(source-line);text-align:right;vertical-align:baseline;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-khtml-user-select:none;border:none;width:4em;padding:0 4px;display:inline-block;position:relative;left:-1em}pre.numberSource{margin-left:3em;padding-left:4px}@media screen{pre>code.sourceCode>span>a:first-child:before{text-decoration:underline}}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../docs/guides/installation.html" rel="next">
+<link href="../../docs/workflows/index.html" rel="prev">
+<link href="../../android-chrome-512x512.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-6527f0f6f1a49fae8767c07d481ee51a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": true,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="mermaid-theme" content="neutral">
+<script src="../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="API Reference Documentation – omeka2dsp">
+<meta property="og:description" content="">
+<meta property="og:site_name" content="omeka2dsp">
+<meta name="twitter:title" content="API Reference Documentation – omeka2dsp">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="floating nav-fixed nav-sidebar quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="fixed-top headroom">
+    <nav class="navbar navbar-expand-lg" data-bs-theme="dark">
+      <div class="container-fluid navbar-container">
+      <div class="mx-auto navbar-brand-container">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../android-chrome-512x512.webp" alt="" class="navbar-logo" fetchpriority="high" decoding="async" width="512" height="512">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">omeka2dsp</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="me-auto navbar-nav navbar-nav-scroll">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../index.html" aria-current="page"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-documentation" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Documentation</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-documentation">    
+        <li>
+    <a class="dropdown-item" href="../../docs/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../docs/architecture/index.html">
+ <span class="dropdown-text">Architecture</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/workflows/index.html">
+ <span class="dropdown-text">Workflows</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/api/index.html">
+ <span class="dropdown-text">API Reference</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/datamodel/index.html">
+ <span class="dropdown-text">Data Model</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/installation.html">
+ <span class="dropdown-text">Installation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/configuration.html">
+ <span class="dropdown-text">Configuration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/usage.html">
+ <span class="dropdown-text">Usage</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/development.html">
+ <span class="dropdown-text">Development</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/troubleshooting.html">
+ <span class="dropdown-text">Troubleshooting</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../project-management/about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/" title="" class="px-1 quarto-navigation-tool" aria-label=""><i class="bi bi-github"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="btn quarto-btn-toggle" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <a class="flex-grow-1 no-decor" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">      
+          <h1 class="quarto-secondary-nav-title">API Reference Documentation</h1>
+        </a>     
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="page-columns page-layout-article page-navbar page-rows-contents quarto-container">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="collapse collapse-horizontal floating overflow-auto quarto-sidebar-collapse-item sidebar sidebar-navigation">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">omeka2dsp</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CHANGELOG.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Changelog</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CODE_OF_CONDUCT.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Code of Conduct</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CONTRIBUTING.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contributing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../LICENSE-CCBY.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">License (Data)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../LICENSE-AGPL.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">License (Code)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../SECURITY.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Security</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Documentation</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/architecture/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">System Architecture</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/workflows/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Workflows</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/api/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">API Reference</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Guides</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/installation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installation &amp; Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/configuration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Configuration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/usage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Usage Guide</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/development.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Development Guide</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/troubleshooting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Troubleshooting</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../project-management/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../project-management/communication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Communication</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../project-management/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">People</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="margin-sidebar sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#module-overview" id="toc-module-overview" class="nav-link active" data-scroll-target="#module-overview">Module Overview</a></li>
+  <li><a href="#data_2_dasch.py" id="toc-data_2_dasch.py" class="nav-link" data-scroll-target="#data_2_dasch.py">data_2_dasch.py</a>
+  <ul class="collapse">
+  <li><a href="#core-functions" id="toc-core-functions" class="nav-link" data-scroll-target="#core-functions">Core Functions</a></li>
+  <li><a href="#authentication-project-functions" id="toc-authentication-project-functions" class="nav-link" data-scroll-target="#authentication-project-functions">Authentication &amp; Project Functions</a></li>
+  <li><a href="#resource-management-functions" id="toc-resource-management-functions" class="nav-link" data-scroll-target="#resource-management-functions">Resource Management Functions</a></li>
+  <li><a href="#data-extraction-transformation-functions" id="toc-data-extraction-transformation-functions" class="nav-link" data-scroll-target="#data-extraction-transformation-functions">Data Extraction &amp; Transformation Functions</a></li>
+  <li><a href="#synchronization-functions" id="toc-synchronization-functions" class="nav-link" data-scroll-target="#synchronization-functions">Synchronization Functions</a></li>
+  <li><a href="#file-upload-functions" id="toc-file-upload-functions" class="nav-link" data-scroll-target="#file-upload-functions">File Upload Functions</a></li>
+  <li><a href="#utility-functions" id="toc-utility-functions" class="nav-link" data-scroll-target="#utility-functions">Utility Functions</a></li>
+  </ul></li>
+  <li><a href="#process_data_from_omeka.py" id="toc-process_data_from_omeka.py" class="nav-link" data-scroll-target="#process_data_from_omeka.py">process_data_from_omeka.py</a>
+  <ul class="collapse">
+  <li><a href="#core-functions-1" id="toc-core-functions-1" class="nav-link" data-scroll-target="#core-functions-1">Core Functions</a></li>
+  <li><a href="#data-extraction-functions" id="toc-data-extraction-functions" class="nav-link" data-scroll-target="#data-extraction-functions">Data Extraction Functions</a></li>
+  <li><a href="#utility-functions-1" id="toc-utility-functions-1" class="nav-link" data-scroll-target="#utility-functions-1">Utility Functions</a></li>
+  </ul></li>
+  <li><a href="#api_get_project.py" id="toc-api_get_project.py" class="nav-link" data-scroll-target="#api_get_project.py">api_get_project.py</a></li>
+  <li><a href="#api_get_lists.py" id="toc-api_get_lists.py" class="nav-link" data-scroll-target="#api_get_lists.py">api_get_lists.py</a></li>
+  <li><a href="#api_get_lists_detailed.py" id="toc-api_get_lists_detailed.py" class="nav-link" data-scroll-target="#api_get_lists_detailed.py">api_get_lists_detailed.py</a></li>
+  <li><a href="#configuration-constants" id="toc-configuration-constants" class="nav-link" data-scroll-target="#configuration-constants">Configuration Constants</a>
+  <ul class="collapse">
+  <li><a href="#environment-variables" id="toc-environment-variables" class="nav-link" data-scroll-target="#environment-variables">Environment Variables</a></li>
+  <li><a href="#processing-constants" id="toc-processing-constants" class="nav-link" data-scroll-target="#processing-constants">Processing Constants</a></li>
+  </ul></li>
+  <li><a href="#error-handling" id="toc-error-handling" class="nav-link" data-scroll-target="#error-handling">Error Handling</a>
+  <ul class="collapse">
+  <li><a href="#exception-types" id="toc-exception-types" class="nav-link" data-scroll-target="#exception-types">Exception Types</a></li>
+  <li><a href="#logging-configuration" id="toc-logging-configuration" class="nav-link" data-scroll-target="#logging-configuration">Logging Configuration</a></li>
+  <li><a href="#error-recovery-strategies" id="toc-error-recovery-strategies" class="nav-link" data-scroll-target="#error-recovery-strategies">Error Recovery Strategies</a></li>
+  <li><a href="#common-error-scenarios" id="toc-common-error-scenarios" class="nav-link" data-scroll-target="#common-error-scenarios">Common Error Scenarios</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/edit/main/docs/api/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="default quarto-title-block">
+<div class="quarto-title">
+<h1 class="d-lg-block d-none title">API Reference Documentation</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">August 29, 2025</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This document provides comprehensive documentation for all Python modules and functions in the omeka2dsp system.</p>
+<section id="module-overview" class="level2">
+<h2 class="anchored" data-anchor-id="module-overview">Module Overview</h2>
+<p>The omeka2dsp system consists of five main Python modules:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TD
+    A[data_2_dasch.py&lt;br/&gt;Main Migration Script] --&gt; B[process_data_from_omeka.py&lt;br/&gt;Omeka Data Extraction]
+    A --&gt; C[api_get_project.py&lt;br/&gt;DSP Project Info]
+    A --&gt; D[api_get_lists.py&lt;br/&gt;DSP Lists]
+    A --&gt; E[api_get_lists_detailed.py&lt;br/&gt;Detailed List Data]
+
+    click A href "#data_2_dasch.py" "Jump to data_2_dasch.py"
+    click B href "#process_data_from_omeka.py" "Jump to process_data_from_omeka.py"
+    click C href "#api_get_project.py" "Jump to api_get_project.py"
+    click D href "#api_get_lists.py" "Jump to api_get_lists.py"
+    click E href "#api_get_lists_detailed.py" "Jump to api_get_lists_detailed.py"
+    
+    style A fill:#e3f2fd
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style D fill:#f3e5f5
+    style E fill:#f3e5f5
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="data_2_dasch.py" class="level2">
+<h2 class="anchored" data-anchor-id="data_2_dasch.py">data_2_dasch.py</h2>
+<p>The main migration script that orchestrates the entire data transfer process from Omeka to DSP.</p>
+<section id="core-functions" class="level3">
+<h3 class="anchored" data-anchor-id="core-functions">Core Functions</h3>
+<section id="main---none" class="level4">
+<h4 class="anchored" data-anchor-id="main---none"><code>main() -&gt; None</code></h4>
+<p><strong>Purpose</strong>: Entry point that orchestrates the entire migration process.</p>
+<p><strong>Workflow</strong>:</p>
+<ol type="1">
+<li>Parse command-line arguments for processing mode</li>
+<li>Fetch and filter data based on mode (all_data, sample_data, test_data)</li>
+<li>Authenticate with DSP and retrieve project information</li>
+<li>Process each item: create new or synchronize existing resources</li>
+<li>Handle associated media files</li>
+</ol>
+<p><strong>Parameters</strong>: None (uses command-line arguments)</p>
+<p><strong>Returns</strong>: None</p>
+<p><strong>Example Usage</strong>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/data_2_dasch.py <span class="at">-m</span> sample_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="parse_arguments---namespace" class="level4">
+<h4 class="anchored" data-anchor-id="parse_arguments---namespace"><code>parse_arguments() -&gt; Namespace</code></h4>
+<p><strong>Purpose</strong>: Parses command-line arguments for processing mode selection.</p>
+<p><strong>Parameters</strong>: None (reads from sys.argv)</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>Namespace</code>: Contains parsed arguments with <code>mode</code> attribute</li>
+</ul>
+<p><strong>Available Modes</strong>:</p>
+<ul>
+<li><code>all_data</code>: Process entire collection</li>
+<li><code>sample_data</code>: Process random sample (configurable size)</li>
+<li><code>test_data</code>: Process predefined test dataset</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>args <span class="op">=</span> parse_arguments()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(args.mode)  <span class="co"># 'sample_data'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="authentication-project-functions" class="level3">
+<h3 class="anchored" data-anchor-id="authentication-project-functions">Authentication &amp; Project Functions</h3>
+<section id="loginemail-str-password-str---str" class="level4">
+<h4 class="anchored" data-anchor-id="loginemail-str-password-str---str"><code>login(email: str, password: str) -&gt; str</code></h4>
+<p><strong>Purpose</strong>: Authenticates with DSP API and retrieves JWT token.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>email</code>: DSP user email address</li>
+<li><code>password</code>: DSP user password</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>str</code>: JWT authentication token</li>
+</ul>
+<p><strong>Raises</strong>:</p>
+<ul>
+<li><code>requests.RequestException</code>: On authentication failure</li>
+<li><code>KeyError</code>: If response format is unexpected</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>token <span class="op">=</span> login(<span class="st">"user@example.com"</span>, <span class="st">"password"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="get_project---str" class="level4">
+<h4 class="anchored" data-anchor-id="get_project---str"><code>get_project() -&gt; str</code></h4>
+<p><strong>Purpose</strong>: Retrieves project information from DSP API using project shortcode.</p>
+<p><strong>Parameters</strong>: None (uses <code>PROJECT_SHORT_CODE</code> environment variable)</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>str</code>: Project IRI/identifier</li>
+</ul>
+<p><strong>Side Effects</strong>: Logs project information</p>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>project_iri <span class="op">=</span> get_project()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Returns: "http://rdfh.ch/projects/IbwoJlv8SEa6L13vXyCzMg"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="get_listsproject_iri-str---list" class="level4">
+<h4 class="anchored" data-anchor-id="get_listsproject_iri-str---list"><code>get_lists(project_iri: str) -&gt; list</code></h4>
+<p><strong>Purpose</strong>: Retrieves all list configurations for a DSP project.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>project_iri</code>: The project IRI to fetch lists for</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>list</code>: Array of complete list objects with nodes and values</li>
+</ul>
+<p><strong>Process</strong>:</p>
+<ol type="1">
+<li>Fetches list summary from <code>/admin/lists/</code></li>
+<li>For each list, fetches detailed information from <code>/v2/lists/{id}</code></li>
+<li>Returns complete list data for mapping operations</li>
+</ol>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>lists <span class="op">=</span> get_lists(project_iri)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> list_obj <span class="kw">in</span> lists:</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"List: </span><span class="sc">{</span>list_obj[<span class="st">'listinfo'</span>][<span class="st">'name'</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="resource-management-functions" class="level3">
+<h3 class="anchored" data-anchor-id="resource-management-functions">Resource Management Functions</h3>
+<section id="get_full_resourcetoken-str-resource_iri-str---dict" class="level4">
+<h4 class="anchored" data-anchor-id="get_full_resourcetoken-str-resource_iri-str---dict"><code>get_full_resource(token: str, resource_iri: str) -&gt; dict</code></h4>
+<p><strong>Purpose</strong>: Retrieves complete resource data from DSP API.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>token</code>: JWT authentication token</li>
+<li><code>resource_iri</code>: URL-encoded resource IRI</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>dict</code>: Complete resource JSON object</li>
+</ul>
+<p><strong>Usage</strong>: Used for synchronization to compare existing DSP data with Omeka data.</p>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>resource_data <span class="op">=</span> get_full_resource(token, urllib.parse.quote(resource_iri, safe<span class="op">=</span><span class="st">''</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="get_resource_by_idtoken-str-object_class-str-identifier-str---dict" class="level4">
+<h4 class="anchored" data-anchor-id="get_resource_by_idtoken-str-object_class-str-identifier-str---dict"><code>get_resource_by_id(token: str, object_class: str, identifier: str) -&gt; dict</code></h4>
+<p><strong>Purpose</strong>: Finds a resource by its identifier using SPARQL query.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>token</code>: JWT authentication token</li>
+<li><code>object_class</code>: DSP resource class (e.g., “sgb_OBJECT”)</li>
+<li><code>identifier</code>: Unique identifier to search for</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>dict</code>: Resource data if found, empty dict if not found</li>
+</ul>
+<p><strong>SPARQL Query</strong>: Constructs and executes a SPARQL query to find resources by identifier.</p>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>resource <span class="op">=</span> get_resource_by_id(token, <span class="ss">f"</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_OBJECT"</span>, <span class="st">"abb13025"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> resource:</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Found resource: </span><span class="sc">{</span>resource[<span class="st">'@id'</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="create_resourcepayload-dict-token-str---none" class="level4">
+<h4 class="anchored" data-anchor-id="create_resourcepayload-dict-token-str---none"><code>create_resource(payload: dict, token: str) -&gt; None</code></h4>
+<p><strong>Purpose</strong>: Creates a new resource in DSP using the provided payload.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>payload</code>: Complete DSP resource payload (JSON-LD format)</li>
+<li><code>token</code>: JWT authentication token</li>
+</ul>
+<p><strong>Returns</strong>: None</p>
+<p><strong>Side Effects</strong>:</p>
+<ul>
+<li>Creates resource in DSP</li>
+<li>Logs creation success/failure</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>payload <span class="op">=</span> construct_payload(omeka_item, <span class="ss">f"</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_OBJECT"</span>, project_iri, lists, <span class="st">""</span>, <span class="st">""</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>create_resource(payload, token)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="data-extraction-transformation-functions" class="level3">
+<h3 class="anchored" data-anchor-id="data-extraction-transformation-functions">Data Extraction &amp; Transformation Functions</h3>
+<section id="extract_dasch_propvalueitem-dict-prop-str---str" class="level4">
+<h4 class="anchored" data-anchor-id="extract_dasch_propvalueitem-dict-prop-str---str"><code>extract_dasch_propvalue(item: dict, prop: str) -&gt; str</code></h4>
+<p><strong>Purpose</strong>: Extracts a single property value from a DSP resource.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>item</code>: DSP resource data</li>
+<li><code>prop</code>: Property name (without prefix)</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>str</code>: Property value or empty string if not found</li>
+</ul>
+<p><strong>Supported Value Types</strong>: TextValue, ListValue, LinkValue, UriValue</p>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> extract_dasch_propvalue(dsp_resource, <span class="st">"title"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="extract_dasch_propvalue_multipleitem-dict-prop-str---list" class="level4">
+<h4 class="anchored" data-anchor-id="extract_dasch_propvalue_multipleitem-dict-prop-str---list"><code>extract_dasch_propvalue_multiple(item: dict, prop: str) -&gt; list</code></h4>
+<p><strong>Purpose</strong>: Extracts multiple values for a property from a DSP resource.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>item</code>: DSP resource data</li>
+<li><code>prop</code>: Property name (without prefix)</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>list</code>: Array of property values</li>
+</ul>
+<p><strong>Usage</strong>: For properties that can have multiple values (arrays).</p>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>subjects <span class="op">=</span> extract_dasch_propvalue_multiple(dsp_resource, <span class="st">"subject"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="extract_value_from_entryentry-dict---str" class="level4">
+<h4 class="anchored" data-anchor-id="extract_value_from_entryentry-dict---str"><code>extract_value_from_entry(entry: dict) -&gt; str</code></h4>
+<p><strong>Purpose</strong>: Extracts the actual value from a DSP property entry based on its type.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>entry</code>: DSP property entry with <span class="citation" data-cites="type">@type</span> and value fields</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>str</code>: Extracted value or None</li>
+</ul>
+<p><strong>Supported Types</strong>:</p>
+<ul>
+<li><code>knora-api:TextValue</code>: Returns <code>knora-api:valueAsString</code></li>
+<li><code>knora-api:ListValue</code>: Returns node IRI from <code>knora-api:listValueAsListNode</code></li>
+<li><code>knora-api:LinkValue</code>: Returns target IRI from <code>knora-api:linkValueHasTargetIri</code></li>
+<li><code>knora-api:UriValue</code>: Returns URI from <code>knora-api:uriValueAsUri</code></li>
+</ul>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>value <span class="op">=</span> extract_value_from_entry({</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"@type"</span>: <span class="st">"knora-api:TextValue"</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"knora-api:valueAsString"</span>: <span class="st">"Example text"</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Returns: "Example text"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="construct_payloaditem-dict-type-str-project_iri-str-lists-list-parent_iri-str-internalmediafilename-str---dict" class="level4">
+<h4 class="anchored" data-anchor-id="construct_payloaditem-dict-type-str-project_iri-str-lists-list-parent_iri-str-internalmediafilename-str---dict"><code>construct_payload(item: dict, type: str, project_iri: str, lists: list, parent_iri: str, internalMediaFilename: str) -&gt; dict</code></h4>
+<p><strong>Purpose</strong>: Converts Omeka item data into DSP-compatible JSON-LD payload.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>item</code>: Omeka item data</li>
+<li><code>type</code>: DSP resource type (e.g., “sgb_OBJECT”, “sgb_MEDIA_IMAGE”)</li>
+<li><code>project_iri</code>: Project IRI for resource association</li>
+<li><code>lists</code>: DSP lists for value mapping</li>
+<li><code>parent_iri</code>: Parent resource IRI for linking</li>
+<li><code>internalMediaFilename</code>: Internal filename for media resources</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>dict</code>: Complete DSP resource payload in JSON-LD format</li>
+</ul>
+<p><strong>Key Transformations</strong>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width:26%">
+<col style="width:24%">
+<col style="width:24%">
+<col style="width:24%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Omeka Property</th>
+<th>DSP Property</th>
+<th>Value Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>dcterms:title</code></td>
+<td><code>rdfs:label</code></td>
+<td>String</td>
+<td>Required field</td>
+</tr>
+<tr class="even">
+<td><code>dcterms:identifier</code></td>
+<td><code>identifier</code></td>
+<td>TextValue</td>
+<td>Unique identifier</td>
+</tr>
+<tr class="odd">
+<td><code>dcterms:description</code></td>
+<td><code>description</code></td>
+<td>TextValue</td>
+<td>Item description</td>
+</tr>
+<tr class="even">
+<td><code>dcterms:creator</code></td>
+<td><code>creator</code></td>
+<td>TextValue</td>
+<td>Creator information</td>
+</tr>
+<tr class="odd">
+<td><code>dcterms:date</code></td>
+<td><code>date</code></td>
+<td>TextValue</td>
+<td>Date information</td>
+</tr>
+<tr class="even">
+<td><code>dcterms:subject</code></td>
+<td><code>subject</code></td>
+<td>TextValue Array</td>
+<td>Subject tags</td>
+</tr>
+<tr class="odd">
+<td><code>dcterms:type</code></td>
+<td><code>type</code></td>
+<td>ListValue</td>
+<td>Mapped to DSP lists</td>
+</tr>
+<tr class="even">
+<td><code>dcterms:format</code></td>
+<td><code>format</code></td>
+<td>ListValue</td>
+<td>Media format mapping</td>
+</tr>
+<tr class="odd">
+<td><code>dcterms:language</code></td>
+<td><code>language</code></td>
+<td>ListValue</td>
+<td>Language mapping</td>
+</tr>
+<tr class="even">
+<td><code>dcterms:rights</code></td>
+<td><code>rights</code></td>
+<td>TextValue</td>
+<td>Rights information</td>
+</tr>
+<tr class="odd">
+<td><code>dcterms:license</code></td>
+<td><code>license</code></td>
+<td>UriValue</td>
+<td>License URL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>payload <span class="op">=</span> construct_payload(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    item<span class="op">=</span>omeka_item,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">type</span><span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>PREFIX<span class="sc">}</span><span class="ss">sgb_OBJECT"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    project_iri<span class="op">=</span>project_iri,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    lists<span class="op">=</span>project_lists,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    parent_iri<span class="op">=</span><span class="st">""</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    internalMediaFilename<span class="op">=</span><span class="st">""</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="extract_listvalueiri_from_valuevalue-str-list_label-str-lists-list---str" class="level4">
+<h4 class="anchored" data-anchor-id="extract_listvalueiri_from_valuevalue-str-list_label-str-lists-list---str"><code>extract_listvalueiri_from_value(value: str, list_label: str, lists: list) -&gt; str</code></h4>
+<p><strong>Purpose</strong>: Maps an Omeka value to a DSP list node IRI.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>value</code>: Value to map (e.g., “image/jpeg”)</li>
+<li><code>list_label</code>: Name of the DSP list to search in</li>
+<li><code>lists</code>: Array of DSP list objects</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>str</code>: DSP list node IRI if found, empty string otherwise</li>
+</ul>
+<p><strong>Process</strong>:</p>
+<ol type="1">
+<li>Finds the list with matching label</li>
+<li>Searches through list nodes for matching value</li>
+<li>Returns the node IRI for API operations</li>
+</ol>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>format_iri <span class="op">=</span> extract_listvalueiri_from_value(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"image/jpeg"</span>, </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Internet Media Type"</span>, </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    project_lists</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Returns: "http://rdfh.ch/lists/IbwoJlv8SEa6L13vXyCzMg/image-jpeg"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="synchronization-functions" class="level3">
+<h3 class="anchored" data-anchor-id="synchronization-functions">Synchronization Functions</h3>
+<section id="check_valuesdasch_item-dict-omeka_item-dict-lists-list---list" class="level4">
+<h4 class="anchored" data-anchor-id="check_valuesdasch_item-dict-omeka_item-dict-lists-list---list"><code>check_values(dasch_item: dict, omeka_item: dict, lists: list) -&gt; list</code></h4>
+<p><strong>Purpose</strong>: Compares DSP and Omeka data to identify changes that need synchronization.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>dasch_item</code>: Current DSP resource data</li>
+<li><code>omeka_item</code>: Current Omeka item data</li>
+<li><code>lists</code>: DSP lists for value mapping</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>list</code>: Array of change operations (create, update, delete)</li>
+</ul>
+<p><strong>Change Detection</strong>:</p>
+<ul>
+<li>Compares each property between systems</li>
+<li>Identifies additions, deletions, and modifications</li>
+<li>Handles both single values and arrays</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>changes <span class="op">=</span> check_values(dsp_resource, omeka_item, project_lists)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> change <span class="kw">in</span> changes:</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Action: </span><span class="sc">{</span>change[<span class="st">'type'</span>]<span class="sc">}</span><span class="ss">, Field: </span><span class="sc">{</span>change[<span class="st">'field'</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="sync_valueprop-str-prop_type-str-dasch_value-str-omeka_value-str---list" class="level4">
+<h4 class="anchored" data-anchor-id="sync_valueprop-str-prop_type-str-dasch_value-str-omeka_value-str---list"><code>sync_value(prop: str, prop_type: str, dasch_value: str, omeka_value: str) -&gt; list</code></h4>
+<p><strong>Purpose</strong>: Generates sync operations for single-value properties.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>prop</code>: Property name</li>
+<li><code>prop_type</code>: DSP property type (TextValue, ListValue, etc.)</li>
+<li><code>dasch_value</code>: Current value in DSP</li>
+<li><code>omeka_value</code>: Current value in Omeka</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>list</code>: Array of change operations</li>
+</ul>
+<p><strong>Logic</strong>:</p>
+<ul>
+<li>If values are different, creates update operation</li>
+<li>If DSP has value but Omeka doesn’t, creates delete operation</li>
+<li>If Omeka has value but DSP doesn’t, creates create operation</li>
+</ul>
+</section>
+<section id="sync_array_valueprop-str-prop_type-str-dasch_array-list-omeka_array-list---list" class="level4">
+<h4 class="anchored" data-anchor-id="sync_array_valueprop-str-prop_type-str-dasch_array-list-omeka_array-list---list"><code>sync_array_value(prop: str, prop_type: str, dasch_array: list, omeka_array: list) -&gt; list</code></h4>
+<p><strong>Purpose</strong>: Generates sync operations for multi-value properties.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>prop</code>: Property name</li>
+<li><code>prop_type</code>: DSP property type</li>
+<li><code>dasch_array</code>: Current values in DSP</li>
+<li><code>omeka_array</code>: Current values in Omeka</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>list</code>: Array of change operations</li>
+</ul>
+<p><strong>Algorithm</strong>:</p>
+<ol type="1">
+<li>Converts arrays to sets for comparison</li>
+<li>Calculates additions (in Omeka but not DSP)</li>
+<li>Calculates deletions (in DSP but not Omeka)</li>
+<li>Generates corresponding create/delete operations</li>
+</ol>
+</section>
+<section id="update_valuetoken-str-item-dict-value-str-field-str-field_type-str-type_of_change-str---none" class="level4">
+<h4 class="anchored" data-anchor-id="update_valuetoken-str-item-dict-value-str-field-str-field_type-str-type_of_change-str---none"><code>update_value(token: str, item: dict, value: str, field: str, field_type: str, type_of_change: str) -&gt; None</code></h4>
+<p><strong>Purpose</strong>: Executes a single value update operation via DSP API.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>token</code>: JWT authentication token</li>
+<li><code>item</code>: DSP resource data</li>
+<li><code>value</code>: New value to set</li>
+<li><code>field</code>: Property name</li>
+<li><code>field_type</code>: DSP value type</li>
+<li><code>type_of_change</code>: Operation type (“create”, “update”, “delete”)</li>
+</ul>
+<p><strong>Returns</strong>: None</p>
+<p><strong>Side Effects</strong>:</p>
+<ul>
+<li>Modifies DSP resource via API</li>
+<li>Logs operation results</li>
+</ul>
+</section>
+</section>
+<section id="file-upload-functions" class="level3">
+<h3 class="anchored" data-anchor-id="file-upload-functions">File Upload Functions</h3>
+<section id="upload_file_from_urlfile_url-str-token-str-zip-bool-false---str" class="level4">
+<h4 class="anchored" data-anchor-id="upload_file_from_urlfile_url-str-token-str-zip-bool-false---str"><code>upload_file_from_url(file_url: str, token: str, zip: bool = False) -&gt; str</code></h4>
+<p><strong>Purpose</strong>: Downloads a file from Omeka and uploads it to DSP storage.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>file_url</code>: URL of file in Omeka</li>
+<li><code>token</code>: JWT authentication token</li>
+<li><code>zip</code>: Whether to compress file before upload</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>str</code>: Internal filename assigned by DSP</li>
+</ul>
+<p><strong>Process</strong>:</p>
+<ol type="1">
+<li>Downloads file from Omeka URL</li>
+<li>Saves to temporary file</li>
+<li>Optionally creates ZIP archive</li>
+<li>Uploads to DSP via multipart form</li>
+<li>Returns DSP internal filename</li>
+</ol>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>internal_filename <span class="op">=</span> upload_file_from_url(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://omeka.example.com/files/image.jpg"</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    token,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">zip</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="specify_mediaclassmedia_type-str---str" class="level4">
+<h4 class="anchored" data-anchor-id="specify_mediaclassmedia_type-str---str"><code>specify_mediaclass(media_type: str) -&gt; str</code></h4>
+<p><strong>Purpose</strong>: Determines appropriate DSP media class based on MIME type.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>media_type</code>: MIME type string (e.g., “image/jpeg”)</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>str</code>: DSP media class name</li>
+</ul>
+<p><strong>Mapping</strong>:</p>
+<ul>
+<li><code>image/*</code> → <code>sgb_MEDIA_IMAGE</code></li>
+<li><code>application/pdf</code>, <code>text/*</code>, <code>application/zip</code> → <code>sgb_MEDIA_ARCHIV</code></li>
+<li>All others → <code>sgb_MEDIA_ARCHIV</code> (default)</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>media_class <span class="op">=</span> specify_mediaclass(<span class="st">"image/jpeg"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Returns: "StadtGeschichteBasel_v1:sgb_MEDIA_IMAGE"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="utility-functions" class="level3">
+<h3 class="anchored" data-anchor-id="utility-functions">Utility Functions</h3>
+<section id="arrays_equalarray1-list-array2-list---bool" class="level4">
+<h4 class="anchored" data-anchor-id="arrays_equalarray1-list-array2-list---bool"><code>arrays_equal(array1: list, array2: list) -&gt; bool</code></h4>
+<p><strong>Purpose</strong>: Compares two arrays for equality, ignoring order.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>array1</code>: First array to compare</li>
+<li><code>array2</code>: Second array to compare</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>bool</code>: True if arrays contain the same elements</li>
+</ul>
+<p><strong>Usage</strong>: Used in synchronization to detect array changes.</p>
+</section>
+</section>
+</section>
+<section id="process_data_from_omeka.py" class="level2">
+<h2 class="anchored" data-anchor-id="process_data_from_omeka.py">process_data_from_omeka.py</h2>
+<p>Handles data extraction and processing from the Omeka API.</p>
+<section id="core-functions-1" class="level3">
+<h3 class="anchored" data-anchor-id="core-functions-1">Core Functions</h3>
+<section id="get_items_from_collectioncollection_id-str---list" class="level4">
+<h4 class="anchored" data-anchor-id="get_items_from_collectioncollection_id-str---list"><code>get_items_from_collection(collection_id: str) -&gt; list</code></h4>
+<p><strong>Purpose</strong>: Retrieves all items from a specified Omeka collection with pagination handling.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>collection_id</code>: Omeka collection/item set ID</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>list</code>: Array of all items in the collection</li>
+</ul>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Automatic pagination handling</li>
+<li>Rate limiting compliance</li>
+<li>Error recovery for temporary failures</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>items <span class="op">=</span> get_items_from_collection(<span class="st">"10780"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Found </span><span class="sc">{</span><span class="bu">len</span>(items)<span class="sc">}</span><span class="ss"> items"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="get_mediaitem_id-str---list" class="level4">
+<h4 class="anchored" data-anchor-id="get_mediaitem_id-str---list"><code>get_media(item_id: str) -&gt; list</code></h4>
+<p><strong>Purpose</strong>: Retrieves all media files associated with a specific Omeka item.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>item_id</code>: Omeka item ID</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>list</code>: Array of media objects with metadata and file URLs</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>media_files <span class="op">=</span> get_media(<span class="st">"12345"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> media <span class="kw">in</span> media_files:</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Media: </span><span class="sc">{</span>media<span class="sc">.</span>get(<span class="st">'o:filename'</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="get_paginated_itemsurl-str-params-dict---list" class="level4">
+<h4 class="anchored" data-anchor-id="get_paginated_itemsurl-str-params-dict---list"><code>get_paginated_items(url: str, params: dict) -&gt; list</code></h4>
+<p><strong>Purpose</strong>: Generic function to handle paginated API requests.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>url</code>: Base API endpoint URL</li>
+<li><code>params</code>: Query parameters for first request</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>list</code>: Combined results from all pages</li>
+</ul>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Follows pagination links automatically</li>
+<li>Handles rate limiting</li>
+<li>Error recovery</li>
+</ul>
+</section>
+</section>
+<section id="data-extraction-functions" class="level3">
+<h3 class="anchored" data-anchor-id="data-extraction-functions">Data Extraction Functions</h3>
+<section id="extract_propertyprops-list-prop_id-int-as_uri-bool-false-only_label-bool-false---str" class="level4">
+<h4 class="anchored" data-anchor-id="extract_propertyprops-list-prop_id-int-as_uri-bool-false-only_label-bool-false---str"><code>extract_property(props: list, prop_id: int, as_uri: bool = False, only_label: bool = False) -&gt; str</code></h4>
+<p><strong>Purpose</strong>: Extracts a specific property value from Omeka property array.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>props</code>: Array of Omeka property objects</li>
+<li><code>prop_id</code>: Numerical ID of property to extract</li>
+<li><code>as_uri</code>: Return as formatted URI link (default: False)</li>
+<li><code>only_label</code>: Return only the label (default: False)</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>str</code>: Property value in requested format</li>
+</ul>
+<p><strong>Formats</strong>:</p>
+<ul>
+<li>Default: Returns <code>@value</code> field</li>
+<li><code>as_uri=True</code>: Returns <code>[label](uri)</code> markdown format</li>
+<li><code>only_label=True</code>: Returns <code>o:label</code> field only</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> extract_property(item.get(<span class="st">"dcterms:title"</span>, []), <span class="dv">1</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>creator_link <span class="op">=</span> extract_property(item.get(<span class="st">"dcterms:creator"</span>, []), <span class="dv">2</span>, as_uri<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="extract_combined_valuesprops-list---list" class="level4">
+<h4 class="anchored" data-anchor-id="extract_combined_valuesprops-list---list"><code>extract_combined_values(props: list) -&gt; list</code></h4>
+<p><strong>Purpose</strong>: Combines text values and URI references from properties into a single array.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>props</code>: Array of Omeka property objects</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>list</code>: Combined array of text values and formatted URI links</li>
+</ul>
+<p><strong>Process</strong>:</p>
+<ol type="1">
+<li>Extracts all <code>@value</code> text fields</li>
+<li>Formats URI references as HTML links</li>
+<li>Escapes semicolons to prevent conflicts</li>
+<li>Returns combined array</li>
+</ol>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>subjects <span class="op">=</span> extract_combined_values(item.get(<span class="st">"dcterms:subject"</span>, []))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Returns: ["History", "Basel", "&lt;a href='...'&gt;Authority Record&lt;/a&gt;"]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="utility-functions-1" class="level3">
+<h3 class="anchored" data-anchor-id="utility-functions-1">Utility Functions</h3>
+<section id="is_valid_urlurl-str---bool" class="level4">
+<h4 class="anchored" data-anchor-id="is_valid_urlurl-str---bool"><code>is_valid_url(url: str) -&gt; bool</code></h4>
+<p><strong>Purpose</strong>: Validates if a string is a properly formatted URL.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>url</code>: URL string to validate</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>bool</code>: True if URL is valid</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>valid <span class="op">=</span> is_valid_url(<span class="st">"https://example.com/file.jpg"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="download_fileurl-str-dest_path-str---none" class="level4">
+<h4 class="anchored" data-anchor-id="download_fileurl-str-dest_path-str---none"><code>download_file(url: str, dest_path: str) -&gt; None</code></h4>
+<p><strong>Purpose</strong>: Downloads a file from URL to local path.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>url</code>: Source file URL</li>
+<li><code>dest_path</code>: Destination file path</li>
+</ul>
+<p><strong>Returns</strong>: None</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Creates directories as needed</li>
+<li>Streaming download for large files</li>
+<li>Error handling and logging</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="api_get_project.py" class="level2">
+<h2 class="anchored" data-anchor-id="api_get_project.py">api_get_project.py</h2>
+<p>Standalone script to fetch DSP project information.</p>
+<section id="get_project---none" class="level4">
+<h4 class="anchored" data-anchor-id="get_project---none"><code>get_project() -&gt; None</code></h4>
+<p><strong>Purpose</strong>: Fetches project data from DSP API and saves to file.</p>
+<p><strong>Environment Variables</strong>:</p>
+<ul>
+<li><code>PROJECT_SHORT_CODE</code>: DSP project shortcode</li>
+<li><code>API_HOST</code>: DSP API base URL</li>
+</ul>
+<p><strong>Output</strong>: Saves project data to <code>../data/project_data.json</code></p>
+<p><strong>Example Usage</strong>:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PROJECT_SHORT_CODE</span><span class="op">=</span><span class="st">"0123"</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">API_HOST</span><span class="op">=</span><span class="st">"https://api.dasch.swiss"</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/api_get_project.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="api_get_lists.py" class="level2">
+<h2 class="anchored" data-anchor-id="api_get_lists.py">api_get_lists.py</h2>
+<p>Standalone script to fetch DSP list configurations.</p>
+<section id="get_lists---none" class="level4">
+<h4 class="anchored" data-anchor-id="get_lists---none"><code>get_lists() -&gt; None</code></h4>
+<p><strong>Purpose</strong>: Fetches list summary from DSP API and saves to file.</p>
+<p><strong>Configuration</strong>:</p>
+<ul>
+<li>Hardcoded project IRI (should be updated for different projects)</li>
+<li>Fixed API host (should be made configurable)</li>
+</ul>
+<p><strong>Output</strong>: Saves list data to <code>../data/data_lists.json</code></p>
+<p><strong>Example Usage</strong>:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode code-with-copy bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/api_get_lists.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="api_get_lists_detailed.py" class="level2">
+<h2 class="anchored" data-anchor-id="api_get_lists_detailed.py">api_get_lists_detailed.py</h2>
+<p>Standalone script to fetch detailed DSP list information.</p>
+<section id="get_complete_listlist_id-str---dict" class="level4">
+<h4 class="anchored" data-anchor-id="get_complete_listlist_id-str---dict"><code>get_complete_list(list_id: str) -&gt; dict</code></h4>
+<p><strong>Purpose</strong>: Fetches complete list data for a single list ID.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>list_id</code>: DSP list IRI</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>dict</code>: Complete list object with all nodes and values</li>
+</ul>
+<p><strong>Process</strong>:</p>
+<ol type="1">
+<li>URL-encodes the list IRI</li>
+<li>Requests detailed list data from <code>/v2/lists/{id}</code></li>
+<li>Returns complete list structure</li>
+</ol>
+<p><strong>Main Script Logic</strong>:</p>
+<ol type="1">
+<li>Loads list summary from <code>data_lists.json</code></li>
+<li>Iterates through each list</li>
+<li>Fetches detailed information for each</li>
+<li>Saves all detailed lists to <code>data_lists_detail.json</code></li>
+</ol>
+</section>
+</section>
+<section id="configuration-constants" class="level2">
+<h2 class="anchored" data-anchor-id="configuration-constants">Configuration Constants</h2>
+<section id="environment-variables" class="level3">
+<h3 class="anchored" data-anchor-id="environment-variables">Environment Variables</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width:20%">
+<col style="width:20%">
+<col style="width:20%">
+<col style="width:20%">
+<col style="width:20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ITEM_SET_ID</code></td>
+<td>string</td>
+<td>No</td>
+<td>Omeka collection ID</td>
+<td>“10780”</td>
+</tr>
+<tr class="even">
+<td><code>PROJECT_SHORT_CODE</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>DSP project shortcode</td>
+<td>None</td>
+</tr>
+<tr class="odd">
+<td><code>API_HOST</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>DSP API base URL</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<td><code>INGEST_HOST</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>DSP ingest service URL</td>
+<td>None</td>
+</tr>
+<tr class="odd">
+<td><code>DSP_USER</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>DSP username</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<td><code>DSP_PWD</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>DSP password</td>
+<td>None</td>
+</tr>
+<tr class="odd">
+<td><code>PREFIX</code></td>
+<td>string</td>
+<td>No</td>
+<td>Ontology prefix</td>
+<td>“StadtGeschichteBasel_v1:”</td>
+</tr>
+<tr class="even">
+<td><code>OMEKA_API_URL</code></td>
+<td>string</td>
+<td>No</td>
+<td>Omeka API base URL</td>
+<td>“https://omeka.unibe.ch/api/”</td>
+</tr>
+<tr class="odd">
+<td><code>KEY_IDENTITY</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Omeka API key identity</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<td><code>KEY_CREDENTIAL</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Omeka API key credential</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="processing-constants" class="level3">
+<h3 class="anchored" data-anchor-id="processing-constants">Processing Constants</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width:31%">
+<col style="width:26%">
+<col style="width:41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Constant</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>NUMBER_RANDOM_OBJECTS</code></td>
+<td>2</td>
+<td>Number of items for sample mode</td>
+</tr>
+<tr class="even">
+<td><code>TEST_DATA</code></td>
+<td>Set of identifiers</td>
+<td>Specific items for test mode</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="error-handling" class="level2">
+<h2 class="anchored" data-anchor-id="error-handling">Error Handling</h2>
+<section id="exception-types" class="level3">
+<h3 class="anchored" data-anchor-id="exception-types">Exception Types</h3>
+<p>The system handles several types of errors:</p>
+<ol type="1">
+<li><strong>Authentication Errors</strong>: Invalid credentials, expired tokens</li>
+<li><strong>Network Errors</strong>: Connection timeouts, API unavailability</li>
+<li><strong>Data Validation Errors</strong>: Invalid payloads, missing required fields</li>
+<li><strong>Rate Limiting</strong>: API quota exceeded</li>
+<li><strong>File System Errors</strong>: Permission issues, disk space</li>
+</ol>
+</section>
+<section id="logging-configuration" class="level3">
+<h3 class="anchored" data-anchor-id="logging-configuration">Logging Configuration</h3>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>logging.basicConfig(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    level<span class="op">=</span>logging.INFO,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">format</span><span class="op">=</span><span class="st">"</span><span class="sc">%(asctime)s</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="er"> -%(levelname)s</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="er"> -%(message)s",</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="er">    handlers=</span>[</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>        logging.StreamHandler(),  <span class="co"># Console output</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>        logging.FileHandler(<span class="st">"data_2_dasch.log"</span>, mode<span class="op">=</span><span class="st">'w'</span>)  <span class="co"># File output</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="error-recovery-strategies" class="level3">
+<h3 class="anchored" data-anchor-id="error-recovery-strategies">Error Recovery Strategies</h3>
+<ol type="1">
+<li><strong>Retry with Exponential Backoff</strong>: For temporary network issues</li>
+<li><strong>Skip and Continue</strong>: For individual item processing errors</li>
+<li><strong>Fail Fast</strong>: For critical configuration or authentication errors</li>
+<li><strong>Graceful Degradation</strong>: Continue with reduced functionality when possible</li>
+</ol>
+</section>
+<section id="common-error-scenarios" class="level3">
+<h3 class="anchored" data-anchor-id="common-error-scenarios">Common Error Scenarios</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width:26%">
+<col style="width:26%">
+<col style="width:47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Cause</th>
+<th>Recovery Strategy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Authentication failure</td>
+<td>Invalid credentials</td>
+<td>Re-authenticate or exit</td>
+</tr>
+<tr class="even">
+<td>Resource not found</td>
+<td>Item doesn’t exist in DSP</td>
+<td>Create new resource</td>
+</tr>
+<tr class="odd">
+<td>Rate limit exceeded</td>
+<td>Too many API requests</td>
+<td>Wait and retry</td>
+</tr>
+<tr class="even">
+<td>Invalid payload</td>
+<td>Data format error</td>
+<td>Log error, skip item</td>
+</tr>
+<tr class="odd">
+<td>Network timeout</td>
+<td>Connection issues</td>
+<td>Retry with backoff</td>
+</tr>
+<tr class="even">
+<td>File upload failure</td>
+<td>File system or network issue</td>
+<td>Retry or skip media</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+</section>
+
+<a onclick="return window.scrollTo(0,0),!1;
+" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">window.document.addEventListener("DOMContentLoaded",function(N){const T="\uE9CB",w=new window.AnchorJS;w.options={placement:"right",icon:T},w.add(".anchored");const M=o=>{for(const t of o.classList)if(t.startsWith("code-annotation-"))return!0;return!1},b=function(o){const t=o.trigger;t.blur(),t.classList.add("code-copy-button-checked");var e=t.getAttribute("title");t.setAttribute("title","Copied!");let n;window.bootstrap&&(t.setAttribute("data-bs-toggle","tooltip"),t.setAttribute("data-bs-placement","left"),t.setAttribute("data-bs-title","Copied!"),n=new bootstrap.Tooltip(t,{trigger:"manual",customClass:"code-copy-button-tooltip",offset:[0,-8]}),n.show()),setTimeout(function(){n&&(n.hide(),t.removeAttribute("data-bs-title"),t.removeAttribute("data-bs-toggle"),t.removeAttribute("data-bs-placement")),t.setAttribute("title",e),t.classList.remove("code-copy-button-checked")},1e3),o.clearSelection()},y=function(o){const t=o.previousElementSibling.cloneNode(!0);for(const e of t.children)M(e)&&e.remove();return t.innerText};new window.ClipboardJS(".code-copy-button:not([data-in-quarto-modal])",{text:y}).on("success",b),window.document.getElementById("quarto-embedded-source-code-modal")&&new window.ClipboardJS(".code-copy-button[data-in-quarto-modal]",{text:y,container:window.document.getElementById("quarto-embedded-source-code-modal")}).on("success",b);for(var q=new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//),I=new RegExp(/^mailto:/),k=new RegExp("https://dokumentation.stadtgeschichtebasel.ch/omeka2dsp/"),H=o=>k.test(o)||q.test(o)||I.test(o),v=window.document.querySelectorAll("a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)"),r=0;r<v.length;r++){const o=v[r];H(o.href)||o.dataset.originalHref!==void 0&&(o.href=o.dataset.originalHref)}function p(o,t,e,n){const i={allowHTML:!0,maxWidth:500,delay:100,arrow:!1,appendTo:function(l){return l.parentElement},interactive:!0,interactiveBorder:10,theme:"quarto",placement:"bottom-start"};t&&(i.content=t),e&&(i.onTrigger=e),n&&(i.onUntrigger=n),window.tippy(o,i)}const E=window.document.querySelectorAll('a[role="doc-noteref"]');for(var r=0;r<E.length;r++){const t=E[r];p(t,function(){let e=t.getAttribute("data-footnote-href")||t.getAttribute("href");try{e=new URL(e).hash}catch{}const n=e.replace(/^#\/?/,""),i=window.document.getElementById(n);return i?i.innerHTML:""})}const A=window.document.querySelectorAll("a.quarto-xref"),g=(o,t)=>{const e=n=>{if(n.classList.remove("page-full","page-columns"),n.children)for(const i of n.children)e(i)};if(e(t),o===null||o.startsWith("sec-")){const n=document.createElement("div");if(t.children&&t.children.length>2){n.appendChild(t.children[0].cloneNode(!0));for(let i=1;i<t.children.length;i++){const l=t.children[i];if(!(l.tagName==="P"&&l.innerText==="")){n.appendChild(l.cloneNode(!0));break}}return window.Quarto?.typesetMath&&window.Quarto.typesetMath(n),n.innerHTML}else return window.Quarto?.typesetMath&&window.Quarto.typesetMath(t),t.innerHTML}else{const n=t.querySelector("a.anchorjs-link");return n&&n.remove(),window.Quarto?.typesetMath&&window.Quarto.typesetMath(t),t.classList.contains("callout")?t.outerHTML:t.innerHTML}};for(var r=0;r<A.length;r++){const t=A[r];p(t,void 0,function(e){e.disable();let n=t.getAttribute("href"),i;if(n.startsWith("#"))i=n;else try{i=new URL(n).hash}catch{}if(i){const l=i.replace(/^#\/?/,""),c=window.document.getElementById(l);if(c!==null)try{const s=g(l,c.cloneNode(!0));e.setContent(s)}finally{e.enable(),e.show()}else fetch(n.split("#")[0]).then(s=>s.text()).then(s=>{const u=new DOMParser().parseFromString(s,"text/html").getElementById(l);if(u!==null){const a=g(l,u);e.setContent(a)}}).finally(()=>{e.enable(),e.show()})}else fetch(n).then(l=>l.text()).then(l=>{const d=new DOMParser().parseFromString(l,"text/html").querySelector("main.content");if(d!==null){d.children.length>0&&d.children[0].tagName==="HEADER"&&d.children[0].remove();const f=g(null,d);e.setContent(f)}}).finally(()=>{e.enable(),e.show()})},function(e){})}let m;const B=(o,t)=>{let e='data-code-cell="'+o+'"',n='data-code-annotation="'+t+'"';return"span["+e+"]["+n+"]"},L=o=>{const t=window.document,e=o.getAttribute("data-target-cell"),n=o.getAttribute("data-target-annotation"),c=window.document.querySelector(B(e,n)).getAttribute("data-code-lines").split(",").map(u=>e+"-"+u);let s=null,d=null,f=null;if(c.length>0){const u=window.document.getElementById(c[0]);if(s=u.offsetTop,d=u.offsetHeight,f=u.parentElement.parentElement,c.length>1){const a=window.document.getElementById(c[c.length-1]);d=a.offsetTop+a.offsetHeight-s}if(s!==null&&d!==null&&f!==null){let a=window.document.getElementById("code-annotation-line-highlight");a===null&&(a=window.document.createElement("div"),a.setAttribute("id","code-annotation-line-highlight"),a.style.position="absolute",f.appendChild(a)),a.style.top=s-2+"px",a.style.height=d+4+"px",a.style.left=0;let h=window.document.getElementById("code-annotation-line-highlight-gutter");h===null&&(h=window.document.createElement("div"),h.setAttribute("id","code-annotation-line-highlight-gutter"),h.style.position="absolute",window.document.getElementById(e).querySelector(".code-annotation-gutter").appendChild(h)),h.style.top=s-2+"px",h.style.height=d+4+"px"}m=o}},C=()=>{["code-annotation-line-highlight","code-annotation-line-highlight-gutter"].forEach(t=>{const e=window.document.getElementById(t);e&&e.remove()}),m=void 0};window.addEventListener("resize",D(()=>{elRect=void 0,m&&L(m)},10));function D(o,t){let e=!1,n;return(...i)=>{e?(n&&clearTimeout(n),n=setTimeout(()=>{o.apply(this,i),n=e=!1},t)):(o.apply(this,i),e=!0)}}const R=window.document.querySelectorAll("dt[data-target-cell]");for(const o of R)o.addEventListener("click",t=>{const e=t.target;if(e!==m){C();const n=window.document.querySelector("dt[data-target-cell].code-annotation-active");n&&n.classList.remove("code-annotation-active"),L(e),e.classList.add("code-annotation-active")}else C(),e.classList.remove("code-annotation-active")});const x=o=>{const t=o.parentElement;if(t){const e=t.dataset.cites;return e?{el:o,cites:e.split(" ")}:x(o.parentElement)}else return};for(var S=window.document.querySelectorAll('a[role="doc-biblioref"]'),r=0;r<S.length;r++){const t=S[r],e=x(t);e&&p(e.el,function(){var n=window.document.createElement("div");return e.cites.forEach(function(i){var l=window.document.createElement("div");l.classList.add("hanging-indent"),l.classList.add("csl-entry");var c=window.document.getElementById("ref-"+i);c&&(l.innerHTML=c.innerHTML),n.appendChild(l)}),n.innerHTML})}});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../docs/workflows/index.html" class="pagination-link" aria-label="Data Workflows">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Data Workflows</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../docs/guides/installation.html" class="pagination-link" aria-label="Installation &amp; Setup">
+        <span class="nav-page-text">Installation &amp; Setup</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-md-none d-sm-block"><ul><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/edit/main/docs/api/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

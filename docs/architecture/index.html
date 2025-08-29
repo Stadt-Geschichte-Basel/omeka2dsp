@@ -1,0 +1,965 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.33">
+
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+
+
+<title>System Architecture – omeka2dsp</title>
+<style>code{white-space:pre-wrap}span.smallcaps{font-variant:small-caps}div.columns{gap:min(4vw,1.5em);display:flex}div.column{flex:auto;overflow-x:auto}div.hanging-indent{text-indent:-1.5em;margin-left:1.5em}ul.task-list{list-style:none}ul.task-list li input[type=checkbox]{vertical-align:middle;width:.8em;margin:0 .8em .2em -1em}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../docs/workflows/index.html" rel="next">
+<link href="../../docs/index.html" rel="prev">
+<link href="../../android-chrome-512x512.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-6527f0f6f1a49fae8767c07d481ee51a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": true,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="mermaid-theme" content="neutral">
+<script src="../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="System Architecture – omeka2dsp">
+<meta property="og:description" content="">
+<meta property="og:site_name" content="omeka2dsp">
+<meta name="twitter:title" content="System Architecture – omeka2dsp">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="floating nav-fixed nav-sidebar quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="fixed-top headroom">
+    <nav class="navbar navbar-expand-lg" data-bs-theme="dark">
+      <div class="container-fluid navbar-container">
+      <div class="mx-auto navbar-brand-container">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../android-chrome-512x512.webp" alt="" class="navbar-logo" fetchpriority="high" decoding="async" width="512" height="512">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">omeka2dsp</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="me-auto navbar-nav navbar-nav-scroll">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../index.html" aria-current="page"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-documentation" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Documentation</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-documentation">    
+        <li>
+    <a class="dropdown-item" href="../../docs/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../docs/architecture/index.html">
+ <span class="dropdown-text">Architecture</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/workflows/index.html">
+ <span class="dropdown-text">Workflows</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/api/index.html">
+ <span class="dropdown-text">API Reference</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/datamodel/index.html">
+ <span class="dropdown-text">Data Model</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/installation.html">
+ <span class="dropdown-text">Installation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/configuration.html">
+ <span class="dropdown-text">Configuration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/usage.html">
+ <span class="dropdown-text">Usage</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/development.html">
+ <span class="dropdown-text">Development</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../docs/guides/troubleshooting.html">
+ <span class="dropdown-text">Troubleshooting</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../project-management/about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/" title="" class="px-1 quarto-navigation-tool" aria-label=""><i class="bi bi-github"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="btn quarto-btn-toggle" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <a class="flex-grow-1 no-decor" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="window.quartoToggleHeadroom&&window.quartoToggleHeadroom();
+">      
+          <h1 class="quarto-secondary-nav-title">System Architecture</h1>
+        </a>     
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="page-columns page-layout-article page-navbar page-rows-contents quarto-container">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="collapse collapse-horizontal floating overflow-auto quarto-sidebar-collapse-item sidebar sidebar-navigation">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">omeka2dsp</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CHANGELOG.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Changelog</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CODE_OF_CONDUCT.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Code of Conduct</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../CONTRIBUTING.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contributing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../LICENSE-CCBY.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">License (Data)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../LICENSE-AGPL.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">License (Code)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../SECURITY.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Security</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Documentation</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/architecture/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">System Architecture</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/workflows/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Workflows</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">API Reference</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Guides</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/installation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installation &amp; Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/configuration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Configuration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/usage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Usage Guide</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/development.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Development Guide</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/guides/troubleshooting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Troubleshooting</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../project-management/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About</span></a>
+          <a class="text-start sidebar-item-toggle" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse depth1 list-unstyled show sidebar-section">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../project-management/communication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Communication</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../project-management/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">People</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="margin-sidebar sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#high-level-architecture" id="toc-high-level-architecture" class="nav-link" data-scroll-target="#high-level-architecture">High-Level Architecture</a></li>
+  <li><a href="#core-components" id="toc-core-components" class="nav-link" data-scroll-target="#core-components">Core Components</a>
+  <ul class="collapse">
+  <li><a href="#data-extraction-layer" id="toc-data-extraction-layer" class="nav-link" data-scroll-target="#data-extraction-layer">1. Data Extraction Layer</a></li>
+  <li><a href="#data-transformation-layer" id="toc-data-transformation-layer" class="nav-link" data-scroll-target="#data-transformation-layer">2. Data Transformation Layer</a></li>
+  <li><a href="#synchronization-layer-data_2_dasch.py" id="toc-synchronization-layer-data_2_dasch.py" class="nav-link" data-scroll-target="#synchronization-layer-data_2_dasch.py">3. Synchronization Layer (<code>data_2_dasch.py</code>)</a></li>
+  <li><a href="#upload-file-management-layer" id="toc-upload-file-management-layer" class="nav-link" data-scroll-target="#upload-file-management-layer">4. Upload &amp; File Management Layer</a></li>
+  </ul></li>
+  <li><a href="#data-flow-architecture" id="toc-data-flow-architecture" class="nav-link" data-scroll-target="#data-flow-architecture">Data Flow Architecture</a>
+  <ul class="collapse">
+  <li><a href="#processing-pipeline" id="toc-processing-pipeline" class="nav-link" data-scroll-target="#processing-pipeline">Processing Pipeline</a></li>
+  <li><a href="#data-transformation-flow" id="toc-data-transformation-flow" class="nav-link" data-scroll-target="#data-transformation-flow">Data Transformation Flow</a></li>
+  </ul></li>
+  <li><a href="#configuration-architecture" id="toc-configuration-architecture" class="nav-link" data-scroll-target="#configuration-architecture">Configuration Architecture</a>
+  <ul class="collapse">
+  <li><a href="#environment-based-configuration" id="toc-environment-based-configuration" class="nav-link" data-scroll-target="#environment-based-configuration">Environment-Based Configuration</a></li>
+  <li><a href="#configuration-categories" id="toc-configuration-categories" class="nav-link" data-scroll-target="#configuration-categories">Configuration Categories</a></li>
+  </ul></li>
+  <li><a href="#error-handling-architecture" id="toc-error-handling-architecture" class="nav-link" data-scroll-target="#error-handling-architecture">Error Handling Architecture</a>
+  <ul class="collapse">
+  <li><a href="#logging-strategy" id="toc-logging-strategy" class="nav-link" data-scroll-target="#logging-strategy">Logging Strategy</a></li>
+  <li><a href="#fault-tolerance" id="toc-fault-tolerance" class="nav-link" data-scroll-target="#fault-tolerance">Fault Tolerance</a></li>
+  </ul></li>
+  <li><a href="#performance-architecture" id="toc-performance-architecture" class="nav-link" data-scroll-target="#performance-architecture">Performance Architecture</a>
+  <ul class="collapse">
+  <li><a href="#optimization-strategies" id="toc-optimization-strategies" class="nav-link" data-scroll-target="#optimization-strategies">Optimization Strategies</a></li>
+  <li><a href="#scalability-considerations" id="toc-scalability-considerations" class="nav-link" data-scroll-target="#scalability-considerations">Scalability Considerations</a></li>
+  </ul></li>
+  <li><a href="#security-architecture" id="toc-security-architecture" class="nav-link" data-scroll-target="#security-architecture">Security Architecture</a>
+  <ul class="collapse">
+  <li><a href="#authentication-flow" id="toc-authentication-flow" class="nav-link" data-scroll-target="#authentication-flow">Authentication Flow</a></li>
+  <li><a href="#security-features" id="toc-security-features" class="nav-link" data-scroll-target="#security-features">Security Features</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/edit/main/docs/architecture/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="default quarto-title-block">
+<div class="quarto-title">
+<h1 class="d-lg-block d-none title">System Architecture</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">August 29, 2025</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>The omeka2dsp system is designed as a data migration and synchronization pipeline that transfers cultural heritage data from Omeka (a digital collections platform) to the DaSCH Service Platform (DSP) for long-term preservation.</p>
+</section>
+<section id="high-level-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="high-level-architecture">High-Level Architecture</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TB
+    subgraph "Source System"
+        A[Omeka Instance]
+        A1[Items API]
+        A2[Media API]
+        A3[Collections API]
+    end
+    
+    subgraph "Migration Pipeline"
+        B[Data Extraction]
+        C[Data Transformation]
+        D[Data Validation]
+        E[Upload &amp; Sync]
+    end
+    
+    subgraph "Target System"
+        F[DSP Instance]
+        F1[Resources API]
+        F2[Files API]
+        F3[Lists API]
+        F4[Projects API]
+    end
+    
+    subgraph "Storage"
+        G[Local File Cache]
+        H[Configuration Files]
+        I[Log Files]
+    end
+    
+    A1 --&gt; B
+    A2 --&gt; B
+    A3 --&gt; B
+    
+    B --&gt; C
+    C --&gt; D
+    D --&gt; E
+    
+    E --&gt; F1
+    E --&gt; F2
+    E --&gt; F3
+    
+    H --&gt; B
+    H --&gt; C
+    H --&gt; E
+    
+    E --&gt; I
+    
+    style A fill:#e1f5fe
+    style F fill:#e8f5e8
+    style B fill:#fff3e0
+    style C fill:#fff3e0
+    style D fill:#fff3e0
+    style E fill:#fff3e0
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="core-components" class="level2">
+<h2 class="anchored" data-anchor-id="core-components">Core Components</h2>
+<section id="data-extraction-layer" class="level3">
+<h3 class="anchored" data-anchor-id="data-extraction-layer">1. Data Extraction Layer</h3>
+<p><strong>Module</strong>: <code>process_data_from_omeka.py</code></p>
+<p><strong>Purpose</strong>: Interfaces with Omeka API to retrieve items, media, and metadata.</p>
+<p><strong>Key Functions</strong>:</p>
+<ul>
+<li><code>get_items_from_collection()</code> – Retrieves paginated items from collections</li>
+<li><code>get_media()</code> – Fetches media files associated with items</li>
+<li><code>extract_property()</code> – Extracts specific metadata properties</li>
+<li><code>extract_combined_values()</code> – Combines multiple property values</li>
+</ul>
+<p>Refer to the <a href="../../docs/api/index.html#process_data_from_omeka.py">API Documentation</a> for more details on these functions.</p>
+<p><strong>Architecture Pattern</strong>: Repository pattern with API abstraction</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">classDiagram
+    class OmekaExtractor {
+        +get_items_from_collection(collection_id)
+        +get_media(item_id)
+        +extract_property(props, prop_id)
+        +extract_combined_values(props)
+        +get_paginated_items(url, params)
+    }
+    
+    class APIClient {
+        +make_request(endpoint, params)
+        +handle_pagination()
+        +validate_response()
+    }
+    
+    OmekaExtractor --&gt; APIClient
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="data-transformation-layer" class="level3">
+<h3 class="anchored" data-anchor-id="data-transformation-layer">2. Data Transformation Layer</h3>
+<p><strong>Module</strong>: <code>data_2_dasch.py</code> Transformation Functions</p>
+<p><strong>Purpose</strong>: Converts Omeka data structures to DSP-compatible formats.</p>
+<p><strong>Key Functions</strong>:</p>
+<ul>
+<li><code>construct_payload()</code> – Builds DSP resource payloads</li>
+<li><code>extract_listvalueiri_from_value()</code> – Maps values to DSP list nodes</li>
+<li><code>specify_mediaclass()</code> – Determines appropriate DSP media classes</li>
+</ul>
+<p>Refer to the <a href="../../docs/api/index.html#data_2_dasch.py">API Documentation</a> for more details on these functions.</p>
+<p><strong>Architecture Pattern</strong>: Builder pattern with strategy pattern for different resource types</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">classDiagram
+    class PayloadBuilder {
+        +construct_payload(item, type, project_iri, lists)
+        +build_metadata_section(item)
+        +build_media_section(item, filename)
+        +map_to_dsp_properties(omeka_properties)
+    }
+    
+    class PropertyMapper {
+        +map_dublin_core(property)
+        +map_custom_properties(property)
+        +extract_list_values(property, lists)
+    }
+    
+    class ResourceTypeStrategy {
+        &lt;&lt;interface&gt;&gt;
+        +build_specific_fields(item)
+    }
+    
+    class ObjectStrategy {
+        +build_specific_fields(item)
+    }
+    
+    class MediaStrategy {
+        +build_specific_fields(item)
+    }
+    
+    PayloadBuilder --&gt; PropertyMapper
+    PayloadBuilder --&gt; ResourceTypeStrategy
+    ResourceTypeStrategy &lt;|-- ObjectStrategy
+    ResourceTypeStrategy &lt;|-- MediaStrategy
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="synchronization-layer-data_2_dasch.py" class="level3">
+<h3 class="anchored" data-anchor-id="synchronization-layer-data_2_dasch.py">3. Synchronization Layer (<code>data_2_dasch.py</code>)</h3>
+<p><strong>Module</strong>: <code>data_2_dasch.py</code> Sync Functions</p>
+<p><strong>Purpose</strong>: Handles incremental updates and conflict resolution between systems.</p>
+<p><strong>Key Functions</strong>:</p>
+<ul>
+<li><code>check_values()</code> – Compares Omeka and DSP data for differences</li>
+<li><code>sync_value()</code> – Synchronizes single-value properties</li>
+<li><code>sync_array_value()</code> – Synchronizes multi-value properties</li>
+<li><code>update_value()</code> – Performs actual API updates</li>
+</ul>
+<p>Refer to the <a href="../../docs/api/index.html#data_2_dasch.py">API Documentation</a> for more details on these functions.</p>
+<p><strong>Architecture Pattern</strong>: Strategy pattern with command pattern for updates</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">classDiagram
+    class SyncManager {
+        +check_values(dasch_item, omeka_item, lists)
+        +sync_resource(resource_iri, omeka_data)
+        +generate_sync_plan(differences)
+    }
+    
+    class ValueComparator {
+        +compare_text_values(dasch_val, omeka_val)
+        +compare_list_values(dasch_val, omeka_val)
+        +compare_array_values(dasch_arr, omeka_arr)
+    }
+    
+    class UpdateCommand {
+        &lt;&lt;interface&gt;&gt;
+        +execute()
+        +rollback()
+    }
+    
+    class CreateValueCommand {
+        +execute()
+        +rollback()
+    }
+    
+    class DeleteValueCommand {
+        +execute()
+        +rollback()
+    }
+    
+    class UpdateValueCommand {
+        +execute()
+        +rollback()
+    }
+    
+    SyncManager --&gt; ValueComparator
+    SyncManager --&gt; UpdateCommand
+    UpdateCommand &lt;|-- CreateValueCommand
+    UpdateCommand &lt;|-- DeleteValueCommand
+    UpdateCommand &lt;|-- UpdateValueCommand
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="upload-file-management-layer" class="level3">
+<h3 class="anchored" data-anchor-id="upload-file-management-layer">4. Upload &amp; File Management Layer</h3>
+<p><strong>Module</strong>: <code>data_2_dasch.py</code> File Functions</p>
+<p><strong>Purpose</strong>: Manages file uploads and media processing for DSP.</p>
+<p><strong>Key Functions</strong>:</p>
+<ul>
+<li><code>upload_file_from_url()</code> – Downloads and uploads files to DSP</li>
+<li><code>create_resource()</code> – Creates new DSP resources</li>
+<li><code>get_full_resource()</code> – Retrieves complete resource data</li>
+</ul>
+<p>Refer to the <a href="../../docs/api/index.html#data_2_dasch.py.py">API Documentation</a> for more details on these functions.</p>
+</section>
+</section>
+<section id="data-flow-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="data-flow-architecture">Data Flow Architecture</h2>
+<section id="processing-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="processing-pipeline">Processing Pipeline</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    Start([Start Migration]) --&gt; Config[Load Configuration]
+    Config --&gt; Auth[Authenticate with DSP]
+    Auth --&gt; FetchOmeka[Fetch Omeka Data]
+    
+    FetchOmeka --&gt; FilterMode{Processing Mode?}
+    FilterMode --&gt;|All Data| AllItems[Process All Items]
+    FilterMode --&gt;|Sample| SampleItems[Process Sample Items]
+    FilterMode --&gt;|Test| TestItems[Process Test Items]
+    
+    AllItems --&gt; ProcessItem[Process Individual Item]
+    SampleItems --&gt; ProcessItem
+    TestItems --&gt; ProcessItem
+    
+    ProcessItem --&gt; CheckExists{Resource Exists in DSP?}
+    
+    CheckExists --&gt;|No| CreateNew[Create New Resource]
+    CheckExists --&gt;|Yes| CompareData[Compare Data]
+    
+    CreateNew --&gt; ProcessMedia[Process Media Files]
+    CompareData --&gt; HasChanges{Has Changes?}
+    
+    HasChanges --&gt;|Yes| UpdateExisting[Update Resource]
+    HasChanges --&gt;|No| ProcessMedia
+    UpdateExisting --&gt; ProcessMedia
+    
+    ProcessMedia --&gt; MoreItems{More Items?}
+    MoreItems --&gt;|Yes| ProcessItem
+    MoreItems --&gt;|No| Complete[Migration Complete]
+    
+    style Start fill:#e8f5e8
+    style Complete fill:#e8f5e8
+    style ProcessItem fill:#fff3e0
+    style CreateNew fill:#e3f2fd
+    style UpdateExisting fill:#fff8e1
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="data-transformation-flow" class="level3">
+<h3 class="anchored" data-anchor-id="data-transformation-flow">Data Transformation Flow</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant O as Omeka API
+    participant E as Extractor
+    participant T as Transformer
+    participant V as Validator
+    participant D as DSP API
+    
+    E-&gt;&gt;O: Get Items from Collection
+    O-&gt;&gt;E: Return Item Data
+    
+    loop For each item
+        E-&gt;&gt;O: Get Media for Item
+        O-&gt;&gt;E: Return Media Data
+        
+        E-&gt;&gt;T: Extract &amp; Transform Data
+        T-&gt;&gt;T: Map Dublin Core Properties
+        T-&gt;&gt;T: Build DSP Payload
+        T-&gt;&gt;V: Validate Payload Structure
+        
+        V-&gt;&gt;D: Check if Resource Exists
+        D-&gt;&gt;V: Return Existing Data
+        
+        alt Resource doesn't exist
+            V-&gt;&gt;D: Create New Resource
+            D-&gt;&gt;V: Return Created Resource
+        else Resource exists with changes
+            V-&gt;&gt;D: Update Resource
+            D-&gt;&gt;V: Return Updated Resource
+        end
+        
+        T-&gt;&gt;D: Upload Media Files
+        D-&gt;&gt;T: Confirm Upload
+    end
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="configuration-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="configuration-architecture">Configuration Architecture</h2>
+<section id="environment-based-configuration" class="level3">
+<h3 class="anchored" data-anchor-id="environment-based-configuration">Environment-Based Configuration</h3>
+<p>The system uses environment variables for configuration, following the 12-factor app methodology:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    subgraph "Configuration Sources"
+        A[Environment Variables]
+        B[.env File]
+        C[example.env Template]
+    end
+    
+    subgraph "Configuration Categories"
+        D[Omeka API Config]
+        E[DSP API Config]
+        F[Processing Config]
+        G[Authentication Config]
+    end
+    
+    A --&gt; D
+    A --&gt; E
+    A --&gt; F
+    A --&gt; G
+    
+    B --&gt; A
+    C --&gt; B
+    
+    style A fill:#e1f5fe
+    style D fill:#fff3e0
+    style E fill:#e8f5e8
+    style F fill:#fff8e1
+    style G fill:#ffebee
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="configuration-categories" class="level3">
+<h3 class="anchored" data-anchor-id="configuration-categories">Configuration Categories</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width:33%">
+<col style="width:36%">
+<col style="width:30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Category</th>
+<th>Variables</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Omeka API</strong></td>
+<td><code>OMEKA_API_URL</code>, <code>KEY_IDENTITY</code>, <code>KEY_CREDENTIAL</code>, <code>ITEM_SET_ID</code></td>
+<td>Connect to source Omeka instance</td>
+</tr>
+<tr class="even">
+<td><strong>DSP API</strong></td>
+<td><code>PROJECT_SHORT_CODE</code>, <code>API_HOST</code>, <code>INGEST_HOST</code></td>
+<td>Connect to target DSP instance</td>
+</tr>
+<tr class="odd">
+<td><strong>Authentication</strong></td>
+<td><code>DSP_USER</code>, <code>DSP_PWD</code></td>
+<td>Authenticate with DSP</td>
+</tr>
+<tr class="even">
+<td><strong>Processing</strong></td>
+<td><code>PREFIX</code>, <code>NUMBER_RANDOM_OBJECTS</code>, <code>TEST_DATA</code></td>
+<td>Control processing behavior</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="error-handling-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="error-handling-architecture">Error Handling Architecture</h2>
+<section id="logging-strategy" class="level3">
+<h3 class="anchored" data-anchor-id="logging-strategy">Logging Strategy</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TD
+    A[Application Events] --&gt; B[Logger]
+    B --&gt; C[Console Handler]
+    B --&gt; D[File Handler]
+    
+    C --&gt; E[Real-time Monitoring]
+    D --&gt; F[data_2_dasch.log]
+    
+    G[Error Events] --&gt; H[Error Handler]
+    H --&gt; I[Log Error Details]
+    H --&gt; J[Continue Processing]
+    H --&gt; K[Fail Fast for Critical Errors]
+    
+    style G fill:#ffebee
+    style H fill:#ffebee
+    style I fill:#ffebee
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="fault-tolerance" class="level3">
+<h3 class="anchored" data-anchor-id="fault-tolerance">Fault Tolerance</h3>
+<ol type="1">
+<li><strong>API Resilience</strong>: Handles rate limiting, timeouts, and temporary failures</li>
+<li><strong>Data Validation</strong>: Validates data at multiple points in the pipeline</li>
+<li><strong>Partial Recovery</strong>: Can resume processing from where it left off</li>
+<li><strong>Graceful Degradation</strong>: Continues processing other items if one fails</li>
+</ol>
+</section>
+</section>
+<section id="performance-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="performance-architecture">Performance Architecture</h2>
+<section id="optimization-strategies" class="level3">
+<h3 class="anchored" data-anchor-id="optimization-strategies">Optimization Strategies</h3>
+<ol type="1">
+<li><strong>Pagination</strong>: Efficiently handles large datasets through API pagination</li>
+<li><strong>Caching</strong>: Caches frequently accessed data (projects, lists)</li>
+<li><strong>Batch Processing</strong>: Groups operations where possible</li>
+<li><strong>Streaming</strong>: Streams large files during upload to minimize memory usage</li>
+</ol>
+</section>
+<section id="scalability-considerations" class="level3">
+<h3 class="anchored" data-anchor-id="scalability-considerations">Scalability Considerations</h3>
+<ul>
+<li><strong>Horizontal Scaling</strong>: Can be containerized and scaled across multiple instances</li>
+<li><strong>Rate Limiting</strong>: Respects API rate limits to avoid service degradation</li>
+<li><strong>Memory Management</strong>: Processes items individually to maintain low memory footprint</li>
+<li><strong>Monitoring</strong>: Comprehensive logging for performance monitoring</li>
+</ul>
+</section>
+</section>
+<section id="security-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="security-architecture">Security Architecture</h2>
+<section id="authentication-flow" class="level3">
+<h3 class="anchored" data-anchor-id="authentication-flow">Authentication Flow</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant S as Script
+    participant D as DSP API
+    participant O as Omeka API
+    
+    S-&gt;&gt;D: Login Request (username/password)
+    D-&gt;&gt;S: JWT Token
+    
+    Note over S: Store token for session
+    
+    S-&gt;&gt;O: API Request (API keys)
+    O-&gt;&gt;S: Data Response
+    
+    S-&gt;&gt;D: API Request (Bearer token)
+    D-&gt;&gt;S: API Response
+    
+    Note over S: Token expires - re-authenticate
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="security-features" class="level3">
+<h3 class="anchored" data-anchor-id="security-features">Security Features</h3>
+<ol type="1">
+<li><strong>Credential Management</strong>: Environment-based credential storage</li>
+<li><strong>Token Handling</strong>: Secure JWT token management for DSP API</li>
+<li><strong>HTTPS</strong>: All API communications use HTTPS</li>
+<li><strong>Access Control</strong>: Respects API permissions and rate limits</li>
+</ol>
+
+
+</section>
+</section>
+
+<a onclick="return window.scrollTo(0,0),!1;
+" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">window.document.addEventListener("DOMContentLoaded",function(N){const T="\uE9CB",w=new window.AnchorJS;w.options={placement:"right",icon:T},w.add(".anchored");const M=o=>{for(const t of o.classList)if(t.startsWith("code-annotation-"))return!0;return!1},b=function(o){const t=o.trigger;t.blur(),t.classList.add("code-copy-button-checked");var e=t.getAttribute("title");t.setAttribute("title","Copied!");let n;window.bootstrap&&(t.setAttribute("data-bs-toggle","tooltip"),t.setAttribute("data-bs-placement","left"),t.setAttribute("data-bs-title","Copied!"),n=new bootstrap.Tooltip(t,{trigger:"manual",customClass:"code-copy-button-tooltip",offset:[0,-8]}),n.show()),setTimeout(function(){n&&(n.hide(),t.removeAttribute("data-bs-title"),t.removeAttribute("data-bs-toggle"),t.removeAttribute("data-bs-placement")),t.setAttribute("title",e),t.classList.remove("code-copy-button-checked")},1e3),o.clearSelection()},y=function(o){const t=o.previousElementSibling.cloneNode(!0);for(const e of t.children)M(e)&&e.remove();return t.innerText};new window.ClipboardJS(".code-copy-button:not([data-in-quarto-modal])",{text:y}).on("success",b),window.document.getElementById("quarto-embedded-source-code-modal")&&new window.ClipboardJS(".code-copy-button[data-in-quarto-modal]",{text:y,container:window.document.getElementById("quarto-embedded-source-code-modal")}).on("success",b);for(var q=new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//),I=new RegExp(/^mailto:/),k=new RegExp("https://dokumentation.stadtgeschichtebasel.ch/omeka2dsp/"),H=o=>k.test(o)||q.test(o)||I.test(o),v=window.document.querySelectorAll("a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)"),r=0;r<v.length;r++){const o=v[r];H(o.href)||o.dataset.originalHref!==void 0&&(o.href=o.dataset.originalHref)}function p(o,t,e,n){const i={allowHTML:!0,maxWidth:500,delay:100,arrow:!1,appendTo:function(l){return l.parentElement},interactive:!0,interactiveBorder:10,theme:"quarto",placement:"bottom-start"};t&&(i.content=t),e&&(i.onTrigger=e),n&&(i.onUntrigger=n),window.tippy(o,i)}const E=window.document.querySelectorAll('a[role="doc-noteref"]');for(var r=0;r<E.length;r++){const t=E[r];p(t,function(){let e=t.getAttribute("data-footnote-href")||t.getAttribute("href");try{e=new URL(e).hash}catch{}const n=e.replace(/^#\/?/,""),i=window.document.getElementById(n);return i?i.innerHTML:""})}const A=window.document.querySelectorAll("a.quarto-xref"),g=(o,t)=>{const e=n=>{if(n.classList.remove("page-full","page-columns"),n.children)for(const i of n.children)e(i)};if(e(t),o===null||o.startsWith("sec-")){const n=document.createElement("div");if(t.children&&t.children.length>2){n.appendChild(t.children[0].cloneNode(!0));for(let i=1;i<t.children.length;i++){const l=t.children[i];if(!(l.tagName==="P"&&l.innerText==="")){n.appendChild(l.cloneNode(!0));break}}return window.Quarto?.typesetMath&&window.Quarto.typesetMath(n),n.innerHTML}else return window.Quarto?.typesetMath&&window.Quarto.typesetMath(t),t.innerHTML}else{const n=t.querySelector("a.anchorjs-link");return n&&n.remove(),window.Quarto?.typesetMath&&window.Quarto.typesetMath(t),t.classList.contains("callout")?t.outerHTML:t.innerHTML}};for(var r=0;r<A.length;r++){const t=A[r];p(t,void 0,function(e){e.disable();let n=t.getAttribute("href"),i;if(n.startsWith("#"))i=n;else try{i=new URL(n).hash}catch{}if(i){const l=i.replace(/^#\/?/,""),c=window.document.getElementById(l);if(c!==null)try{const s=g(l,c.cloneNode(!0));e.setContent(s)}finally{e.enable(),e.show()}else fetch(n.split("#")[0]).then(s=>s.text()).then(s=>{const u=new DOMParser().parseFromString(s,"text/html").getElementById(l);if(u!==null){const a=g(l,u);e.setContent(a)}}).finally(()=>{e.enable(),e.show()})}else fetch(n).then(l=>l.text()).then(l=>{const d=new DOMParser().parseFromString(l,"text/html").querySelector("main.content");if(d!==null){d.children.length>0&&d.children[0].tagName==="HEADER"&&d.children[0].remove();const f=g(null,d);e.setContent(f)}}).finally(()=>{e.enable(),e.show()})},function(e){})}let m;const B=(o,t)=>{let e='data-code-cell="'+o+'"',n='data-code-annotation="'+t+'"';return"span["+e+"]["+n+"]"},L=o=>{const t=window.document,e=o.getAttribute("data-target-cell"),n=o.getAttribute("data-target-annotation"),c=window.document.querySelector(B(e,n)).getAttribute("data-code-lines").split(",").map(u=>e+"-"+u);let s=null,d=null,f=null;if(c.length>0){const u=window.document.getElementById(c[0]);if(s=u.offsetTop,d=u.offsetHeight,f=u.parentElement.parentElement,c.length>1){const a=window.document.getElementById(c[c.length-1]);d=a.offsetTop+a.offsetHeight-s}if(s!==null&&d!==null&&f!==null){let a=window.document.getElementById("code-annotation-line-highlight");a===null&&(a=window.document.createElement("div"),a.setAttribute("id","code-annotation-line-highlight"),a.style.position="absolute",f.appendChild(a)),a.style.top=s-2+"px",a.style.height=d+4+"px",a.style.left=0;let h=window.document.getElementById("code-annotation-line-highlight-gutter");h===null&&(h=window.document.createElement("div"),h.setAttribute("id","code-annotation-line-highlight-gutter"),h.style.position="absolute",window.document.getElementById(e).querySelector(".code-annotation-gutter").appendChild(h)),h.style.top=s-2+"px",h.style.height=d+4+"px"}m=o}},C=()=>{["code-annotation-line-highlight","code-annotation-line-highlight-gutter"].forEach(t=>{const e=window.document.getElementById(t);e&&e.remove()}),m=void 0};window.addEventListener("resize",D(()=>{elRect=void 0,m&&L(m)},10));function D(o,t){let e=!1,n;return(...i)=>{e?(n&&clearTimeout(n),n=setTimeout(()=>{o.apply(this,i),n=e=!1},t)):(o.apply(this,i),e=!0)}}const R=window.document.querySelectorAll("dt[data-target-cell]");for(const o of R)o.addEventListener("click",t=>{const e=t.target;if(e!==m){C();const n=window.document.querySelector("dt[data-target-cell].code-annotation-active");n&&n.classList.remove("code-annotation-active"),L(e),e.classList.add("code-annotation-active")}else C(),e.classList.remove("code-annotation-active")});const x=o=>{const t=o.parentElement;if(t){const e=t.dataset.cites;return e?{el:o,cites:e.split(" ")}:x(o.parentElement)}else return};for(var S=window.document.querySelectorAll('a[role="doc-biblioref"]'),r=0;r<S.length;r++){const t=S[r],e=x(t);e&&p(e.el,function(){var n=window.document.createElement("div");return e.cites.forEach(function(i){var l=window.document.createElement("div");l.classList.add("hanging-indent"),l.classList.add("csl-entry");var c=window.document.getElementById("ref-"+i);c&&(l.innerHTML=c.innerHTML),n.appendChild(l)}),n.innerHTML})}});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../docs/index.html" class="pagination-link" aria-label="Overview">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Overview</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../docs/workflows/index.html" class="pagination-link" aria-label="Data Workflows">
+        <span class="nav-page-text">Data Workflows</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-md-none d-sm-block"><ul><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/edit/main/docs/architecture/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
