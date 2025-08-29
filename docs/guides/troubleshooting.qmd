@@ -282,7 +282,7 @@ ERROR - Required field missing
     from scripts.process_data_from_omeka import get_items_from_collection
     import json
 
-    items = get_items_from_collection('YOUR_ITEM_SET_ID')
+    items = get_items_from_collection('10780') # SGB Item Set ID
     problem_item = items[0]  # Adjust index as needed
     print(json.dumps(problem_item, indent=2))
     ```
@@ -386,7 +386,7 @@ requests.exceptions.RequestException
 
     ``` bash
     # Test file URL directly
-    curl -I "https://omeka.example.com/files/original/problematic-file.jpg"
+    curl -I "https://omeka.unibe.ch/files/original/98d8559515187ec4a710347c7b9e6cda0bdd58d2.tif"
 
     # Check file size
     curl -sI "URL" | grep -i content-length

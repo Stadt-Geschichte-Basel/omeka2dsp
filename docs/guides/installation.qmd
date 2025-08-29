@@ -112,13 +112,13 @@ Update the `.env` file with your specific settings:
 
 ``` bash
 # Omeka Configuration
-OMEKA_API_URL=https://your-omeka-instance.com/api/
+OMEKA_API_URL=https://omeka.unibe.ch/api/
 KEY_IDENTITY=your_api_key_identity
 KEY_CREDENTIAL=your_api_key_credential
 ITEM_SET_ID=your_collection_id
 
 # DSP Configuration
-PROJECT_SHORT_CODE=your_project_shortcode
+PROJECT_SHORT_CODE=0712
 API_HOST=https://api.dasch.swiss
 INGEST_HOST=https://ingest.dasch.swiss
 DSP_USER=your_dsp_username

@@ -419,7 +419,7 @@ print(json.dumps(problem_item, indent=2))
 
 ``` bash
 # Check file accessibility
-curl -I "https://omeka.example.com/files/original/problematic-file.jpg"
+curl -I "https://omeka.unibe.ch/files/original/98d8559515187ec4a710347c7b9e6cda0bdd58d2.tif"
 ```
 
 **Solutions**:

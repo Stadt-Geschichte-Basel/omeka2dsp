@@ -15,7 +15,7 @@ The system uses environment variables for configuration, following the 12-factor
 
 ``` bash
 # Omeka instance API endpoint
-OMEKA_API_URL=https://your-omeka-instance.com/api/
+OMEKA_API_URL=https://omeka.unibe.ch/api/
 
 # API authentication credentials
 KEY_IDENTITY=your_api_key_identity
@@ -42,7 +42,7 @@ ITEM_SET_ID=10780
 
 ``` bash
 # DSP project identifier (shortcode)
-PROJECT_SHORT_CODE=0123
+PROJECT_SHORT_CODE=0712
 
 # DSP API endpoints
 API_HOST=https://api.dasch.swiss
@@ -83,21 +83,21 @@ The complete `.env` template will look like this (replace with values for your p
 # ===========================================
 
 # Omeka API base URL (with trailing slash)
-OMEKA_API_URL=https://your-omeka.example.com/api/
+OMEKA_API_URL=https://omeka.unibe.ch/api/
 
 # Omeka API credentials (from User Settings > API Keys)
 KEY_IDENTITY=AbCdEfGhIjKlMnOpQrStUvWxYz123456
 KEY_CREDENTIAL=XyZaBcDeFgHiJkLmNoPqRsTuVwXyZ789
 
 # Item Set ID to migrate (numeric ID from Omeka)
-ITEM_SET_ID=12345
+ITEM_SET_ID=10780
 
 # ===========================================
 # DSP CONFIGURATION
 # ===========================================
 
 # DSP project shortcode (4 characters)
-PROJECT_SHORT_CODE=ABC1
+PROJECT_SHORT_CODE=0712
 
 # DSP API endpoints
 API_HOST=https://api.dasch.swiss
