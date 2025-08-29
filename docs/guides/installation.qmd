@@ -31,7 +31,7 @@ We recommend using [**GitHub Codespaces**](https://github.com/features/codespace
 ## Getting Started
 
 ::: panel-tabset
-### 🚀 Reproducible Setup with GitHub Codespaces (Most Users)
+### 🚀 Setup with GitHub Codespaces (Most Users)
 
 1.  **Fork or clone** this repository to your GitHub account.
 
@@ -91,8 +91,6 @@ cp example.env .env
 # 5. Test installation
 uv run python scripts/api_get_project.py
 ```
-
-</details>
 :::
 
 ## Configuration
