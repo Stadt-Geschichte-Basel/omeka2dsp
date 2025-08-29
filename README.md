@@ -1,101 +1,176 @@
 # omeka2dsp
 
-This project contains the data model for the long-term preservation of the research data of [Stadt.Geschichte.Basel (SGB)](https://stadtgeschichtebasel.ch/) on the [DaSCH Service Platform (DSP)](https://www.dasch.swiss/plattform-characteristics) and the necessary scripts to transfer the research data from omeka to the DSP.
+This repository contains the pipeline and data model for the long-term preservation of the research data of [Stadt.Geschichte.Basel (SGB)](https://stadtgeschichtebasel.ch/) on the [DaSCH Service Platform (DSP)](https://www.dasch.swiss/plattform-characteristics).  
+It enables the transfer of metadata and media files from the SGB Omeka S instance to the DSP. The pipeline detects changes, updates existing records, and ensures reproducible and open research.
 
-The script transfers the metadata and the associated media files from the SGB Omeka instance to the DSP. If a data object with the same id already exists on the DSP, the metadata is updated according to the omeka instance if it has changed.
+[![GitHub issues](https://img.shields.io/github/issues/Stadt-Geschichte-Basel/omeka2dsp.svg)](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)
+[![GitHub forks](https://img.shields.io/github/forks/Stadt-Geschichte-Basel/omeka2dsp.svg)](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/network)
+[![GitHub stars](https://img.shields.io/github/stars/Stadt-Geschichte-Basel/omeka2dsp.svg)](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/stargazers)
+[![Code license](https://img.shields.io/github/license/Stadt-Geschichte-Basel/omeka2dsp.svg)](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/blob/main/LICENSE-AGPL.md)
+[![Data license](https://img.shields.io/github/license/Stadt-Geschichte-Basel/omeka2dsp.svg)](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/blob/main/LICENSE-CCBY.md)
+[![DOI](https://zenodo.org/badge/GITHUB_REPO_ID.svg)](https://zenodo.org/badge/latestdoi/ZENODO_RECORD)
 
-[![GitHub issues](https://img.shields.io/github/issues/koilebeit/omeka2dsp.svg)](https://github.com/koilebeit/omeka2dsp/issues)
-[![GitHub forks](https://img.shields.io/github/forks/koilebeit/omeka2dsp.svg)](https://github.com/koilebeit/omeka2dsp/network)
-[![GitHub stars](https://img.shields.io/github/stars/koilebeit/omeka2dsp.svg)](https://github.com/koilebeit/omeka2dsp/stargazers)
-[![GitHub license](https://img.shields.io/github/license/koilebeit/omeka2dsp.svg)](https://github.com/koilebeit/omeka2dsp/blob/main/LICENSE.md)
+## 📚 Documentation
 
-## Installation
+Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
-Use the package manager [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) to install all dependencies.
+- 📖 [**Complete Documentation**](docs/index.qmd) -- Full system documentation
+- 🏗️ [**Architecture Overview**](docs/architecture/index.qmd) -- System design and components
+- 🔄 [**Workflows**](docs/workflows/index.qmd) -- Data migration workflows with Mermaid diagrams
+- 🔧 [**API Reference**](docs/api/index.qmd) -- Python function documentation
+- 🧩 [**Data Model**](/docs/datamodel/index.qmd) -- Data model documentation
+
+### 📒 Quick Start Guides
+
+- ⚡ [**Installation & Setup**](docs/guides/installation.qmd)
+- ⚙️ [**Configuration**](docs/guides/configuration.qmd)
+- 📋 [**Usage**](docs/guides/usage.qmd)
+- 🛠️ [**Development**](docs/guides/development.qmd)
+- 🔍 [**Troubleshooting**](docs/guides/troubleshooting.qmd)
+
+## ⚡ Quick Installation
+
+We recommend using [**GitHub Codespaces**](https://github.com/features/codespaces) for a reproducible setup.
+
+### GitHub Codespaces (Recommended)
+
+1. Click the green **`<> Code`** button → **"Codespaces"** → **"Create codespace on `main`"**
+2. Configure environment: `cp example.env .env` and edit with your credentials
+3. Test installation: `uv run python scripts/api_get_project.py`
+
+### Local Installation
 
 ```bash
-npm install
+# Clone repository
+git clone https://github.com/Stadt-Geschichte-Basel/omeka2dsp.git
+cd omeka2dsp
+
+# Install dependencies
+pnpm install         # Node.js development tools
+uv sync             # Python dependencies with uv
+
+# Configure environment
+cp example.env .env
+# Edit .env with your credentials
+
+# Test installation
+uv run python scripts/api_get_project.py
 ```
 
-## Usage
+## 🚀 Quick Usage
 
-### Preconditions
+```bash
+# Run sample data migration (recommended first test)
+python scripts/data_2_dasch.py -m sample_data
 
-You need an already created project with the provided [data model](data/data_model_dasch.json) on a DSP instance. If this needs to be created, this can be done using the [DSP-Tools](https://docs.dasch.swiss/latest/DSP-TOOLS/) like this:
+# Run full migration
+python scripts/data_2_dasch.py -m all_data
 
-```
-dsp-tools create -s 0.0.0.0:3333 -u root@example.com -p test data/data_model_dasch.json
-```
-
-(note: this requires system administrator rights on the DSP instance)
-
-### Setting the environment variables
-
-The following environment variables must be set:
-|Environment variable | Description |
-|---------------------|----------------|
-|OMEKA_API_URL |URL of the Omeka API |
-|KEY_IDENTITY |Your Omeka API identity |
-|KEY_CREDENTIAL |Your Omeka API credential |
-|ITEM_SET_ID |The itemset id of your Omeka collection |
-|PROJECT_SHORT_CODE |Shortcode of your DSP project |
-|API_HOST |URL of the DSP API |
-|INGEST_HOST |URL of the DaSCH ingest host |
-|DSP_USER |Your DSP username |
-|DSP_PWD |Your DSP password |
-|PREFIX |Prefix of your ontology (Default: StadtGeschichteBasel_v1) |
-
-### Run the script
-
-```
-python scripts/data_2_dasch.py [-m]
+# Run test data migration
+python scripts/data_2_dasch.py -m test_data
 ```
 
-- `-m all_data` process all data of the omeka instance (same as without -m)
+### Processing Modes
 
-- `-m sample_data` process a random selection of data from omeka
+| Mode          | Description               | Use Case               |
+| ------------- | ------------------------- | ---------------------- |
+| `all_data`    | Process entire collection | Production migrations  |
+| `sample_data` | Process random subset     | Testing and validation |
+| `test_data`   | Process predefined items  | Development, debugging |
 
-- `-m test_data`process only selected data of the omeka instance
+## 🏗️ System Architecture
 
-### Configuration
+```{mermaid}
+graph LR
+    A[Omeka API] --> B[Data Extraction]
+    B --> C[Data Transformation]
+    C --> D[DSP Upload]
+    D --> E[DSP API]
 
-You can configure the number of random data and specify the test data by adjusting the following variables in the [script](scripts/data_2_dasch.py):
+    F[Configuration] --> B
+    F --> C
+    F --> D
 
-```python
-NUMBER_RANDOM_OBJECTS = 2
-TEST_DATA = {'abb13025', 'abb14375', 'abb41033', 'abb11536', 'abb28998'}
+    style A fill:#e1f5fe
+    style E fill:#e8f5e8
+    style B fill:#fff3e0
+    style C fill:#fff3e0
+    style D fill:#fff3e0
 ```
 
-## Support
+### Features
 
-This project is maintained by [@koilebeit](https://github.com/koilebeit). Please understand that we won't be able to provide individual support via email. We also believe that help is much more valuable if it's shared publicly, so that more people can benefit from it.
+- ✅ Automated synchronization: detects and applies only necessary changes
+- ✅ Media file handling: transfers and processes associated files
+- ✅ Data validation: ensures data integrity throughout the process
+- ✅ Error recovery: robust error handling and retry mechanisms
 
-| Type                                   | Platforms                                                                |
-| -------------------------------------- | ------------------------------------------------------------------------ |
-| 🚨 **Bug Reports**                     | [GitHub Issue Tracker](https://github.com/koilebeit/omeka2dsp/issues)    |
-| 📚 **Docs Issue**                      | [GitHub Issue Tracker](https://github.com/koilebeit/omeka2dsp/issues)    |
-| 🎁 **Feature Requests**                | [GitHub Issue Tracker](https://github.com/koilebeit/omeka2dsp/issues)    |
-| 🛡 **Report a security vulnerability** | See [SECURITY.md](SECURITY.md)                                           |
-| 💬 **General Questions**               | [GitHub Discussions](https://github.com/koilebeit/omeka2dsp/discussions) |
+## 📂 Repository Structure
 
-## Roadmap
+This repository follows the [_Turing Way_ advanced structure](https://the-turing-way.netlify.app/project-design/project-repo/project-repo-advanced.html):
+
+- `assets/` – images, logos, etc.
+- `data/` – data files
+- `docs/` – documentation of the repository and data
+- `project-management/` – project management documents
+- `scripts/` – source code (migration scripts, utilities)
+- `report.qmd` – report describing the analysis of the data
+
+## 📊 Data Model
+
+The omeka2dsp system transforms data from Omeka's metadata structure to the DaSCH Service Platform (DSP) using a specialized data model developed by Stadt.Geschichte.Basel's research data management team.
+
+### Key Components
+
+- **Resource Classes**: Maps Omeka item types to DSP ontology classes (e.g., `sgb_PHOTO`, `sgb_DOCUMENT`)
+- **Property Mappings**: Converts Omeka metadata fields to DSP property values with appropriate data types
+- **Value Transformations**: Handles text values, URIs, dates, and linked resources according to DSP specifications
+- **Media Integration**: Processes and uploads associated files while maintaining metadata relationships
+
+### Standards Compliance
+
+The data model follows the [manual for creating non-discriminatory metadata for historical sources and research data](https://maehr.github.io/diskriminierungsfreie-metadaten/), ensuring inclusive and accessible metadata practices.
+
+For detailed data model documentation, see [Data Model Reference](/docs/datamodel/).
+
+## 🛠️ Support
+
+This project is maintained by [Stadt.Geschichte.Basel](https://github.com/Stadt-Geschichte-Basel).
+Support is provided **publicly** through GitHub.
+
+| Type                            | Platform                                                                              |
+| ------------------------------- | ------------------------------------------------------------------------------------- |
+| 🚨 **Bug Reports**              | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
+| 📊 **Report bad data**          | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
+| 📚 **Docs Issue**               | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
+| 🎁 **Feature Requests**         | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
+| 🛡 **Security vulnerabilities** | [SECURITY.md](SECURITY.md)                                                            |
+| 💬 **General Questions**        | [GitHub Discussions](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/discussions) |
+
+## 🗺 Roadmap
 
 No changes are currently planned.
 
-## Contributing
+## 🤝 Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Contributions are welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+If you find errors, propose new features, or want to extend the dataset, open an issue or a pull request.
 
-## Versioning
+## 🔖 Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/koilebeit/omeka2dsp/tags).
+We use [Semantic Versioning](https://semver.org/).
+Available versions are listed in the [tags](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/tags).
 
-## Authors and acknowledgment
+## ✍️ Authors and Acknowledgment
 
-- **Nico Görlich** - _Initial work_ - [koilebeit](https://github.com/koilebeit)
+- **Stadt.Geschichte.Basel** – _Initial work_ – [Stadt-Geschichte-Basel](https://github.com/Stadt-Geschichte-Basel)
+- **Nico Görlich** – _Initial scripting_ – [koilebeit](https://github.com/koilebeit)
 
-See also the list of [contributors](https://github.com/koilebeit/omeka2dsp/graphs/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/graphs/contributors).
 
-## License
+## 📜 License
 
-This project is licensed under the GNU Affero General Public License v3.0 - see the [LICENSE.md](LICENSE.md) file for details.
+- **Code**: GNU Affero General Public License v3.0 – see [LICENSE-AGPL.md](LICENSE-AGPL.md)
+- **Data**: Creative Commons Attribution 4.0 International (CC BY 4.0) – see [LICENSE-CCBY.md](LICENSE-CCBY.md)
+
+By using this repository, you agree to provide appropriate credit and share modifications under the same license terms.

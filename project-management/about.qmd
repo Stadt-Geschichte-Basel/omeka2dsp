@@ -1,0 +1,13 @@
+---
+title: Stadt.Geschichte.Basel
+date-modified: last-modified
+---
+
+This repository contains the [pipeline and data model](/docs/index.qmd) for the long-term preservation of the research data of [Stadt.Geschichte.Basel](https://stadtgeschichtebasel.ch/).
+
+Stadt.Geschichte.Basel is an interdisciplinary research project dedicated to the comprehensive study and documentation of Basel's long history in a [nine-volume book series](https://www.merianverlag.ch/buecher/stadt.geschichte.basel.html). Over 70 researchers and staff from various countries are investigating the history of Basel from the first traces of settlement to the present day. Our goal is to make a significant contribution to the study and documentation of Basel's history while making the past accessible in an appealing way.
+
+* 🏛️ Visit the project portal: [stadtgeschichtebasel.ch](https://stadtgeschichtebasel.ch)
+* 🔎 Deep dive into the project's [Open Research Data](https://forschung.stadtgeschichtebasel.ch)
+* 📚 Get the book series from [Christoph Merian Verlag](https://www.merianverlag.ch/buecher/stadt.geschichte.basel.html) or at [openaccess.stadtgeschichtebasel.ch](https://openaccess.stadtgeschichtebasel.ch)
+* 💎 Explore all products developed by the [Research Data Management and Public History Team](https://dokumentation.stadtgeschichtebasel.ch)

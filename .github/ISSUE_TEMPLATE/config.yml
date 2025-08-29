@@ -1,8 +1,8 @@
 contact_links:
   - name: Are you looking for documentation on omeka2dsp?
-    url: https://koilebeit.github.io/omeka2dsp
+    url: https://Stadt-Geschichte-Basel.github.io/omeka2dsp
     about: Please see the documentation for omeka2dsp on its GitHub Pages page.
-  - name: Do want to discuss omeka2dsp with the community?
-    url: https://github.com/koilebeit/omeka2dsp/discussions
+  - name: Do you want to discuss omeka2dsp with the community?
+    url: https://github.com/Stadt-Geschichte-Basel/omeka2dsp/discussions
     about: Please see the discussions page for omeka2dsp.
 blank_issues_enabled: true

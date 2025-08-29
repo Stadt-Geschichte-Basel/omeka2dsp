@@ -1,0 +1,12 @@
+---
+title: omeka2dsp
+subtitle: Long-Term Archival Pipeline for Stadt.Geschichte.Basel
+date-modified: last-modified
+format:
+  html:
+    embed-resources: true
+    filters:
+      - assets/filter-h1.lua
+---
+
+{{< include README.md >}}

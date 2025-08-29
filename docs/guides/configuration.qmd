@@ -1,0 +1,604 @@
+---
+title: Configuration Guide
+date-modified: last-modified
+---
+
+Comprehensive guide to configuring the omeka2dsp system for your specific migration requirements. Customize the omeka2dsp system for your project while maintaining security and performance best practices.
+
+## Environment Variables {#environment-variables}
+
+The system uses environment variables for configuration, following the 12-factor app methodology for maintainability and security.
+
+### Core Configuration
+
+#### Omeka API Configuration
+
+``` bash
+# Omeka instance API endpoint
+OMEKA_API_URL=https://omeka.unibe.ch/api/
+
+# API authentication credentials
+KEY_IDENTITY=your_api_key_identity
+KEY_CREDENTIAL=your_api_key_credential
+
+# Collection to migrate (item set ID)
+ITEM_SET_ID=10780
+```
+
+**Getting Omeka Credentials**:
+
+1.  Log into your Omeka admin panel
+2.  Navigate to User settings → API keys
+3.  Create a new API key
+4.  Copy the Identity and Credential values
+
+**Finding Collection ID**:
+
+1.  In Omeka admin, go to Item sets
+2.  Click on your collection
+3.  The ID is in the URL: `/admin/item-sets/show/{ID}`
+
+#### DSP API Configuration
+
+``` bash
+# DSP project identifier (shortcode)
+PROJECT_SHORT_CODE=0712
+
+# DSP API endpoints
+API_HOST=https://api.dasch.swiss
+INGEST_HOST=https://ingest.dasch.swiss
+
+# DSP user credentials
+DSP_USER=your.email@example.com
+DSP_PWD=your_secure_password
+
+# Ontology prefix (default works for most cases)
+PREFIX=StadtGeschichteBasel_v1:
+```
+
+**DSP Configuration Notes**:
+
+-   `PROJECT_SHORT_CODE`: 4-character alphanumeric project identifier
+-   `API_HOST`: Main DSP API endpoint (varies by instance)
+-   `INGEST_HOST`: File upload service endpoint
+-   `PREFIX`: Must match your DSP ontology namespace
+
+### Environment File Template
+
+To Create `.env` from template:
+
+``` bash
+# Copy example configuration
+cp example.env .env
+
+# Edit with your specific values
+nano .env
+```
+
+The complete `.env` template will look like this (replace with values for your project):
+
+``` bash
+# ===========================================
+# OMEKA CONFIGURATION
+# ===========================================
+
+# Omeka API base URL (with trailing slash)
+OMEKA_API_URL=https://omeka.unibe.ch/api/
+
+# Omeka API credentials (from User Settings > API Keys)
+KEY_IDENTITY=your_api_key_identity
+KEY_CREDENTIAL=your_api_key_identity_credential
+
+# Item Set ID to migrate (numeric ID from Omeka)
+ITEM_SET_ID=10780
+
+# ===========================================
+# DSP CONFIGURATION
+# ===========================================
+
+# DSP project shortcode (4 characters)
+PROJECT_SHORT_CODE=0712
+
+# DSP API endpoints
+API_HOST=https://api.dasch.swiss
+INGEST_HOST=https://ingest.dasch.swiss
+
+# DSP user credentials
+DSP_USER=username@example.com
+DSP_PWD=secure_password_here
+
+# Ontology prefix (usually don't change)
+PREFIX=StadtGeschichteBasel_v1:
+
+# ===========================================
+# OPTIONAL CONFIGURATION
+# ===========================================
+
+# Custom timeout for API requests (seconds)
+API_TIMEOUT=30
+
+# Enable debug logging (true/false)
+DEBUG_MODE=false
+
+# Maximum retry attempts for failed requests
+MAX_RETRIES=3
+```
+
+## Processing Configuration {#processing-configuration}
+
+Control how the migration processes data by modifying constants in `scripts/data_2_dasch.py`.
+
+### Processing Modes
+
+The system supports three processing modes:
+
+``` python
+# Edit these constants in data_2_dasch.py
+
+# Number of random items for sample mode
+NUMBER_RANDOM_OBJECTS = 5
+
+# Specific items for test mode
+TEST_DATA = {
+    'abb13025',  # Historic painting
+    'abb14375',  # Map with Geodata
+    'abb41033',  # Map
+    'abb11536',  # Photograph
+    'abb28998'   # Map
+}
+```
+
+#### Mode Configuration
+
+| Mode          | Configuration                | Use Case                  |
+|---------------|------------------------------|---------------------------|
+| `all_data`    | Uses `ITEM_SET_ID`           | Full production migration |
+| `sample_data` | Uses `NUMBER_RANDOM_OBJECTS` | Testing with subset       |
+| `test_data`   | Uses `TEST_DATA` identifiers | Development and debugging |
+
+### Batch Processing Configuration
+
+For large datasets, configure batch processing:
+
+``` python
+# Add these constants to data_2_dasch.py
+
+# Process items in batches
+BATCH_SIZE = 50
+
+# Delay between batches (seconds)
+BATCH_DELAY = 2
+
+# Maximum items per session
+MAX_ITEMS_PER_SESSION = 1000
+```
+
+### Retry Configuration
+
+Configure retry behavior for API failures:
+
+``` python
+# Retry configuration
+MAX_RETRIES = 3
+RETRY_DELAY = 5  # seconds
+EXPONENTIAL_BACKOFF = True
+```
+
+## Data Mapping Configuration {#data-mapping-configuration}
+
+### Property Mapping
+
+The system maps Omeka Dublin Core properties to DSP properties. Customize mappings in the `construct_payload()` function:
+
+``` python
+# Property ID mappings (edit in construct_payload function)
+PROPERTY_MAPPINGS = {
+    'title': 1,         # dcterms:title
+    'creator': 2,       # dcterms:creator
+    'subject': 3,       # dcterms:subject
+    'description': 4,   # dcterms:description
+    'publisher': 5,     # dcterms:publisher
+    'contributor': 6,   # dcterms:contributor
+    'date': 7,          # dcterms:date
+    'type': 8,          # dcterms:type
+    'format': 9,        # dcterms:format
+    'identifier': 10,   # dcterms:identifier
+    'source': 11,       # dcterms:source
+    'language': 12,     # dcterms:language
+    'relation': 13,     # dcterms:relation
+    'coverage': 14,     # dcterms:coverage
+    'rights': 15,       # dcterms:rights
+}
+```
+
+### List Value Mappings
+
+Configure how Omeka values map to DSP list nodes:
+
+``` json
+{
+  "list_mappings": {
+    "DCMI Type Vocabulary": {
+      "Image": "image",
+      "Text": "text", 
+      "Collection": "collection",
+      "Interactive Resource": "interactive"
+    },
+    "Internet Media Type": {
+      "image/jpeg": "image-jpeg",
+      "image/png": "image-png",
+      "application/pdf": "application-pdf",
+      "text/plain": "text-plain"
+    },
+    "ISO 639 Language Codes": {
+      "German": "de",
+      "English": "en", 
+      "French": "fr",
+      "Italian": "it"
+    }
+  }
+}
+```
+
+### Resource Class Mappings
+
+Configure DSP resource classes for different content types:
+
+``` python
+# Resource class configuration
+RESOURCE_CLASSES = {
+    'metadata': f'{PREFIX}sgb_OBJECT',
+    'image': f'{PREFIX}sgb_MEDIA_IMAGE',
+    'document': f'{PREFIX}sgb_MEDIA_ARCHIV',
+    'audio': f'{PREFIX}sgb_MEDIA_ARCHIV',
+    'video': f'{PREFIX}sgb_MEDIA_ARCHIV'
+}
+
+# Media type to class mapping
+MEDIA_TYPE_MAPPING = {
+    'image/jpeg': 'image',
+    'image/png': 'image',
+    'image/gif': 'image',
+    'image/tiff': 'image',
+    'application/pdf': 'document',
+    'text/plain': 'document',
+    'text/html': 'document',
+    'application/zip': 'document',
+    'audio/mpeg': 'audio',
+    'video/mp4': 'video'
+}
+```
+
+## Performance Tuning {#performance-tuning}
+
+### API Request Configuration
+
+Optimize API performance:
+
+``` python
+# API configuration constants
+API_TIMEOUT = 30        # Request timeout in seconds
+API_BATCH_SIZE = 100    # Items per API request
+API_RATE_LIMIT = 10     # Requests per second
+API_RETRY_ATTEMPTS = 3  # Retry failed requests
+
+# Connection pooling
+REQUESTS_SESSION_CONFIG = {
+    'pool_connections': 10,
+    'pool_maxsize': 20,
+    'max_retries': 3
+}
+```
+
+### File Upload Configuration
+
+Configure file handling:
+
+``` python
+# File upload settings
+MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
+UPLOAD_CHUNK_SIZE = 8192            # 8KB chunks
+COMPRESS_THRESHOLD = 10 * 1024 * 1024  # 10MB
+SUPPORTED_FORMATS = [
+    'image/jpeg', 'image/png', 'image/tiff',
+    'application/pdf', 'text/plain', 'application/zip'
+]
+```
+
+### Memory Management
+
+Configure memory usage:
+
+``` python
+# Memory management
+MEMORY_LIMIT = 1024 * 1024 * 1024  # 1GB
+CACHE_SIZE = 1000                  # Items to cache
+TEMP_DIR = '/tmp/omeka2dsp'        # Temporary file directory
+CLEANUP_TEMP_FILES = True          # Clean up after processing
+```
+
+### Logging Configuration
+
+Customize logging behavior:
+
+``` python
+# Logging configuration
+LOG_LEVEL = 'INFO'  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+LOG_FILE = 'data_2_dasch.log'
+MAX_LOG_SIZE = 10 * 1024 * 1024  # 10MB
+LOG_BACKUP_COUNT = 5
+
+# Console and file logging
+CONSOLE_LOGGING = True
+FILE_LOGGING = True
+```
+
+## Security Configuration {#security-configuration}
+
+### Credential Security
+
+Secure credential handling:
+
+``` bash
+# File permissions for .env
+chmod 600 .env
+
+# Secure log files
+chmod 600 *.log
+
+# Use secure environment variable loading
+# Never commit .env to version control
+echo ".env" >> .gitignore
+```
+
+### API Security
+
+Configure secure API communications:
+
+``` python
+# Security settings
+VERIFY_SSL = True             # Verify SSL certificates
+USER_AGENT = 'omeka2dsp/1.0'  # Identify requests
+REQUEST_TIMEOUT = 30          # Prevent hanging requests
+
+# Headers for security
+SECURITY_HEADERS = {
+    'User-Agent': USER_AGENT,
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+}
+```
+
+### Access Control
+
+Configure access permissions:
+
+``` python
+# Required permissions check
+REQUIRED_OMEKA_PERMISSIONS = [
+    'read_items',
+    'read_media',
+    'read_collections'
+]
+
+REQUIRED_DSP_PERMISSIONS = [
+    'create_resources',
+    'update_resources',
+    'upload_files'
+]
+```
+
+## Advanced Configuration {#advanced-configuration}
+
+### Custom Property Extractors
+
+Create custom extractors for special properties:
+
+``` python
+def extract_custom_property(item, property_name):
+    """Custom property extraction logic"""
+    props = item.get(property_name, [])
+    
+    # Custom processing logic here
+    for prop in props:
+        if prop.get('property_id') == CUSTOM_PROPERTY_ID:
+            return process_custom_value(prop)
+    
+    return ""
+
+# Register custom extractors
+CUSTOM_EXTRACTORS = {
+    'custom:field': extract_custom_property,
+    'custom:date': extract_custom_date,
+    'custom:geo': extract_geo_coordinates
+}
+```
+
+### Validation Rules
+
+Configure data validation:
+
+``` python
+# Validation configuration
+VALIDATION_RULES = {
+    'required_fields': ['identifier', 'title'],
+    'max_length': {
+        'title': 255,
+        'description': 5000,
+        'identifier': 50
+    },
+    'patterns': {
+        'identifier': r'^[a-zA-Z0-9_-]+$',
+        'email': r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    }
+}
+```
+
+### Transformation Rules
+
+Configure data transformation:
+
+``` python
+# Data transformation rules
+TRANSFORMATION_RULES = {
+    'text_cleanup': {
+        'remove_html': True,
+        'normalize_whitespace': True,
+        'max_length': 1000
+    },
+    'date_formatting': {
+        'input_formats': ['%Y-%m-%d', '%d.%m.%Y', '%Y'],
+        'output_format': '%Y-%m-%d'
+    },
+    'url_validation': {
+        'schemes': ['http', 'https'],
+        'require_domain': True
+    }
+}
+```
+
+### Error Handling Configuration
+
+Configure error handling behavior:
+
+``` python
+# Error handling configuration
+ERROR_CONFIG = {
+    'continue_on_error': True,        # Continue processing after errors
+    'max_errors': 10,                 # Stop after N errors
+    'error_report_file': 'errors.log',
+    'skip_invalid_items': True,       # Skip items that fail validation
+    'retry_on_network_error': True,   # Retry network failures
+    'email_on_critical_error': False  # Email notifications
+}
+```
+
+## Configuration Validation
+
+Validate your configuration before running:
+
+``` python
+# Configuration validation script
+def validate_configuration():
+    """Validate all configuration settings"""
+    errors = []
+    
+    # Check required environment variables
+    required_vars = [
+        'OMEKA_API_URL', 'KEY_IDENTITY', 'KEY_CREDENTIAL',
+        'PROJECT_SHORT_CODE', 'API_HOST', 'DSP_USER', 'DSP_PWD'
+    ]
+    
+    for var in required_vars:
+        if not os.getenv(var):
+            errors.append(f"Missing required environment variable: {var}")
+    
+    # Check API connectivity
+    try:
+        test_omeka_connection()
+        test_dsp_connection()
+    except Exception as e:
+        errors.append(f"API connection failed: {e}")
+    
+    # Check file permissions
+    if not os.access('.env', os.R_OK):
+        errors.append("Cannot read .env file")
+    
+    return errors
+
+# Run validation
+if __name__ == '__main__':
+    errors = validate_configuration()
+    if errors:
+        print("Configuration errors found:")
+        for error in errors:
+            print(f"  - {error}")
+    else:
+        print("Configuration validation passed!")
+```
+
+Run validation:
+
+``` bash
+uv run python scripts/validate_config.py
+```
+
+## Environment-Specific Configurations
+
+### Development Configuration
+
+``` bash
+# .env.development
+DEBUG_MODE=true
+LOG_LEVEL=DEBUG
+API_TIMEOUT=60
+NUMBER_RANDOM_OBJECTS=2
+VERIFY_SSL=false  # For local development only
+```
+
+### Staging Configuration
+
+``` bash
+# .env.staging
+DEBUG_MODE=false
+LOG_LEVEL=INFO
+API_TIMEOUT=30
+NUMBER_RANDOM_OBJECTS=10
+VERIFY_SSL=true
+```
+
+### Production Configuration
+
+``` bash
+# .env.production
+DEBUG_MODE=false
+LOG_LEVEL=WARNING
+API_TIMEOUT=30
+VERIFY_SSL=true
+MAX_RETRIES=5
+BATCH_SIZE=100
+```
+
+## Configuration Management
+
+### Using Configuration Files
+
+For complex setups, use JSON configuration files:
+
+``` json
+{
+  "migration_config": {
+    "processing": {
+      "mode": "all_data",
+      "batch_size": 50,
+      "concurrent_uploads": 3
+    },
+    "mapping": {
+      "property_mappings": {},
+      "list_mappings": {},
+      "custom_transformations": {}
+    },
+    "performance": {
+      "api_timeout": 30,
+      "retry_attempts": 3,
+      "rate_limit": 10
+    }
+  }
+}
+```
+
+Load configuration in Python:
+
+``` python
+import json
+
+def load_config(config_file='config.json'):
+    """Load configuration from JSON file"""
+    with open(config_file, 'r') as f:
+        return json.load(f)
+
+# Use in main script
+config = load_config()
+BATCH_SIZE = config['migration_config']['processing']['batch_size']
+```

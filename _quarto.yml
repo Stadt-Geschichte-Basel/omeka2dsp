@@ -1,0 +1,118 @@
+project:
+  type: website
+
+website:
+  title: omeka2dsp
+  favicon: android-chrome-512x512.png
+  open-graph: true
+  twitter-card: true
+  site-url: https://Stadt-Geschichte-Basel.github.io/omeka2dsp/
+  repo-url: https://github.com/Stadt-Geschichte-Basel/omeka2dsp/
+  issue-url: https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues/new/choose
+  repo-actions: [edit, issue]
+  page-navigation: true
+  bread-crumbs: false
+  back-to-top-navigation: true
+  search:
+    show-item-context: true
+    type: overlay
+  navbar:
+    logo: android-chrome-512x512.png
+    logo-alt: ''
+    title: omeka2dsp
+    tools:
+      - icon: github
+        url: https://github.com/Stadt-Geschichte-Basel/omeka2dsp/
+    left:
+      - text: Home
+        href: index.qmd
+      - text: Documentation
+        menu:
+          - text: Overview
+            href: docs/index.qmd
+          - text: '---'
+          - text: Architecture
+            href: docs/architecture/index.qmd
+          - text: Workflows
+            href: docs/workflows/index.qmd
+          - text: API Reference
+            href: docs/api/index.qmd
+          - text: Data Model
+            href: docs/datamodel/index.qmd
+          - text: '---'
+          - text: Installation
+            href: docs/guides/installation.qmd
+          - text: Configuration
+            href: docs/guides/configuration.qmd
+          - text: Usage
+            href: docs/guides/usage.qmd
+          - text: Development
+            href: docs/guides/development.qmd
+          - text: Troubleshooting
+            href: docs/guides/troubleshooting.qmd
+      - text: About
+        href: project-management/about.qmd
+
+  sidebar:
+    contents:
+      - section: omeka2dsp
+        href: index.qmd
+        contents:
+          - text: Changelog
+            href: CHANGELOG.md
+          - text: Code of Conduct
+            href: CODE_OF_CONDUCT.md
+          - text: Contributing
+            href: CONTRIBUTING.md
+          - text: License (Data)
+            href: LICENSE-CCBY.md
+          - text: License (Code)
+            href: LICENSE-AGPL.md
+          - text: Security
+            href: SECURITY.md
+      - section: Documentation
+        contents:
+          - text: Overview
+            href: docs/index.qmd
+          - text: System Architecture
+            href: docs/architecture/index.qmd
+          - text: Data Workflows
+            href: docs/workflows/index.qmd
+          - text: API Reference
+            href: docs/api/index.qmd
+      - section: Guides
+        contents:
+          - text: Installation & Setup
+            href: docs/guides/installation.qmd
+          - text: Configuration
+            href: docs/guides/configuration.qmd
+          - text: Usage Guide
+            href: docs/guides/usage.qmd
+          - text: Development Guide
+            href: docs/guides/development.qmd
+          - text: Troubleshooting
+            href: docs/guides/troubleshooting.qmd
+      - section: About
+        href: project-management/about.qmd
+        contents:
+          - text: Communication
+            href: project-management/communication.qmd
+          - text: People
+            href: project-management/people.qmd
+          - text: Report
+            href: report.qmd
+format:
+  html:
+    toc: true
+    theme:
+      - brand
+      - cosmo
+    mermaid:
+      theme: neutral
+    css: styles.css
+    code-copy: true
+    code-overflow: wrap
+
+freeze: true
+
+editor: visual
