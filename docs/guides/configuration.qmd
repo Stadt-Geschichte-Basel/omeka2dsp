@@ -27,16 +27,16 @@ ITEM_SET_ID=10780
 
 **Getting Omeka Credentials**:
 
-1. Log into your Omeka admin panel
-2. Navigate to User settings → API keys
-3. Create a new API key
-4. Copy the Identity and Credential values
+1.  Log into your Omeka admin panel
+2.  Navigate to User settings → API keys
+3.  Create a new API key
+4.  Copy the Identity and Credential values
 
 **Finding Collection ID**:
 
-1. In Omeka admin, go to Item sets
-2. Click on your collection
-3. The ID is in the URL: `/admin/item-sets/show/{ID}`
+1.  In Omeka admin, go to Item sets
+2.  Click on your collection
+3.  The ID is in the URL: `/admin/item-sets/show/{ID}`
 
 #### DSP API Configuration
 
@@ -58,10 +58,10 @@ PREFIX=StadtGeschichteBasel_v1:
 
 **DSP Configuration Notes**:
 
-- `PROJECT_SHORT_CODE`: 4-character alphanumeric project identifier
-- `API_HOST`: Main DSP API endpoint (varies by instance)
-- `INGEST_HOST`: File upload service endpoint
-- `PREFIX`: Must match your DSP ontology namespace
+-   `PROJECT_SHORT_CODE`: 4-character alphanumeric project identifier
+-   `API_HOST`: Main DSP API endpoint (varies by instance)
+-   `INGEST_HOST`: File upload service endpoint
+-   `PREFIX`: Must match your DSP ontology namespace
 
 ### Environment File Template
 

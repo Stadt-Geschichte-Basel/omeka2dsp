@@ -9,8 +9,7 @@ Guide for developers contributing to or extending the omeka2dsp system.
 
 We recommend using [**GitHub Codespaces**](https://github.com/features/codespaces) for development.
 
-::: {.panel-tabset}
-
+::: panel-tabset
 ### 🚀 Reproducible Setup with GitHub Codespaces (Most Users)
 
 1.  **Fork** this repository to your GitHub account.
@@ -94,7 +93,6 @@ DSP_PWD=test_password
 DEBUG_MODE=true
 LOG_LEVEL=DEBUG
 ```
-
 :::
 
 ## Code Architecture {#code-architecture}

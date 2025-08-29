@@ -65,13 +65,13 @@ uv run python scripts/data_2_dasch.py -m sample_data
 
 **Returns**:
 
-- `Namespace`: Contains parsed arguments with `mode` attribute
+-   `Namespace`: Contains parsed arguments with `mode` attribute
 
 **Available Modes**:
 
-- `all_data`: Process entire collection
-- `sample_data`: Process random sample (configurable size)
-- `test_data`: Process predefined test dataset
+-   `all_data`: Process entire collection
+-   `sample_data`: Process random sample (configurable size)
+-   `test_data`: Process predefined test dataset
 
 **Example**:
 
@@ -88,17 +88,17 @@ print(args.mode)  # 'sample_data'
 
 **Parameters**:
 
-- `email`: DSP user email address
-- `password`: DSP user password
+-   `email`: DSP user email address
+-   `password`: DSP user password
 
 **Returns**:
 
-- `str`: JWT authentication token
+-   `str`: JWT authentication token
 
 **Raises**:
 
-- `requests.RequestException`: On authentication failure
-- `KeyError`: If response format is unexpected
+-   `requests.RequestException`: On authentication failure
+-   `KeyError`: If response format is unexpected
 
 **Example**:
 
@@ -114,7 +114,7 @@ token = login("user@example.com", "password")
 
 **Returns**:
 
-- `str`: Project IRI/identifier
+-   `str`: Project IRI/identifier
 
 **Side Effects**: Logs project information
 
@@ -131,17 +131,17 @@ project_iri = get_project()
 
 **Parameters**:
 
-- `project_iri`: The project IRI to fetch lists for
+-   `project_iri`: The project IRI to fetch lists for
 
 **Returns**:
 
-- `list`: Array of complete list objects with nodes and values
+-   `list`: Array of complete list objects with nodes and values
 
 **Process**:
 
-1. Fetches list summary from `/admin/lists/`
-2. For each list, fetches detailed information from `/v2/lists/{id}`
-3. Returns complete list data for mapping operations
+1.  Fetches list summary from `/admin/lists/`
+2.  For each list, fetches detailed information from `/v2/lists/{id}`
+3.  Returns complete list data for mapping operations
 
 **Example**:
 
@@ -159,12 +159,12 @@ for list_obj in lists:
 
 **Parameters**:
 
-- `token`: JWT authentication token
-- `resource_iri`: URL-encoded resource IRI
+-   `token`: JWT authentication token
+-   `resource_iri`: URL-encoded resource IRI
 
 **Returns**:
 
-- `dict`: Complete resource JSON object
+-   `dict`: Complete resource JSON object
 
 **Usage**: Used for synchronization to compare existing DSP data with Omeka data.
 
@@ -180,13 +180,13 @@ resource_data = get_full_resource(token, urllib.parse.quote(resource_iri, safe='
 
 **Parameters**:
 
-- `token`: JWT authentication token
-- `object_class`: DSP resource class (e.g., "sgb_OBJECT")
-- `identifier`: Unique identifier to search for
+-   `token`: JWT authentication token
+-   `object_class`: DSP resource class (e.g., "sgb_OBJECT")
+-   `identifier`: Unique identifier to search for
 
 **Returns**:
 
-- `dict`: Resource data if found, empty dict if not found
+-   `dict`: Resource data if found, empty dict if not found
 
 **SPARQL Query**: Constructs and executes a SPARQL query to find resources by identifier.
 
@@ -204,15 +204,15 @@ if resource:
 
 **Parameters**:
 
-- `payload`: Complete DSP resource payload (JSON-LD format)
-- `token`: JWT authentication token
+-   `payload`: Complete DSP resource payload (JSON-LD format)
+-   `token`: JWT authentication token
 
 **Returns**: None
 
 **Side Effects**:
 
- - Creates resource in DSP
- - Logs creation success/failure
+-   Creates resource in DSP
+-   Logs creation success/failure
 
 **Example**:
 
@@ -229,12 +229,12 @@ create_resource(payload, token)
 
 **Parameters**:
 
-- `item`: DSP resource data
-- `prop`: Property name (without prefix)
+-   `item`: DSP resource data
+-   `prop`: Property name (without prefix)
 
 **Returns**:
 
-- `str`: Property value or empty string if not found
+-   `str`: Property value or empty string if not found
 
 **Supported Value Types**: TextValue, ListValue, LinkValue, UriValue
 
@@ -250,12 +250,12 @@ title = extract_dasch_propvalue(dsp_resource, "title")
 
 **Parameters**:
 
-- `item`: DSP resource data
-- `prop`: Property name (without prefix)
+-   `item`: DSP resource data
+-   `prop`: Property name (without prefix)
 
 **Returns**:
 
-- `list`: Array of property values
+-   `list`: Array of property values
 
 **Usage**: For properties that can have multiple values (arrays).
 
@@ -271,18 +271,18 @@ subjects = extract_dasch_propvalue_multiple(dsp_resource, "subject")
 
 **Parameters**:
 
-- `entry`: DSP property entry with @type and value fields
+-   `entry`: DSP property entry with @type and value fields
 
 **Returns**:
 
-- `str`: Extracted value or None
+-   `str`: Extracted value or None
 
 **Supported Types**:
 
-- `knora-api:TextValue`: Returns `knora-api:valueAsString`
-- `knora-api:ListValue`: Returns node IRI from `knora-api:listValueAsListNode` 
-- `knora-api:LinkValue`: Returns target IRI from `knora-api:linkValueHasTargetIri`
-- `knora-api:UriValue`: Returns URI from `knora-api:uriValueAsUri`
+-   `knora-api:TextValue`: Returns `knora-api:valueAsString`
+-   `knora-api:ListValue`: Returns node IRI from `knora-api:listValueAsListNode`
+-   `knora-api:LinkValue`: Returns target IRI from `knora-api:linkValueHasTargetIri`
+-   `knora-api:UriValue`: Returns URI from `knora-api:uriValueAsUri`
 
 **Example**:
 
@@ -300,16 +300,16 @@ value = extract_value_from_entry({
 
 **Parameters**:
 
-- `item`: Omeka item data
-- `type`: DSP resource type (e.g., "sgb_OBJECT", "sgb_MEDIA_IMAGE")
-- `project_iri`: Project IRI for resource association
-- `lists`: DSP lists for value mapping 
-- `parent_iri`: Parent resource IRI for linking
-- `internalMediaFilename`: Internal filename for media resources
+-   `item`: Omeka item data
+-   `type`: DSP resource type (e.g., "sgb_OBJECT", "sgb_MEDIA_IMAGE")
+-   `project_iri`: Project IRI for resource association
+-   `lists`: DSP lists for value mapping
+-   `parent_iri`: Parent resource IRI for linking
+-   `internalMediaFilename`: Internal filename for media resources
 
 **Returns**:
 
-- `dict`: Complete DSP resource payload in JSON-LD format
+-   `dict`: Complete DSP resource payload in JSON-LD format
 
 **Key Transformations**:
 
@@ -346,19 +346,19 @@ payload = construct_payload(
 
 **Parameters**:
 
-- `value`: Value to map (e.g., "image/jpeg")
-- `list_label`: Name of the DSP list to search in
-- `lists`: Array of DSP list objects
+-   `value`: Value to map (e.g., "image/jpeg")
+-   `list_label`: Name of the DSP list to search in
+-   `lists`: Array of DSP list objects
 
 **Returns**:
 
-- `str`: DSP list node IRI if found, empty string otherwise
+-   `str`: DSP list node IRI if found, empty string otherwise
 
 **Process**:
 
-1. Finds the list with matching label
-2. Searches through list nodes for matching value
-3. Returns the node IRI for API operations
+1.  Finds the list with matching label
+2.  Searches through list nodes for matching value
+3.  Returns the node IRI for API operations
 
 **Example**:
 
@@ -379,19 +379,19 @@ format_iri = extract_listvalueiri_from_value(
 
 **Parameters**:
 
-- `dasch_item`: Current DSP resource data
-- `omeka_item`: Current Omeka item data
-- `lists`: DSP lists for value mapping
+-   `dasch_item`: Current DSP resource data
+-   `omeka_item`: Current Omeka item data
+-   `lists`: DSP lists for value mapping
 
 **Returns**:
 
-- `list`: Array of change operations (create, update, delete)
+-   `list`: Array of change operations (create, update, delete)
 
 **Change Detection**:
 
-- Compares each property between systems
-- Identifies additions, deletions, and modifications
-- Handles both single values and arrays
+-   Compares each property between systems
+-   Identifies additions, deletions, and modifications
+-   Handles both single values and arrays
 
 **Example**:
 
@@ -407,20 +407,20 @@ for change in changes:
 
 **Parameters**:
 
-- `prop`: Property name
-- `prop_type`: DSP property type (TextValue, ListValue, etc.)
-- `dasch_value`: Current value in DSP
-- `omeka_value`: Current value in Omeka
+-   `prop`: Property name
+-   `prop_type`: DSP property type (TextValue, ListValue, etc.)
+-   `dasch_value`: Current value in DSP
+-   `omeka_value`: Current value in Omeka
 
 **Returns**:
 
-- `list`: Array of change operations
+-   `list`: Array of change operations
 
 **Logic**:
 
-- If values are different, creates update operation
-- If DSP has value but Omeka doesn't, creates delete operation
-- If Omeka has value but DSP doesn't, creates create operation
+-   If values are different, creates update operation
+-   If DSP has value but Omeka doesn't, creates delete operation
+-   If Omeka has value but DSP doesn't, creates create operation
 
 #### `sync_array_value(prop: str, prop_type: str, dasch_array: list, omeka_array: list) -> list`
 
@@ -428,21 +428,21 @@ for change in changes:
 
 **Parameters**:
 
-- `prop`: Property name
-- `prop_type`: DSP property type
-- `dasch_array`: Current values in DSP
-- `omeka_array`: Current values in Omeka
+-   `prop`: Property name
+-   `prop_type`: DSP property type
+-   `dasch_array`: Current values in DSP
+-   `omeka_array`: Current values in Omeka
 
 **Returns**:
 
-- `list`: Array of change operations
+-   `list`: Array of change operations
 
 **Algorithm**:
 
-1. Converts arrays to sets for comparison
-2. Calculates additions (in Omeka but not DSP)
-3. Calculates deletions (in DSP but not Omeka)
-4. Generates corresponding create/delete operations
+1.  Converts arrays to sets for comparison
+2.  Calculates additions (in Omeka but not DSP)
+3.  Calculates deletions (in DSP but not Omeka)
+4.  Generates corresponding create/delete operations
 
 #### `update_value(token: str, item: dict, value: str, field: str, field_type: str, type_of_change: str) -> None`
 
@@ -450,19 +450,19 @@ for change in changes:
 
 **Parameters**:
 
-- `token`: JWT authentication token
-- `item`: DSP resource data
-- `value`: New value to set
-- `field`: Property name
-- `field_type`: DSP value type
-- `type_of_change`: Operation type ("create", "update", "delete")
+-   `token`: JWT authentication token
+-   `item`: DSP resource data
+-   `value`: New value to set
+-   `field`: Property name
+-   `field_type`: DSP value type
+-   `type_of_change`: Operation type ("create", "update", "delete")
 
 **Returns**: None
 
 **Side Effects**:
 
-- Modifies DSP resource via API
-- Logs operation results
+-   Modifies DSP resource via API
+-   Logs operation results
 
 ### File Upload Functions
 
@@ -472,21 +472,21 @@ for change in changes:
 
 **Parameters**:
 
-- `file_url`: URL of file in Omeka
-- `token`: JWT authentication token
-- `zip`: Whether to compress file before upload
+-   `file_url`: URL of file in Omeka
+-   `token`: JWT authentication token
+-   `zip`: Whether to compress file before upload
 
 **Returns**:
 
-- `str`: Internal filename assigned by DSP
+-   `str`: Internal filename assigned by DSP
 
 **Process**:
 
-1. Downloads file from Omeka URL
-2. Saves to temporary file
-3. Optionally creates ZIP archive
-4. Uploads to DSP via multipart form 
-5. Returns DSP internal filename
+1.  Downloads file from Omeka URL
+2.  Saves to temporary file
+3.  Optionally creates ZIP archive
+4.  Uploads to DSP via multipart form
+5.  Returns DSP internal filename
 
 **Example**:
 
@@ -504,17 +504,17 @@ internal_filename = upload_file_from_url(
 
 **Parameters**:
 
-- `media_type`: MIME type string (e.g., "image/jpeg")
+-   `media_type`: MIME type string (e.g., "image/jpeg")
 
 **Returns**:
 
-- `str`: DSP media class name
+-   `str`: DSP media class name
 
 **Mapping**:
 
-- `image/*` → `sgb_MEDIA_IMAGE`
-- `application/pdf`, `text/*`, `application/zip` → `sgb_MEDIA_ARCHIV`
-- All others → `sgb_MEDIA_ARCHIV` (default)
+-   `image/*` → `sgb_MEDIA_IMAGE`
+-   `application/pdf`, `text/*`, `application/zip` → `sgb_MEDIA_ARCHIV`
+-   All others → `sgb_MEDIA_ARCHIV` (default)
 
 **Example**:
 
@@ -531,12 +531,12 @@ media_class = specify_mediaclass("image/jpeg")
 
 **Parameters**:
 
-- `array1`: First array to compare
-- `array2`: Second array to compare
+-   `array1`: First array to compare
+-   `array2`: Second array to compare
 
 **Returns**:
 
-- `bool`: True if arrays contain the same elements
+-   `bool`: True if arrays contain the same elements
 
 **Usage**: Used in synchronization to detect array changes.
 
@@ -552,17 +552,17 @@ Handles data extraction and processing from the Omeka API.
 
 **Parameters**:
 
-- `collection_id`: Omeka collection/item set ID
+-   `collection_id`: Omeka collection/item set ID
 
 **Returns**:
 
-- `list`: Array of all items in the collection
+-   `list`: Array of all items in the collection
 
 **Features**:
 
-- Automatic pagination handling
-- Rate limiting compliance
-- Error recovery for temporary failures
+-   Automatic pagination handling
+-   Rate limiting compliance
+-   Error recovery for temporary failures
 
 **Example**:
 
@@ -577,11 +577,11 @@ print(f"Found {len(items)} items")
 
 **Parameters**:
 
-- `item_id`: Omeka item ID
+-   `item_id`: Omeka item ID
 
 **Returns**:
 
-- `list`: Array of media objects with metadata and file URLs
+-   `list`: Array of media objects with metadata and file URLs
 
 **Example**:
 
@@ -597,16 +597,18 @@ for media in media_files:
 
 **Parameters**:
 
-- `url`: Base API endpoint URL
-- `params`: Query parameters for first request
+-   `url`: Base API endpoint URL
+-   `params`: Query parameters for first request
 
 **Returns**:
 
-- `list`: Combined results from all pages
+-   `list`: Combined results from all pages
 
 **Features**:
 
-- Follows pagination links automatically -Handles rate limiting -Error recovery
+-   Follows pagination links automatically
+-   Handles rate limiting
+-   Error recovery
 
 ### Data Extraction Functions
 
@@ -616,20 +618,20 @@ for media in media_files:
 
 **Parameters**:
 
-- `props`: Array of Omeka property objects
-- `prop_id`: Numerical ID of property to extract
-- `as_uri`: Return as formatted URI link (default: False)
-- `only_label`: Return only the label (default: False)
+-   `props`: Array of Omeka property objects
+-   `prop_id`: Numerical ID of property to extract
+-   `as_uri`: Return as formatted URI link (default: False)
+-   `only_label`: Return only the label (default: False)
 
 **Returns**:
 
-- `str`: Property value in requested format
+-   `str`: Property value in requested format
 
 **Formats**:
 
-- Default: Returns `@value` field
-- `as_uri=True`: Returns `[label](uri)` markdown format
-- `only_label=True`: Returns `o:label` field only
+-   Default: Returns `@value` field
+-   `as_uri=True`: Returns `[label](uri)` markdown format
+-   `only_label=True`: Returns `o:label` field only
 
 **Example**:
 
@@ -644,18 +646,18 @@ creator_link = extract_property(item.get("dcterms:creator", []), 2, as_uri=True)
 
 **Parameters**:
 
-- `props`: Array of Omeka property objects
+-   `props`: Array of Omeka property objects
 
 **Returns**:
 
-- `list`: Combined array of text values and formatted URI links
+-   `list`: Combined array of text values and formatted URI links
 
 **Process**:
 
-1. Extracts all `@value` text fields
-2. Formats URI references as HTML links
-3. Escapes semicolons to prevent conflicts
-4. Returns combined array
+1.  Extracts all `@value` text fields
+2.  Formats URI references as HTML links
+3.  Escapes semicolons to prevent conflicts
+4.  Returns combined array
 
 **Example**:
 
@@ -672,11 +674,11 @@ subjects = extract_combined_values(item.get("dcterms:subject", []))
 
 **Parameters**:
 
-- `url`: URL string to validate
+-   `url`: URL string to validate
 
 **Returns**:
 
-- `bool`: True if URL is valid
+-   `bool`: True if URL is valid
 
 **Example**:
 
@@ -690,16 +692,16 @@ valid = is_valid_url("https://example.com/file.jpg")
 
 **Parameters**:
 
-- `url`: Source file URL
-- `dest_path`: Destination file path
+-   `url`: Source file URL
+-   `dest_path`: Destination file path
 
 **Returns**: None
 
 **Features**:
 
-- Creates directories as needed
-- Streaming download for large files
-- Error handling and logging
+-   Creates directories as needed
+-   Streaming download for large files
+-   Error handling and logging
 
 ## api_get_project.py
 
@@ -711,8 +713,8 @@ Standalone script to fetch DSP project information.
 
 **Environment Variables**:
 
-- `PROJECT_SHORT_CODE`: DSP project shortcode
-- `API_HOST`: DSP API base URL
+-   `PROJECT_SHORT_CODE`: DSP project shortcode
+-   `API_HOST`: DSP API base URL
 
 **Output**: Saves project data to `../data/project_data.json`
 
@@ -734,8 +736,8 @@ Standalone script to fetch DSP list configurations.
 
 **Configuration**:
 
-- Hardcoded project IRI (should be updated for different projects)
-- Fixed API host (should be made configurable)
+-   Hardcoded project IRI (should be updated for different projects)
+-   Fixed API host (should be made configurable)
 
 **Output**: Saves list data to `../data/data_lists.json`
 
@@ -755,24 +757,24 @@ Standalone script to fetch detailed DSP list information.
 
 **Parameters**:
 
-- `list_id`: DSP list IRI
+-   `list_id`: DSP list IRI
 
 **Returns**:
 
-- `dict`: Complete list object with all nodes and values
+-   `dict`: Complete list object with all nodes and values
 
 **Process**:
 
-1. URL-encodes the list IRI
-2. Requests detailed list data from `/v2/lists/{id}`
-3. Returns complete list structure
+1.  URL-encodes the list IRI
+2.  Requests detailed list data from `/v2/lists/{id}`
+3.  Returns complete list structure
 
 **Main Script Logic**:
 
-1. Loads list summary from `data_lists.json` 
-2. Iterates through each list 
-3. Fetches detailed information for each 
-4. Saves all detailed lists to `data_lists_detail.json`
+1.  Loads list summary from `data_lists.json`
+2.  Iterates through each list
+3.  Fetches detailed information for each
+4.  Saves all detailed lists to `data_lists_detail.json`
 
 ## Configuration Constants {#configuration-constants}
 

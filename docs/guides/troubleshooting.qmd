@@ -231,7 +231,6 @@ requests.exceptions.ConnectionError
 **Symptoms:**
 
 ::: {.callout-important appearance="minimal"}
-
 ```         
 requests.exceptions.SSLError: certificate verify failed
 ```
@@ -464,10 +463,10 @@ requests.exceptions.RequestException
 **Symptoms:**
 
 ::: {.callout-important appearance="minimal"}
-- Processing takes much longer than expected
-- High memory usage
-- Network timeouts
-- System becomes unresponsive
+-   Processing takes much longer than expected
+-   High memory usage
+-   Network timeouts
+-   System becomes unresponsive
 :::
 
 **Diagnostic Steps:**
@@ -679,7 +678,6 @@ ERROR - Invalid API endpoint
 **Symptoms:**
 
 ::: {.callout-important appearance="minimal"}
-
 ```         
 WARNING - List value not found for: unknown_value
 ERROR - Invalid list node IRI
