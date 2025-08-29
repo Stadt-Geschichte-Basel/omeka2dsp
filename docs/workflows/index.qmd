@@ -35,6 +35,12 @@ graph TB
     G --> A
     H --> A
     I --> A
+
+    click A href "#main-migration-workflow"
+    click B href "#data-extraction-workflow"
+    click C href "#data-transformation-workflow"
+    click D href "#synchronization-workflow"
+    click E href "#file-upload-workflow"
     
     style A fill:#e3f2fd
     style B fill:#fff3e0
