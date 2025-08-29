@@ -110,6 +110,7 @@ format:
     mermaid:
       theme: neutral
     css: styles.css
+    mainfont: Euclid Circular B
     code-copy: true
     code-overflow: wrap
 
