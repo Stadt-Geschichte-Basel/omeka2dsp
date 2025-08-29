@@ -198,27 +198,31 @@ if resource:
     print(f"Found resource: {resource['@id']}")
 ```
 
-#### `create_resource(payload: dict, token: str) -> None`
+#### `create_resource(payload: dict, token: str) -> str`
 
-**Purpose**: Creates a new resource in DSP using the provided payload.
+**Purpose**: Creates a new resource in DSP using the provided payload and returns the resource IRI.
 
 **Parameters**:
 
 -   `payload`: Complete DSP resource payload (JSON-LD format)
 -   `token`: JWT authentication token
 
-**Returns**: None
+**Returns**: 
+-   `str`: The DSP resource IRI if creation successful, empty string otherwise
 
 **Side Effects**:
 
 -   Creates resource in DSP
--   Logs creation success/failure
+-   Logs creation success/failure with resource IRI
+-   If `OMEKA_WRITEBACK_ENABLED` is true, triggers write-back of DSP URI to Omeka
 
 **Example**:
 
 ``` python
 payload = construct_payload(omeka_item, f"{PREFIX}sgb_OBJECT", project_iri, lists, "", "")
-create_resource(payload, token)
+resource_iri = create_resource(payload, token)
+if resource_iri:
+    print(f"Created resource: {resource_iri}")
 ```
 
 ### Data Extraction & Transformation Functions
@@ -666,6 +670,41 @@ subjects = extract_combined_values(item.get("dcterms:subject", []))
 # Returns: ["History", "Basel", "<a href='...'>Authority Record</a>"]
 ```
 
+#### `update_omeka_item(item_id: int, property_id: int, dsp_uri: str) -> bool`
+
+**Purpose**: Updates an Omeka item by adding a DSP URI to a specific Dublin Core property.
+
+**Parameters**:
+
+-   `item_id`: Omeka item ID to update
+-   `property_id`: Dublin Core property ID (e.g., 44 for dcterms:hasVersion)
+-   `dsp_uri`: DSP resource IRI to add as property value
+
+**Returns**:
+
+-   `bool`: True if update successful, False otherwise
+
+**Process**:
+
+1.  Fetches current item data from Omeka API
+2.  Locates existing property or creates new property entry
+3.  Adds DSP URI as new property value
+4.  Updates item via PUT request to Omeka API
+
+**Error Handling**:
+
+-   Catches and logs HTTP errors
+-   Returns False on any failure
+-   Continues processing if write-back fails
+
+**Example**:
+
+``` python
+success = update_omeka_item(12345, 44, "https://dsp.example.com/resource/123")
+if success:
+    print("DSP URI written back to Omeka successfully")
+```
+
 ### Utility Functions
 
 #### `is_valid_url(url: str) -> bool`
@@ -792,6 +831,8 @@ Standalone script to fetch detailed DSP list information.
 | `OMEKA_API_URL` | string | No | Omeka API base URL | "https://omeka.unibe.ch/api/" |
 | `KEY_IDENTITY` | string | Yes | Omeka API key identity | None |
 | `KEY_CREDENTIAL` | string | Yes | Omeka API key credential | None |
+| `OMEKA_WRITEBACK_ENABLED` | string | No | Enable DSP URI write-back to Omeka | "true" |
+| `DCTERMS_HASVERSION_PROPERTY_ID` | string | No | Property ID for dcterms:hasVersion | "44" |
 
 ### Processing Constants
 

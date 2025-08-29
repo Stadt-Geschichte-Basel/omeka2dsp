@@ -15,7 +15,8 @@ from process_data_from_omeka import (
     get_items_from_collection,
     get_media,
     extract_combined_values,
-    extract_property
+    extract_property,
+    update_omeka_item
 )
 
 # TODO: - improve error handling
@@ -31,6 +32,10 @@ INGEST_HOST = os.getenv("INGEST_HOST")
 DSP_USER = os.getenv("DSP_USER")
 DSP_PWD = os.getenv("DSP_PWD")
 PREFIX = os.getenv("PREFIX", "StadtGeschichteBasel_v1:")
+
+# Configuration for Omeka write-back
+OMEKA_WRITEBACK_ENABLED = os.getenv("OMEKA_WRITEBACK_ENABLED", "true").lower() == "true"
+DCTERMS_HASVERSION_PROPERTY_ID = int(os.getenv("DCTERMS_HASVERSION_PROPERTY_ID", "44"))  # Default property ID for dcterms:hasVersion
 
 NUMBER_RANDOM_OBJECTS = 2
 TEST_DATA = {'abb13025', 'abb14375', 'abb41033', 'abb11536', 'abb28998'}
@@ -570,7 +575,7 @@ def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
     return None
 
 
-def create_resource(payload: dict, token: str) -> None:
+def create_resource(payload: dict, token: str) -> str:
     # https://docs.dasch.swiss/latest/DSP-API/03-endpoints/api-v2/editing-resources/#creating-a-resource
     resources_endpoint = f"{API_HOST}/v2/resources"
     headers = {
@@ -580,10 +585,13 @@ def create_resource(payload: dict, token: str) -> None:
 
     response = requests.post(resources_endpoint, json=payload, headers=headers, timeout=10)
     if response.status_code == 200:
-        logging.info(f"{payload[f"{PREFIX}identifier"]["knora-api:valueAsString"]}: resource created on DaSCH")
+        resource_iri = response.json().get("@id", "")
+        logging.info(f"{payload[f"{PREFIX}identifier"]["knora-api:valueAsString"]}: resource created on DaSCH with IRI: {resource_iri}")
+        return resource_iri
     else:
         logging.error(f"{payload[f"{PREFIX}identifier"]["knora-api:valueAsString"]}: resource creation failed: {response.status_code}: {response.text}")
         logging.error(payload)
+        return ""
 
 
 def specify_mediaclass(media_type: str) -> str:
@@ -663,7 +671,14 @@ def main() -> None:
                 
         else:
             payload = construct_payload(item, f"{PREFIX}sgb_OBJECT", project_iri, project_lists,"","")
-            create_resource(payload, token)
+            created_iri = create_resource(payload, token)
+            if created_iri and OMEKA_WRITEBACK_ENABLED:
+                # Write back DSP URI to Omeka item
+                omeka_item_id = item.get("o:id", "")
+                if omeka_item_id:
+                    success = update_omeka_item(omeka_item_id, DCTERMS_HASVERSION_PROPERTY_ID, created_iri)
+                    if not success:
+                        logging.warning(f"Failed to write back DSP URI to Omeka item {omeka_item_id}")
             metadata_iri = get_resource_by_id(token, f"{PREFIX}sgb_OBJECT", item_id).get('@id')
         media_data = get_media(item.get("o:id", ""))
         if media_data:
@@ -693,7 +708,14 @@ def main() -> None:
                     internalFilename = upload_file_from_url(object_location,token, zip=(media_class == f"{PREFIX}sgb_MEDIA_ARCHIV"))
                     if internalFilename:
                         media_payload = construct_payload(media, media_class, project_iri, project_lists, metadata_iri,internalFilename)
-                        create_resource(media_payload, token)
+                        created_media_iri = create_resource(media_payload, token)
+                        if created_media_iri and OMEKA_WRITEBACK_ENABLED:
+                            # Write back DSP URI to Omeka media item
+                            omeka_media_id = media.get("o:id", "")
+                            if omeka_media_id:
+                                success = update_omeka_item(omeka_media_id, DCTERMS_HASVERSION_PROPERTY_ID, created_media_iri)
+                                if not success:
+                                    logging.warning(f"Failed to write back DSP URI to Omeka media item {omeka_media_id}")
                     else:
                         logging.error(f"{media_id}: could not create resource")
 
