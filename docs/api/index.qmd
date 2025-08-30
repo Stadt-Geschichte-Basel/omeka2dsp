@@ -22,11 +22,11 @@ graph TD
     click D href "#api_get_lists.py" "Jump to api_get_lists.py"
     click E href "#api_get_lists_detailed.py" "Jump to api_get_lists_detailed.py"
     
-    style A fill:#e3f2fd
-    style B fill:#fff3e0
-    style C fill:#f3e5f5
-    style D fill:#f3e5f5
-    style E fill:#f3e5f5
+    style A fill:#86bbd8
+    style B fill:#ffe880
+    style C fill:#3a1e3e,color:#fff
+    style D fill:#3a1e3e,color:#fff
+    style E fill:#3a1e3e,color:#fff
 ```
 
 ## data_2_dasch.py
