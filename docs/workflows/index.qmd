@@ -42,11 +42,11 @@ graph TB
     click D href "#synchronization-workflow"
     click E href "#file-upload-workflow"
     
-    style A fill:#e3f2fd
-    style B fill:#fff3e0
-    style C fill:#fff3e0
-    style D fill:#fff3e0
-    style E fill:#fff3e0
+    style A fill:#86bbd8
+    style B fill:#ffe880
+    style C fill:#ffe880
+    style D fill:#ffe880
+    style E fill:#ffe880
 ```
 
 ## Main Migration Workflow {#main-migration-workflow}
@@ -115,13 +115,13 @@ flowchart TD
     ConfigError --> End
     AuthError --> End
     
-    style Start fill:#e8f5e8
-    style End fill:#e8f5e8
-    style ProcessItem fill:#fff3e0
-    style CreateFlow fill:#e3f2fd
-    style SyncFlow fill:#fff8e1
-    style ProcessMedia fill:#f3e5f5
-    style Complete fill:#e8f5e8
+    style Start fill:#dbfe87
+    style End fill:#dbfe87
+    style ProcessItem fill:#ffe880
+    style CreateFlow fill:#86bbd8
+    style SyncFlow fill:#ffe880
+    style ProcessMedia fill:#3a1e3e,color:#fff
+    style Complete fill:#dbfe87
 ```
 
 ### Processing Mode Details
@@ -138,9 +138,9 @@ graph LR
     B1 --> Config2[Uses NUMBER_RANDOM_OBJECTS variable]
     C1 --> Config3[Uses TEST_DATA array]
     
-    style A fill:#e3f2fd
-    style B fill:#fff8e1
-    style C fill:#ffebee
+    style A fill:#86bbd8
+    style B fill:#ffe880
+    style C fill:#f6ae2d
 ```
 
 ## Data Extraction Workflow {#data-extraction-workflow}
@@ -204,9 +204,9 @@ flowchart TD
     H --> K
     J --> K
     
-    style A fill:#e1f5fe
-    style K fill:#e8f5e8
-    style B fill:#fff3e0
+    style A fill:#86bbd8
+    style K fill:#dbfe87
+    style B fill:#ffe880
 ```
 
 ## Data Transformation Workflow {#data-transformation-workflow}
@@ -260,10 +260,10 @@ flowchart TD
     
     P --> R[Return Null/Error]
     
-    style A fill:#e1f5fe
-    style Q fill:#e8f5e8
-    style R fill:#ffebee
-    style B fill:#fff3e0
+    style A fill:#86bbd8
+    style Q fill:#dbfe87
+    style R fill:#f6ae2d
+    style B fill:#ffe880
 ```
 
 ### List Value Mapping
@@ -328,10 +328,10 @@ flowchart TD
     S --> T[Apply Updates via DSP API]
     T --> U[Log Synchronization Results]
     
-    style A fill:#e1f5fe
-    style U fill:#e8f5e8
-    style E fill:#fff3e0
-    style S fill:#fff8e1
+    style A fill:#86bbd8
+    style U fill:#dbfe87
+    style E fill:#ffe880
+    style S fill:#ffe880
 ```
 
 ### Array Value Synchronization Details
@@ -353,8 +353,8 @@ flowchart LR
     H --> K[Execute via DSP API]
     I --> K
     
-    style C fill:#fff3e0
-    style K fill:#e8f5e8
+    style C fill:#ffe880
+    style K fill:#dbfe87
 ```
 
 ## File Upload Workflow {#file-upload-workflow}
@@ -414,10 +414,10 @@ graph TD
     G --> I[Configure Image-specific Fields]
     H --> J[Configure Archive-specific Fields]
     
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style G fill:#e3f2fd
-    style H fill:#f3e5f5
+    style A fill:#86bbd8
+    style B fill:#ffe880
+    style G fill:#86bbd8
+    style H fill:#3a1e3e,color:#fff
 ```
 
 ## Error Handling Workflow {#error-handling-workflow}
@@ -461,11 +461,11 @@ flowchart TD
     
     S --> T[Processing Complete]
     
-    style A fill:#e1f5fe
-    style T fill:#e8f5e8
-    style K fill:#ffebee
-    style R fill:#ffebee
-    style E fill:#fff8e1
+    style A fill:#86bbd8
+    style T fill:#dbfe87
+    style K fill:#f6ae2d
+    style R fill:#f6ae2d
+    style E fill:#ffe880
 ```
 
 ## API Utility Workflows {#api-utility-workflows}
@@ -546,10 +546,10 @@ flowchart TD
     O --> P[End Script]
     D --> P
     
-    style A fill:#e8f5e8
-    style P fill:#e8f5e8
-    style B fill:#fff3e0
-    style I fill:#e3f2fd
+    style A fill:#dbfe87
+    style P fill:#dbfe87
+    style B fill:#ffe880
+    style I fill:#86bbd8
 ```
 
 ## Workflow Integration
@@ -590,7 +590,7 @@ graph TB
     C1 --> C2
     C2 --> C3
     
-    style A1 fill:#e1f5fe
-    style B1 fill:#fff3e0
-    style C1 fill:#e8f5e8
+    style A1 fill:#86bbd8
+    style B1 fill:#ffe880
+    style C1 fill:#dbfe87
 ```
