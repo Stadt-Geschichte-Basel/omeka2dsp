@@ -66,6 +66,17 @@
 	color: #ffe880;
 }
 
+.navbar .dropdown-menu .dropdown-item:hover,
+.navbar .dropdown-menu .dropdown-item:focus {
+	background-color: #3a1e3e;
+	color: #fff;
+}
+
+.navbar .dropdown-menu .dropdown-item:active {
+	color: #ffe880;
+	background-color: #3a1e3e;
+}
+
 [data-bs-theme='dark'] .navbar-toggler-icon {
 	--bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
@@ -110,16 +121,6 @@ h1 {
 	text-decoration: underline;
 	text-decoration-color: #ffe880;
 	text-decoration-thickness: 4px;
-}
-
-.callout-tip,
-.callout-note {
-	border: 1.5px solid rgba(255, 232, 128, 0.85) !important;
-	border-left-width: 5px !important;
-}
-
-.callout-header {
-	background-color: #ffe880 !important;
 }
 
 .col-centered {
