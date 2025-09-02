@@ -57,12 +57,12 @@ graph TB
     
     E --> I
     
-    style A fill:#e1f5fe
-    style F fill:#e8f5e8
-    style B fill:#fff3e0
-    style C fill:#fff3e0
-    style D fill:#fff3e0
-    style E fill:#fff3e0
+    style A fill:#86bbd8
+    style F fill:#dbfe87
+    style B fill:#ffe880
+    style C fill:#ffe880
+    style D fill:#ffe880
+    style E fill:#ffe880
 ```
 
 ## Core Components
@@ -75,10 +75,10 @@ graph TB
 
 **Key Functions**:
 
-- `get_items_from_collection()` -- Retrieves paginated items from collections
-- `get_media()` -- Fetches media files associated with items
-- `extract_property()` -- Extracts specific metadata properties
-- `extract_combined_values()` -- Combines multiple property values  
+-   `get_items_from_collection()` -- Retrieves paginated items from collections
+-   `get_media()` -- Fetches media files associated with items
+-   `extract_property()` -- Extracts specific metadata properties
+-   `extract_combined_values()` -- Combines multiple property values
 
 Refer to the [API Documentation](/docs/api/index.qmd#process_data_from_omeka.py) for more details on these functions.
 
@@ -111,12 +111,11 @@ classDiagram
 
 **Key Functions**:
 
-- `construct_payload()` -- Builds DSP resource payloads
-- `extract_listvalueiri_from_value()` -- Maps values to DSP list nodes
-- `specify_mediaclass()` -- Determines appropriate DSP media classes
+-   `construct_payload()` -- Builds DSP resource payloads
+-   `extract_listvalueiri_from_value()` -- Maps values to DSP list nodes
+-   `specify_mediaclass()` -- Determines appropriate DSP media classes
 
 Refer to the [API Documentation](/docs/api/index.qmd#data_2_dasch.py) for more details on these functions.
-
 
 **Architecture Pattern**: Builder pattern with strategy pattern for different resource types
 
@@ -162,13 +161,12 @@ classDiagram
 
 **Key Functions**:
 
-- `check_values()` -- Compares Omeka and DSP data for differences
-- `sync_value()` -- Synchronizes single-value properties
-- `sync_array_value()` -- Synchronizes multi-value properties
-- `update_value()` -- Performs actual API updates
+-   `check_values()` -- Compares Omeka and DSP data for differences
+-   `sync_value()` -- Synchronizes single-value properties
+-   `sync_array_value()` -- Synchronizes multi-value properties
+-   `update_value()` -- Performs actual API updates
 
 Refer to the [API Documentation](/docs/api/index.qmd#data_2_dasch.py) for more details on these functions.
-
 
 **Architecture Pattern**: Strategy pattern with command pattern for updates
 
@@ -222,9 +220,9 @@ classDiagram
 
 **Key Functions**:
 
-- `upload_file_from_url()` -- Downloads and uploads files to DSP
-- `create_resource()` -- Creates new DSP resources
-- `get_full_resource()` -- Retrieves complete resource data
+-   `upload_file_from_url()` -- Downloads and uploads files to DSP
+-   `create_resource()` -- Creates new DSP resources
+-   `get_full_resource()` -- Retrieves complete resource data
 
 Refer to the [API Documentation](/docs/api/index.qmd#data_2_dasch.py.py) for more details on these functions.
 
@@ -263,11 +261,11 @@ flowchart TD
     MoreItems -->|Yes| ProcessItem
     MoreItems -->|No| Complete[Migration Complete]
     
-    style Start fill:#e8f5e8
-    style Complete fill:#e8f5e8
-    style ProcessItem fill:#fff3e0
-    style CreateNew fill:#e3f2fd
-    style UpdateExisting fill:#fff8e1
+    style Start fill:#dbfe87
+    style Complete fill:#dbfe87
+    style ProcessItem fill:#ffe880
+    style CreateNew fill:#86bbd8
+    style UpdateExisting fill:#ffe880
 ```
 
 ### Data Transformation Flow
@@ -337,11 +335,11 @@ graph LR
     B --> A
     C --> B
     
-    style A fill:#e1f5fe
-    style D fill:#fff3e0
-    style E fill:#e8f5e8
-    style F fill:#fff8e1
-    style G fill:#ffebee
+    style A fill:#86bbd8
+    style D fill:#f6ae2d
+    style E fill:#dbfe87
+    style F fill:#ffe880
+    style G fill:#3a1e3e,color:#fff
 ```
 
 ### Configuration Categories
@@ -371,9 +369,9 @@ graph TD
     H --> J[Continue Processing]
     H --> K[Fail Fast for Critical Errors]
     
-    style G fill:#ffebee
-    style H fill:#ffebee
-    style I fill:#ffebee
+    style G fill:#f6ae2d
+    style H fill:#f6ae2d
+    style I fill:#f6ae2d
 ```
 
 ### Fault Tolerance

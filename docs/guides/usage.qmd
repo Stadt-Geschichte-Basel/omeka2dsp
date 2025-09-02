@@ -266,9 +266,9 @@ flowchart TD
     H --> K[Process Next Item]
     J --> K
     
-    style C fill:#e3f2fd
-    style G fill:#fff8e1
-    style H fill:#e8f5e8
+    style C fill:#86bbd8
+    style G fill:#ffe880
+    style H fill:#dbfe87
 ```
 
 ### Conflict Resolution

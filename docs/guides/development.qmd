@@ -10,7 +10,7 @@ Guide for developers contributing to or extending the omeka2dsp system.
 We recommend using [**GitHub Codespaces**](https://github.com/features/codespaces) for development.
 
 ::: panel-tabset
-### 🚀 Reproducible Setup with GitHub Codespaces (Most Users)
+### 🚀 Setup with GitHub Codespaces (Most Users)
 
 1.  **Fork** this repository to your GitHub account.
 
@@ -254,8 +254,6 @@ refactor: extract payload building to separate module
 -   [ ] Performance impact considered
 -   [ ] Error handling included
 -   [ ] Logging appropriate
-
-
 
 ## Debugging {#debugging}
 
