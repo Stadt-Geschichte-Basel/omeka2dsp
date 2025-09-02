@@ -3,7 +3,7 @@
 @font-face {
 	font-display: swap;
 	font-family: 'Euclid Circular B';
-	src: url('/assets/fonts/EuclidCircularB-Regular-WebS.woff2') format('woff2');
+	src: url('assets/fonts/EuclidCircularB-Regular-WebS.woff2') format('woff2');
 	font-style: normal;
 	font-weight: 400;
 }
@@ -11,7 +11,7 @@
 @font-face {
 	font-display: swap;
 	font-family: 'Euclid Circular B';
-	src: url('/assets/fonts/EuclidCircularB-Medium-WebS.woff2') format('woff2');
+	src: url('assets/fonts/EuclidCircularB-Medium-WebS.woff2') format('woff2');
 	font-style: normal;
 	font-weight: 500;
 }
@@ -19,7 +19,7 @@
 @font-face {
 	font-display: swap;
 	font-family: 'Euclid Circular B';
-	src: url('/assets/fonts/EuclidCircularB-Semibold-WebS.woff2') format('woff2');
+	src: url('assets/fonts/EuclidCircularB-Semibold-WebS.woff2') format('woff2');
 	font-style: normal;
 	font-weight: 600;
 }
@@ -131,8 +131,9 @@ h1 {
 
 .card {
 	border-radius: 0.2em;
-	&:hover {
-		background-color: #ffe880;
-		border-color: #3a1e3e;
-	}
+}
+
+.card:hover {
+	background-color: #ffe880;
+	border-color: #3a1e3e;
 }
