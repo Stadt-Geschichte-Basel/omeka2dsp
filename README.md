@@ -91,11 +91,11 @@ graph LR
     F --> C
     F --> D
 
-    style A fill:#e1f5fe
-    style E fill:#e8f5e8
-    style B fill:#fff3e0
-    style C fill:#fff3e0
-    style D fill:#fff3e0
+    style A fill:#86bbd8
+    style E fill:#dbfe87
+    style B fill:#ffe880
+    style C fill:#ffe880
+    style D fill:#ffe880
 ```
 
 ### Features
