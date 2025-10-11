@@ -1,0 +1,1005 @@
+{
+  "prefixes": {
+    "SGB": "http://api.rdu-13.dasch.swiss/ontology/4001/SGB/v2",
+    "dcterms": "http://purl.org/dc/terms/"
+  },
+  "$schema": "https://raw.githubusercontent.com/dasch-swiss/dsp-tools/main/src/dsp_tools/resources/schema/project.json",
+  "project": {
+    "shortcode": "4001",
+    "shortname": "sgb",
+    "longname": "Stadt.Geschichte.Basel",
+    "descriptions": {
+      "de": "Interdisziplinäres Langzeitprojekt zur Erforschung und Darstellung der Basler Stadtgeschichte. Die Plattform bietet nachnutzbare Quellen, Datensätze und Visualisierungen und verknüpft sie mit der Buchreihe sowie der Open-Access-Ausgabe. Ziel ist forschungsnahe Vermittlung, langfristige Nachnutzung und offene Wissenschaft.",
+      "en": "An interdisciplinary project researching and presenting the history of Basel. The platform provides reusable sources, datasets, and visualisations, linked to the multi-volume book series and the open-access edition, to enable research-driven communication, long-term reuse, and open scholarship."
+    },
+    "keywords": [
+      "Maps",
+      "Archäologie",
+      "Sources",
+      "Iconclass",
+      "Geodaten",
+      "Ikonklassifikation",
+      "Open Access",
+      "Visualisation",
+      "Middle Ages",
+      "Mittelalter",
+      "Visualisierung",
+      "Early modern period",
+      "Basel",
+      "Metadata",
+      "Timeline",
+      "Editionsverweise",
+      "FAIR",
+      "Karten",
+      "Quellen",
+      "Archaeology",
+      "Forschungsdaten",
+      "Edition links",
+      "Geodata",
+      "Neuzeit",
+      "Metadaten",
+      "Digital Humanities",
+      "Stadtgeschichte",
+      "Urban history",
+      "Research data",
+      "Zeitachse"
+    ],
+    "groups": [],
+    "users": [
+      {
+        "username": "mtwente",
+        "email": "moritz.twente@unibas.ch",
+        "givenName": "Moritz",
+        "familyName": "Twente",
+        "password": "",
+        "lang": "de",
+        "groups": [],
+        "projects": [
+          "sgb:admin"
+        ],
+        "status": true
+      },
+      {
+        "username": "mmaehr",
+        "email": "moritz.maehr@unibas.ch",
+        "givenName": "Moritz",
+        "familyName": "Mähr",
+        "password": "",
+        "lang": "de",
+        "groups": [],
+        "projects": [
+          "sgb:admin"
+        ],
+        "status": true
+      }
+    ],
+    "lists": [
+      {
+        "name": "language",
+        "labels": {
+          "en": "ISO 639-1"
+        },
+        "comments": {
+          "en": "ISO 639-1, two-letter codes for languages",
+          "de": "ISO 639-1, zwei-Buchstaben-Codes für Sprachen"
+        },
+        "nodes": [
+          {
+            "name": "language_de",
+            "labels": {
+              "en": "de"
+            }
+          },
+          {
+            "name": "language_fr",
+            "labels": {
+              "en": "fr"
+            }
+          },
+          {
+            "name": "language_la",
+            "labels": {
+              "en": "la"
+            }
+          },
+          {
+            "name": "language_it",
+            "labels": {
+              "en": "it"
+            }
+          },
+          {
+            "name": "language_nl",
+            "labels": {
+              "en": "nl"
+            }
+          },
+          {
+            "name": "language_en",
+            "labels": {
+              "en": "en"
+            }
+          }
+        ]
+      },
+      {
+        "name": "type",
+        "labels": {
+          "en": "DCMI Type"
+        },
+        "comments": {
+          "en": "DCMI Type Vocabulary for resource types, https://www.dublincore.org/specifications/dublin-core/dcmi-type-vocabulary/",
+          "de": "DCMI Type Vocabulary für Ressourcentypen, https://www.dublincore.org/specifications/dublin-core/dcmi-type-vocabulary/"
+        },
+        "nodes": [
+          {
+            "name": "type_dataset",
+            "labels": {
+              "en": "dataset"
+            }
+          },
+          {
+            "name": "type_image",
+            "labels": {
+              "en": "image"
+            }
+          }
+        ]
+      },
+      {
+        "name": "subject",
+        "labels": {
+          "de": "Iconclass Sachbegriff",
+          "en": "Iconclass subject heading"
+        },
+        "comments": {
+          "en": "Iconclass is a hierarchical classification system for describing and indexing visual content, primarily in art history. It organizes motifs, themes, and concepts through standardized codes to enable semantic interoperability and precise image retrieval.",
+          "de": "Iconclass ist ein hierarchisches Klassifikationssystem zur Beschreibung und Erschliessung von Bildinhalten, insbesondere in der Kunstgeschichte. Es ordnet Motive, Themen und Konzepte anhand standardisierter Codes, um semantische Interoperabilität und präzise Bildsuche zu ermöglichen."
+        },
+        "nodes": [
+          {
+            "name": "iconclass_11A",
+            "labels": {
+              "de": "11A|Gottheit, Gott (im allgemeinen) in der christlichen Religion",
+              "en": "11A|Deity, God (in general) in Christian religion"
+            }
+          }
+        ]
+      },
+      {
+        "name": "license",
+        "labels": {
+          "en": "Licenses"
+        },
+        "comments": {
+          "en": "Licenses"
+        },
+        "nodes": [
+          {
+            "name": "license_cc_pdm",
+            "labels": {
+              "en": "https://creativecommons.org/publicdomain/mark/1.0/"
+            }
+          },
+          {
+            "name": "license_cc0",
+            "labels": {
+              "en": "https://creativecommons.org/publicdomain/zero/1.0/"
+            }
+          },
+          {
+            "name": "license_cc_by_4",
+            "labels": {
+              "en": "https://creativecommons.org/licenses/by/4.0/"
+            }
+          },
+          {
+            "name": "license_cc_by_sa_4",
+            "labels": {
+              "en": "https://creativecommons.org/licenses/by-sa/4.0/"
+            }
+          },
+          {
+            "name": "license_cc_by_nc_sa_4",
+            "labels": {
+              "en": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+            }
+          },
+          {
+            "name": "license_in_c",
+            "labels": {
+              "en": "http://rightsstatements.org/vocab/InC/1.0/"
+            }
+          },
+          {
+            "name": "license_in_c_ruu",
+            "labels": {
+              "en": "http://rightsstatements.org/vocab/InC-RUU/1.0/"
+            }
+          }
+        ]
+      },
+      {
+        "name": "temporal",
+        "labels": {
+          "de": "Stadt.Geschichte.Basel Epoche",
+          "en": "Stadt.Geschichte.Basel Era"
+        },
+        "comments": {
+          "en": "Project-internal periodization without years.",
+          "de": "Projektinterne Periodisierung ohne Jahreszahlen."
+        },
+        "nodes": [
+          {
+            "name": "temporal_fruehgeschichte",
+            "labels": {
+              "de": "Frühgeschichte"
+            }
+          },
+          {
+            "name": "temporal_antike",
+            "labels": {
+              "de": "Antike"
+            }
+          },
+          {
+            "name": "temporal_mittelalter",
+            "labels": {
+              "de": "Mittelalter"
+            }
+          },
+          {
+            "name": "temporal_fruehe_neuzeit",
+            "labels": {
+              "de": "Frühe Neuzeit"
+            }
+          },
+          {
+            "name": "temporal_19_jahrhundert",
+            "labels": {
+              "de": "19. Jahrhundert"
+            }
+          },
+          {
+            "name": "temporal_20_jahrhundert",
+            "labels": {
+              "de": "20. Jahrhundert"
+            }
+          },
+          {
+            "name": "temporal_21_jahrhundert",
+            "labels": {
+              "de": "21. Jahrhundert"
+            }
+          }
+        ]
+      },
+      {
+        "name": "format",
+        "labels": {
+          "en": "Internet Media Type"
+        },
+        "comments": {
+          "en": "Internet Media Type"
+        },
+        "nodes": [
+          {
+            "name": "format_application_geojson",
+            "labels": {
+              "en": "application/geo+json"
+            }
+          },
+          {
+            "name": "format_application_pdf",
+            "labels": {
+              "en": "application/pdf"
+            }
+          },
+          {
+            "name": "format_image_jpeg",
+            "labels": {
+              "en": "image/jpeg"
+            }
+          },
+          {
+            "name": "format_image_png",
+            "labels": {
+              "en": "image/png"
+            }
+          },
+          {
+            "name": "format_image_tiff",
+            "labels": {
+              "en": "image/tiff"
+            }
+          },
+          {
+            "name": "format_text_csv",
+            "labels": {
+              "en": "text/csv"
+            }
+          }
+        ]
+      }
+    ],
+    "ontologies": [
+      {
+        "name": "SGB",
+        "label": "SGB",
+        "comment": "Datenmodell für Stadt.Geschichte.Basel\nSiehe https://forschung.stadtgeschichtebasel.ch/ und https://dokumentation.stadtgeschichtebasel.ch/",
+        "properties": [
+          {
+            "name": "hasAbstract",
+            "super": [
+              "hasValue",
+              "dcterms:abstract"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "abstract"
+            },
+            "comments": {
+              "en": "abstract"
+            },
+            "gui_element": "Textarea"
+          },
+          {
+            "name": "hasCreator",
+            "super": [
+              "hasValue",
+              "dcterms:creator"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "creator"
+            },
+            "comments": {
+              "en": "creator"
+            },
+            "gui_element": "Richtext"
+          },
+          {
+            "name": "hasDate",
+            "super": [
+              "hasValue",
+              "dcterms:date"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "date"
+            },
+            "comments": {
+              "de": "Datumsangabe im Extended Date Time Format (EDTF), z. B. 1920, 1920-05, 1920-05-10, 1900/1950, 1960?, 1900~/1950?. Siehe https://www.loc.gov/standards/datetime/.",
+              "en": "Date in Extended Date Time Format (EDTF), e.g., 1920, 1920-05, 1920-05-10, 1900/1950, 1960?, 1900~/1950?. See https://www.loc.gov/standards/datetime/."
+            },
+            "gui_element": "SimpleText"
+          },
+          {
+            "name": "hasDescription",
+            "super": [
+              "hasValue",
+              "dcterms:description"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "description"
+            },
+            "comments": {
+              "en": "description"
+            },
+            "gui_element": "Textarea"
+          },
+          {
+            "name": "hasExtent",
+            "super": [
+              "hasValue",
+              "dcterms:extent"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "extent"
+            },
+            "comments": {
+              "de": "Massangabe: Pixel für Rastergrafiken, Millimeter für Vektorgrafiken.",
+              "en": "Measurement: pixels for raster images, millimetres for vector graphics."
+            },
+            "gui_element": "SimpleText"
+          },
+          {
+            "name": "hasFormatList",
+            "super": [
+              "hasValue",
+              "dcterms:format"
+            ],
+            "object": "ListValue",
+            "labels": {
+              "en": "format"
+            },
+            "comments": {
+              "en": "format"
+            },
+            "gui_element": "List",
+            "gui_attributes": {
+              "hlist": "format"
+            }
+          },
+          {
+            "name": "hasIdentifier",
+            "super": [
+              "hasValue",
+              "dcterms:identifier"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "identifier"
+            },
+            "comments": {
+              "en": "identifier"
+            },
+            "gui_element": "SimpleText"
+          },
+          {
+            "name": "hasLanguageList",
+            "super": [
+              "hasValue",
+              "dcterms:language"
+            ],
+            "object": "ListValue",
+            "labels": {
+              "en": "language"
+            },
+            "comments": {
+              "en": "language"
+            },
+            "gui_element": "List",
+            "gui_attributes": {
+              "hlist": "language"
+            }
+          },
+          {
+            "name": "hasLicenseList",
+            "super": [
+              "hasValue",
+              "dcterms:license"
+            ],
+            "object": "ListValue",
+            "labels": {
+              "en": "license"
+            },
+            "comments": {
+              "en": "license"
+            },
+            "gui_element": "List",
+            "gui_attributes": {
+              "hlist": "license"
+            }
+          },
+          {
+            "name": "hasPublisher",
+            "super": [
+              "hasValue",
+              "dcterms:publisher"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "publisher"
+            },
+            "comments": {
+              "en": "publisher"
+            },
+            "gui_element": "Richtext"
+          },
+          {
+            "name": "hasRelation",
+            "super": [
+              "hasValue",
+              "dcterms:relation"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "relation"
+            },
+            "comments": {
+              "de": "Weiterführende Verweise, z. B. Historisches Lexikon der Schweiz, Wikipedia, Wikidata.",
+              "en": "Further references, e.g., HLS, Wikipedia, Wikidata."
+            },
+            "gui_element": "Richtext"
+          },
+          {
+            "name": "hasRights",
+            "super": [
+              "hasValue",
+              "dcterms:rights"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "rights"
+            },
+            "comments": {
+              "en": "rights"
+            },
+            "gui_element": "Textarea"
+          },
+          {
+            "name": "hasSource",
+            "super": [
+              "hasValue",
+              "dcterms:source"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "source"
+            },
+            "comments": {
+              "de": "Herkunft und Bearbeitung: Gedächtnisinstitution, Signatur, Digitalisat/Provenienz, Bearbeitungsangaben.",
+              "en": "Provenance and processing: memory institution, call number, digitisation/provenance, editing notes."
+            },
+            "gui_element": "Richtext"
+          },
+          {
+            "name": "hasSubjectList",
+            "super": [
+              "hasValue",
+              "dcterms:subject"
+            ],
+            "object": "ListValue",
+            "labels": {
+              "en": "subject"
+            },
+            "comments": {
+              "en": "subject"
+            },
+            "gui_element": "List",
+            "gui_attributes": {
+              "hlist": "subject"
+            }
+          },
+          {
+            "name": "hasTemporalList",
+            "super": [
+              "hasValue",
+              "dcterms:temporal"
+            ],
+            "object": "ListValue",
+            "labels": {
+              "en": "temporal"
+            },
+            "comments": {
+              "de": "Epoche gemäss projektinterner Periodisierung ohne explizite Jahreszahlen.",
+              "en": "Project-specific periodization without explicit years."
+            },
+            "gui_element": "List",
+            "gui_attributes": {
+              "hlist": "temporal"
+            }
+          },
+          {
+            "name": "hasTitle",
+            "super": [
+              "hasValue",
+              "dcterms:title"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "title"
+            },
+            "comments": {
+              "en": "title"
+            },
+            "gui_element": "SimpleText"
+          },
+          {
+            "name": "hasTypeList",
+            "super": [
+              "hasValue",
+              "dcterms:type"
+            ],
+            "object": "ListValue",
+            "labels": {
+              "en": "type"
+            },
+            "comments": {
+              "en": "type"
+            },
+            "gui_element": "List",
+            "gui_attributes": {
+              "hlist": "type"
+            }
+          },
+          {
+            "name": "isPartOf",
+            "super": [
+              "hasValue",
+              "dcterms:isPartOf"
+            ],
+            "object": "TextValue",
+            "labels": {
+              "en": "isPartOf"
+            },
+            "comments": {
+              "de": "Verweis auf den entsprechenden Band der Stadtgeschichte (Print) sowie die Open-Access-Ausgabe.",
+              "en": "Reference to the corresponding printed volume and the open-access edition."
+            },
+            "gui_element": "Richtext"
+          },
+          {
+            "name": "linkToParentObject",
+            "super": [
+              "hasLinkTo"
+            ],
+            "object": ":Parent",
+            "labels": {
+              "en": "parent"
+            },
+            "comments": {
+              "en": "parent"
+            },
+            "gui_element": "Searchbox"
+          }
+        ],
+        "resources": [
+          {
+            "name": "Document",
+            "super": "DocumentRepresentation",
+            "labels": {
+              "en": "document"
+            },
+            "comments": {
+              "en": "Documents like text documents, PDFs, etc."
+            },
+            "cardinalities": [
+              {
+                "propname": ":hasIdentifier",
+                "cardinality": "0-1",
+                "gui_order": 1
+              },
+              {
+                "propname": ":hasTitle",
+                "cardinality": "1",
+                "gui_order": 2
+              },
+              {
+                "propname": ":hasSubjectList",
+                "cardinality": "0-1",
+                "gui_order": 3
+              },
+              {
+                "propname": ":hasDescription",
+                "cardinality": "1",
+                "gui_order": 4
+              },
+              {
+                "propname": ":hasCreator",
+                "cardinality": "0-n",
+                "gui_order": 5
+              },
+              {
+                "propname": ":hasPublisher",
+                "cardinality": "0-n",
+                "gui_order": 6
+              },
+              {
+                "propname": ":hasDate",
+                "cardinality": "0-1",
+                "gui_order": 7
+              },
+              {
+                "propname": ":hasTemporalList",
+                "cardinality": "0-1",
+                "gui_order": 8
+              },
+              {
+                "propname": ":hasTypeList",
+                "cardinality": "0-1",
+                "gui_order": 9
+              },
+              {
+                "propname": ":hasFormatList",
+                "cardinality": "0-1",
+                "gui_order": 10
+              },
+              {
+                "propname": ":hasExtent",
+                "cardinality": "0-1",
+                "gui_order": 11
+              },
+              {
+                "propname": ":hasSource",
+                "cardinality": "0-n",
+                "gui_order": 12
+              },
+              {
+                "propname": ":hasLanguageList",
+                "cardinality": "0-1",
+                "gui_order": 13
+              },
+              {
+                "propname": ":hasRelation",
+                "cardinality": "0-n",
+                "gui_order": 14
+              },
+              {
+                "propname": ":hasRights",
+                "cardinality": "0-1",
+                "gui_order": 15
+              },
+              {
+                "propname": ":hasLicenseList",
+                "cardinality": "0-1",
+                "gui_order": 16
+              },
+              {
+                "propname": ":hasAbstract",
+                "cardinality": "0-1",
+                "gui_order": 17
+              },
+              {
+                "propname": ":linkToParentObject",
+                "cardinality": "0-1",
+                "gui_order": 18
+              }
+            ]
+          },
+          {
+            "name": "Image",
+            "super": [
+              "StillImageRepresentation",
+              "dcterms:Image"
+            ],
+            "labels": {
+              "en": "image"
+            },
+            "comments": {
+              "en": "A visual representation other than text. Examples include images and photographs of physical objects, paintings, prints, drawings, other images and graphics, animations and moving pictures, film, diagrams, maps, musical notation. Note that Image may include both electronic and physical representations."
+            },
+            "cardinalities": [
+              {
+                "propname": ":hasIdentifier",
+                "cardinality": "0-1",
+                "gui_order": 1
+              },
+              {
+                "propname": ":hasTitle",
+                "cardinality": "1",
+                "gui_order": 2
+              },
+              {
+                "propname": ":hasSubjectList",
+                "cardinality": "0-1",
+                "gui_order": 3
+              },
+              {
+                "propname": ":hasDescription",
+                "cardinality": "1",
+                "gui_order": 4
+              },
+              {
+                "propname": ":hasCreator",
+                "cardinality": "0-n",
+                "gui_order": 5
+              },
+              {
+                "propname": ":hasPublisher",
+                "cardinality": "0-n",
+                "gui_order": 6
+              },
+              {
+                "propname": ":hasDate",
+                "cardinality": "0-1",
+                "gui_order": 7
+              },
+              {
+                "propname": ":hasTemporalList",
+                "cardinality": "0-1",
+                "gui_order": 8
+              },
+              {
+                "propname": ":hasTypeList",
+                "cardinality": "0-1",
+                "gui_order": 9
+              },
+              {
+                "propname": ":hasFormatList",
+                "cardinality": "0-1",
+                "gui_order": 10
+              },
+              {
+                "propname": ":hasExtent",
+                "cardinality": "0-1",
+                "gui_order": 11
+              },
+              {
+                "propname": ":hasSource",
+                "cardinality": "0-n",
+                "gui_order": 12
+              },
+              {
+                "propname": ":hasLanguageList",
+                "cardinality": "0-1",
+                "gui_order": 13
+              },
+              {
+                "propname": ":hasRelation",
+                "cardinality": "0-n",
+                "gui_order": 14
+              },
+              {
+                "propname": ":hasRights",
+                "cardinality": "0-1",
+                "gui_order": 15
+              },
+              {
+                "propname": ":hasLicenseList",
+                "cardinality": "0-1",
+                "gui_order": 16
+              },
+              {
+                "propname": ":hasAbstract",
+                "cardinality": "0-1",
+                "gui_order": 17
+              },
+              {
+                "propname": ":linkToParentObject",
+                "cardinality": "0-1",
+                "gui_order": 18
+              }
+            ]
+          },
+          {
+            "name": "Parent",
+            "super": "Resource",
+            "labels": {
+              "de": "Übergeordnetes Objekt",
+              "en": "Parent object"
+            },
+            "comments": {
+              "de": "Übergeordnetes Objekt",
+              "en": "Parent object"
+            },
+            "cardinalities": [
+              {
+                "propname": ":hasIdentifier",
+                "cardinality": "0-1",
+                "gui_order": 1
+              },
+              {
+                "propname": ":hasTitle",
+                "cardinality": "1",
+                "gui_order": 2
+              },
+              {
+                "propname": ":hasSubjectList",
+                "cardinality": "0-n",
+                "gui_order": 3
+              },
+              {
+                "propname": ":hasDescription",
+                "cardinality": "0-1",
+                "gui_order": 4
+              },
+              {
+                "propname": ":hasTemporalList",
+                "cardinality": "1",
+                "gui_order": 5
+              },
+              {
+                "propname": ":hasLanguageList",
+                "cardinality": "0-1",
+                "gui_order": 6
+              },
+              {
+                "propname": ":isPartOf",
+                "cardinality": "0-1",
+                "gui_order": 7
+              }
+            ]
+          },
+          {
+            "name": "ResourceWithoutMedia",
+            "super": "Resource",
+            "labels": {
+              "de": "Ressource ohne Mediendatei",
+              "en": "Resource without media file"
+            },
+            "comments": {
+              "de": "Ressource ohne Mediendatei, höchstwahrscheinlich aufgrund von Urheberrechtsbeschränkungen.",
+              "en": "Resource without media file, most likely due to copyright restrictions."
+            },
+            "cardinalities": [
+              {
+                "propname": ":hasIdentifier",
+                "cardinality": "0-1",
+                "gui_order": 1
+              },
+              {
+                "propname": ":hasTitle",
+                "cardinality": "1",
+                "gui_order": 2
+              },
+              {
+                "propname": ":hasSubjectList",
+                "cardinality": "0-1",
+                "gui_order": 3
+              },
+              {
+                "propname": ":hasDescription",
+                "cardinality": "1",
+                "gui_order": 4
+              },
+              {
+                "propname": ":hasCreator",
+                "cardinality": "0-n",
+                "gui_order": 5
+              },
+              {
+                "propname": ":hasPublisher",
+                "cardinality": "0-n",
+                "gui_order": 6
+              },
+              {
+                "propname": ":hasDate",
+                "cardinality": "0-1",
+                "gui_order": 7
+              },
+              {
+                "propname": ":hasTemporalList",
+                "cardinality": "0-1",
+                "gui_order": 8
+              },
+              {
+                "propname": ":hasTypeList",
+                "cardinality": "0-1",
+                "gui_order": 9
+              },
+              {
+                "propname": ":hasFormatList",
+                "cardinality": "0-1",
+                "gui_order": 10
+              },
+              {
+                "propname": ":hasExtent",
+                "cardinality": "0-1",
+                "gui_order": 11
+              },
+              {
+                "propname": ":hasSource",
+                "cardinality": "0-n",
+                "gui_order": 12
+              },
+              {
+                "propname": ":hasLanguageList",
+                "cardinality": "0-1",
+                "gui_order": 13
+              },
+              {
+                "propname": ":hasRelation",
+                "cardinality": "0-n",
+                "gui_order": 14
+              },
+              {
+                "propname": ":hasRights",
+                "cardinality": "0-1",
+                "gui_order": 15
+              },
+              {
+                "propname": ":hasLicenseList",
+                "cardinality": "0-1",
+                "gui_order": 16
+              },
+              {
+                "propname": ":hasAbstract",
+                "cardinality": "0-1",
+                "gui_order": 17
+              },
+              {
+                "propname": ":linkToParentObject",
+                "cardinality": "0-1",
+                "gui_order": 18
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
