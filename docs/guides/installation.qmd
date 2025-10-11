@@ -116,14 +116,14 @@ KEY_CREDENTIAL=your_api_key_credential
 ITEM_SET_ID=your_collection_id
 
 # DSP Configuration
-PROJECT_SHORT_CODE=0712
+PROJECT_SHORT_CODE=4001
 API_HOST=https://api.dasch.swiss
 INGEST_HOST=https://ingest.dasch.swiss
 DSP_USER=your_dsp_username
 DSP_PWD=your_dsp_password
 
 # Optional Configuration
-PREFIX=StadtGeschichteBasel_v1:
+PREFIX=SGB:
 ```
 
 ### 3. Validate Configuration

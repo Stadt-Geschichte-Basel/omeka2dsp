@@ -301,7 +301,7 @@ value = extract_value_from_entry({
 **Parameters**:
 
 -   `item`: Omeka item data
--   `type`: DSP resource type (e.g., "sgb_OBJECT", "sgb_MEDIA_IMAGE")
+-   `type`: DSP resource type (e.g., "SGB:Parent", "SGB:Image", "SGB:Document")
 -   `project_iri`: Project IRI for resource association
 -   `lists`: DSP lists for value mapping
 -   `parent_iri`: Parent resource IRI for linking
@@ -512,15 +512,14 @@ internal_filename = upload_file_from_url(
 
 **Mapping**:
 
--   `image/*` → `sgb_MEDIA_IMAGE`
--   `application/pdf`, `text/*`, `application/zip` → `sgb_MEDIA_ARCHIV`
--   All others → `sgb_MEDIA_ARCHIV` (default)
+-   `image/*` → `SGB:Image`
+-   `application/pdf`, `text/*`, archives → `SGB:Document`
 
 **Example**:
 
 ``` python
 media_class = specify_mediaclass("image/jpeg")
-# Returns: "StadtGeschichteBasel_v1:sgb_MEDIA_IMAGE"
+# Returns: "SGB:Image"
 ```
 
 ### Utility Functions
@@ -788,7 +787,7 @@ Standalone script to fetch detailed DSP list information.
 | `INGEST_HOST` | string | Yes | DSP ingest service URL | None |
 | `DSP_USER` | string | Yes | DSP username | None |
 | `DSP_PWD` | string | Yes | DSP password | None |
-| `PREFIX` | string | No | Ontology prefix | "StadtGeschichteBasel_v1:" |
+| `PREFIX` | string | No | Ontology prefix | "SGB:" |
 | `OMEKA_API_URL` | string | No | Omeka API base URL | "https://omeka.unibe.ch/api/" |
 | `KEY_IDENTITY` | string | Yes | Omeka API key identity | None |
 | `KEY_CREDENTIAL` | string | Yes | Omeka API key credential | None |

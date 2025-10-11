@@ -30,7 +30,7 @@ API_HOST = os.getenv("API_HOST")
 INGEST_HOST = os.getenv("INGEST_HOST")
 DSP_USER = os.getenv("DSP_USER")
 DSP_PWD = os.getenv("DSP_PWD")
-PREFIX = os.getenv("PREFIX", "StadtGeschichteBasel_v1:")
+PREFIX = os.getenv("PREFIX", "SGB:")
 
 NUMBER_RANDOM_OBJECTS = 2
 TEST_DATA = {'abb13025', 'abb14375', 'abb41033', 'abb11536', 'abb28998'}
@@ -161,16 +161,16 @@ def get_resource_by_id(token: str, object_class: str, identifier: str) -> dict:
     }
     query = f"""
         PREFIX knora-api: <http://api.knora.org/ontology/knora-api/v2#>
-        PREFIX {PREFIX} <{API_HOST}/ontology/{PROJECT_SHORT_CODE}/StadtGeschichteBasel_v1/v2#>
+        PREFIX {PREFIX} <{API_HOST}/ontology/{PROJECT_SHORT_CODE}/SGB/v2#>
         CONSTRUCT {{
             ?metadata knora-api:isMainResource true .
-            ?metadata {PREFIX}identifier ?identifierValue .
-            ?metadata {PREFIX}title ?title .
+            ?metadata {PREFIX}hasIdentifier ?identifierValue .
+            ?metadata {PREFIX}hasTitle ?title .
         }} WHERE {{
             ?metadata a {object_class} .
-            ?metadata {PREFIX}identifier ?identifierValue .
+            ?metadata {PREFIX}hasIdentifier ?identifierValue .
             ?identifierValue knora-api:valueAsString ?identifier .
-            ?metadata {PREFIX}title ?title .
+            ?metadata {PREFIX}hasTitle ?title .
             FILTER(?identifier = "{identifier}")
         }}
         """
@@ -188,7 +188,7 @@ def update_value(token, item, value, field, field_type, type_of_change):
     context_data = {
         "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         "knora-api": "http://api.knora.org/ontology/knora-api/v2#",
-        "StadtGeschichteBasel_v1": API_HOST + "/ontology/" + PROJECT_SHORT_CODE + "/StadtGeschichteBasel_v1/v2#",
+        "SGB": API_HOST + "/ontology/" + PROJECT_SHORT_CODE + "/SGB/v2#",
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
     }   
     complete_field_type = f"knora-api:{field_type}"
@@ -249,9 +249,9 @@ def update_value(token, item, value, field, field_type, type_of_change):
         response = requests.post(endpoint, json=payload, headers=headers, timeout=10)
 
     if response.status_code == 200:
-        logging.info(f"{item[f"{PREFIX}identifier"]["knora-api:valueAsString"]}: {type_of_change}d {field} '{value}'")
+        logging.info(f"{item[f"{PREFIX}hasIdentifier"]["knora-api:valueAsString"]}: {type_of_change}d {field} '{value}'")
     else:
-        logging.error(f"{item[f"{PREFIX}identifier"]["knora-api:valueAsString"]}: update of {field} failed: {response.status_code}: {response.text}")
+        logging.error(f"{item[f"{PREFIX}hasIdentifier"]["knora-api:valueAsString"]}: update of {field} failed: {response.status_code}: {response.text}")
         # logging.error(payload)
 
 def arrays_equal(array1, array2):
@@ -283,47 +283,47 @@ def sync_array_value(prop, prop_type, dasch_array, omeka_array):
 
 def check_values(dasch_item, omeka_item, lists):
     modified_values = []
-    title = sync_value("title", "TextValue", extract_dasch_propvalue(dasch_item, "title"),extract_property(omeka_item.get("dcterms:title", []), 1))
+    title = sync_value("hasTitle", "TextValue", extract_dasch_propvalue(dasch_item, "hasTitle"),extract_property(omeka_item.get("dcterms:title", []), 1))
     if title: modified_values.append(title)
-    description = sync_value("description", "TextValue", extract_dasch_propvalue(dasch_item, "description"),extract_property(omeka_item.get("dcterms:description", []), 4))
+    description = sync_value("hasDescription", "TextValue", extract_dasch_propvalue(dasch_item, "hasDescription"),extract_property(omeka_item.get("dcterms:description", []), 4))
     if description: modified_values.append(description)
     subjects = []
     for data in extract_combined_values(omeka_item.get("dcterms:subject", [])):
-        subject = extract_listvalueiri_from_value(data, "Thema", lists)
+        subject = extract_listvalueiri_from_value(data, "Iconclass subject heading", lists)
         subjects.append(subject)
-    subject = sync_array_value("subject", "ListValue", extract_dasch_propvalue_multiple(dasch_item, "subject"), subjects)
+    subject = sync_array_value("hasSubjectList", "ListValue", extract_dasch_propvalue_multiple(dasch_item, "hasSubjectList"), subjects)
     if subject: modified_values.extend(subject)
-    temporal = sync_value("temporal", "ListValue", extract_dasch_propvalue(dasch_item, "temporal"),extract_listvalueiri_from_value(extract_property(omeka_item.get("dcterms:temporal", []), 41), "Era", lists))
+    temporal = sync_value("hasTemporalList", "ListValue", extract_dasch_propvalue(dasch_item, "hasTemporalList"),extract_listvalueiri_from_value(extract_property(omeka_item.get("dcterms:temporal", []), 41), "Stadt.Geschichte.Basel Era", lists))
     if temporal: modified_values.append(temporal)
-    language = sync_value("language", "TextValue", extract_dasch_propvalue(dasch_item, "language"),extract_property(omeka_item.get("dcterms:language", []), 12))
+    language = sync_value("hasLanguageList", "ListValue", extract_dasch_propvalue(dasch_item, "hasLanguageList"),extract_listvalueiri_from_value(extract_property(omeka_item.get("dcterms:language", []), 12), "ISO 639-1", lists))
     if language: modified_values.append(language)
 
     # Check object specific fields  
-    if dasch_item["@type"] == f"{PREFIX}sgb_OBJECT":
+    if dasch_item["@type"] == f"{PREFIX}Parent":
         isPartOf = sync_array_value("isPartOf", "TextValue", extract_dasch_propvalue_multiple(dasch_item, "isPartOf"), extract_combined_values(omeka_item.get("dcterms:isPartOf", [])))
         if isPartOf: modified_values.extend(isPartOf)
 
-    # Check media specific fields
-    if dasch_item["@type"].startswith(f"{PREFIX}sgb_MEDIA"):
-        creator = sync_array_value("creator", "TextValue", extract_dasch_propvalue_multiple(dasch_item, "creator"), extract_combined_values(omeka_item.get("dcterms:creator", [])))
+    # Check media specific fields (Document, Image, ResourceWithoutMedia)
+    if dasch_item["@type"] in [f"{PREFIX}Document", f"{PREFIX}Image", f"{PREFIX}ResourceWithoutMedia"]:
+        creator = sync_array_value("hasCreator", "TextValue", extract_dasch_propvalue_multiple(dasch_item, "hasCreator"), extract_combined_values(omeka_item.get("dcterms:creator", [])))
         if creator: modified_values.extend(creator)
-        publisher = sync_array_value("publisher", "TextValue", extract_dasch_propvalue_multiple(dasch_item, "publisher"), extract_combined_values(omeka_item.get("dcterms:publisher", [])))
+        publisher = sync_array_value("hasPublisher", "TextValue", extract_dasch_propvalue_multiple(dasch_item, "hasPublisher"), extract_combined_values(omeka_item.get("dcterms:publisher", [])))
         if publisher: modified_values.extend(publisher)
-        date = sync_value("date", "TextValue", extract_dasch_propvalue(dasch_item, "date"),extract_property(omeka_item.get("dcterms:date", []), 7))
+        date = sync_value("hasDate", "TextValue", extract_dasch_propvalue(dasch_item, "hasDate"),extract_property(omeka_item.get("dcterms:date", []), 7))
         if date: modified_values.append(date)
-        extent = sync_value("extent", "TextValue", extract_dasch_propvalue(dasch_item, "extent"),extract_property(omeka_item.get("dcterms:extent", []), 25))
+        extent = sync_value("hasExtent", "TextValue", extract_dasch_propvalue(dasch_item, "hasExtent"),extract_property(omeka_item.get("dcterms:extent", []), 25))
         if extent: modified_values.append(extent)
-        type = sync_value("type", "ListValue", extract_dasch_propvalue(dasch_item, "type"),extract_listvalueiri_from_value(extract_property(omeka_item.get("dcterms:type", []), 8, only_label=True), "DCMI Type Vocabulary", lists))
+        type = sync_value("hasTypeList", "ListValue", extract_dasch_propvalue(dasch_item, "hasTypeList"),extract_listvalueiri_from_value(extract_property(omeka_item.get("dcterms:type", []), 8, only_label=True), "DCMI Type", lists))
         if type: modified_values.append(type)
-        format = sync_value("format", "ListValue", extract_dasch_propvalue(dasch_item, "format"),extract_listvalueiri_from_value(extract_property(omeka_item.get("dcterms:format", []), 9), "Internet Media Type", lists))
+        format = sync_value("hasFormatList", "ListValue", extract_dasch_propvalue(dasch_item, "hasFormatList"),extract_listvalueiri_from_value(extract_property(omeka_item.get("dcterms:format", []), 9), "Internet Media Type", lists))
         if format: modified_values.append(format)
-        source = sync_array_value("source", "TextValue", extract_dasch_propvalue_multiple(dasch_item, "source"), extract_combined_values(omeka_item.get("dcterms:source", [])))
+        source = sync_array_value("hasSource", "TextValue", extract_dasch_propvalue_multiple(dasch_item, "hasSource"), extract_combined_values(omeka_item.get("dcterms:source", [])))
         if source: modified_values.extend(source)
-        relation = sync_array_value("relation", "TextValue", extract_dasch_propvalue_multiple(dasch_item, "relation"), extract_combined_values(omeka_item.get("dcterms:relation", [])))
+        relation = sync_array_value("hasRelation", "TextValue", extract_dasch_propvalue_multiple(dasch_item, "hasRelation"), extract_combined_values(omeka_item.get("dcterms:relation", [])))
         if relation: modified_values.extend(relation)
-        rights = sync_value("rights", "TextValue", extract_dasch_propvalue(dasch_item, "rights"),extract_property(omeka_item.get("dcterms:rights", []), 15))
+        rights = sync_value("hasRights", "TextValue", extract_dasch_propvalue(dasch_item, "hasRights"),extract_property(omeka_item.get("dcterms:rights", []), 15))
         if rights: modified_values.append(rights)
-        license = sync_value("license", "UriValue", extract_dasch_propvalue(dasch_item, "license"),extract_property(omeka_item.get("dcterms:license", []), 49))
+        license = sync_value("hasLicenseList", "ListValue", extract_dasch_propvalue(dasch_item, "hasLicenseList"),extract_listvalueiri_from_value(extract_property(omeka_item.get("dcterms:license", []), 49), "Licenses", lists))
         if license: modified_values.append(license)
 
     return modified_values
@@ -342,7 +342,7 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
     context_data = {
         "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         "knora-api": "http://api.knora.org/ontology/knora-api/v2#",
-        "StadtGeschichteBasel_v1": API_HOST + "/ontology/" + PROJECT_SHORT_CODE + "/StadtGeschichteBasel_v1/v2#",
+        "SGB": API_HOST + "/ontology/" + PROJECT_SHORT_CODE + "/SGB/v2#",
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
     }
     
@@ -354,44 +354,49 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
             "@id": project_iri
         },
         "rdfs:label": extract_property(item.get("dcterms:title", []), 1),
-        f"{PREFIX}identifier": {
+        f"{PREFIX}hasIdentifier": {
             "knora-api:valueAsString": extract_property(item.get("dcterms:identifier", []), 10),
             "@type": "knora-api:TextValue"
         },
-        f"{PREFIX}title": {
+        f"{PREFIX}hasTitle": {
             "knora-api:valueAsString": extract_property(item.get("dcterms:title", []), 1),
             "@type": "knora-api:TextValue"
         }
     }
-    payload[f"{PREFIX}description"] = {
+    payload[f"{PREFIX}hasDescription"] = {
         "knora-api:valueAsString": extract_property(item.get("dcterms:description", []), 4),
         "@type": "knora-api:TextValue"
     }
     if 'dcterms:subject' in item:
         subjects = []
         for data in extract_combined_values(item.get("dcterms:subject", [])):
-            subject = extract_listvalueiri_from_value(data, "Thema", lists)
+            subject = extract_listvalueiri_from_value(data, "Iconclass subject heading", lists)
             if subject:
                 subjects.append({
                 "@type": "knora-api:ListValue",
                 "knora-api:listValueAsListNode": {
                     "@id": subject
             }})
-        payload[f"{PREFIX}subject"] = subjects
+        payload[f"{PREFIX}hasSubjectList"] = subjects
     if 'dcterms:temporal' in item:
-        temporal = extract_listvalueiri_from_value(extract_property(item.get("dcterms:temporal", []), 41), "Era", lists)
+        temporal = extract_listvalueiri_from_value(extract_property(item.get("dcterms:temporal", []), 41), "Stadt.Geschichte.Basel Era", lists)
         if temporal:
-            payload[f"{PREFIX}temporal"] = {
+            payload[f"{PREFIX}hasTemporalList"] = {
                 "@type": "knora-api:ListValue",
                 "knora-api:listValueAsListNode": {
                     "@id": temporal
                 }
             }
     if extract_property(item.get("dcterms:language", []), 12):
-        payload[f"{PREFIX}language"] =  {
-            "knora-api:valueAsString": extract_property(item.get("dcterms:language", []), 12),
-            "@type": "knora-api:TextValue"
-        }
+        lang_code = extract_property(item.get("dcterms:language", []), 12)
+        lang_iri = extract_listvalueiri_from_value(lang_code, "ISO 639-1", lists)
+        if lang_iri:
+            payload[f"{PREFIX}hasLanguageList"] = {
+                "@type": "knora-api:ListValue",
+                "knora-api:listValueAsListNode": {
+                    "@id": lang_iri
+                }
+            }
     if 'dcterms:isPartOf' in item:
         isPartOf = []
         for data in extract_combined_values(item.get("dcterms:isPartOf", [])): 
@@ -402,42 +407,50 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
         payload[f"{PREFIX}isPartOf"] = isPartOf
          
     # Handle MEDIA type-specific fields
-    if type == f"{PREFIX}sgb_MEDIA_IMAGE":
+    if type == f"{PREFIX}Image":
         payload["knora-api:hasStillImageFileValue"] =  {
             "@type": "knora-api:StillImageFileValue",
             "knora-api:fileValueHasFilename": internalMediaFilename
         }
-    if type == f"{PREFIX}sgb_MEDIA_ARCHIV":
-        payload["knora-api:hasArchiveFileValue"] =  {
-            "@type": "knora-api:ArchiveFileValue",
-            "knora-api:fileValueHasFilename": internalMediaFilename
-        }
-    if type == f"{PREFIX}sgb_MEDIA_DOCUMENT":
-        payload["knora-api:hasDocumentFileValue"] =  {
-            "@type": "knora-api:DocumentFileValue",
-            "knora-api:fileValueHasFilename": internalMediaFilename
-        }
-    if type == f"{PREFIX}sgb_MEDIA_TEXT":
-        payload["knora-api:hasTextFileValue"] =  {
-            "@type": "knora-api:TextFileValue",
-            "knora-api:fileValueHasFilename": internalMediaFilename
-        }
-    if type.startswith(f"{PREFIX}sgb_MEDIA"):
-
-        payload[f"{PREFIX}partOf_MetadataValue"] = {
-            "@type": "knora-api:LinkValue",
-            "knora-api:linkValueHasTargetIri": {
-                "@id": parent_iri
+    if type == f"{PREFIX}Document":
+        # Documents can be PDF, text, or archive files
+        # Determine which file value type to use based on media format
+        media_format = extract_property(item.get("dcterms:format", []), 9)
+        if media_format == "application/pdf":
+            payload["knora-api:hasDocumentFileValue"] =  {
+                "@type": "knora-api:DocumentFileValue",
+                "knora-api:fileValueHasFilename": internalMediaFilename
             }
-        }
+        elif media_format in ["text/csv", "text/markdown", "text/plain", "application/json"]:
+            payload["knora-api:hasTextFileValue"] =  {
+                "@type": "knora-api:TextFileValue",
+                "knora-api:fileValueHasFilename": internalMediaFilename
+            }
+        else:
+            # Default to archive for other formats
+            payload["knora-api:hasArchiveFileValue"] =  {
+                "@type": "knora-api:ArchiveFileValue",
+                "knora-api:fileValueHasFilename": internalMediaFilename
+            }
+    
+    # Add additional fields for Document, Image, and ResourceWithoutMedia
+    if type in [f"{PREFIX}Document", f"{PREFIX}Image", f"{PREFIX}ResourceWithoutMedia"]:
+
+        if parent_iri:
+            payload[f"{PREFIX}linkToParentObject"] = {
+                "@type": "knora-api:LinkValue",
+                "knora-api:linkValueHasTargetIri": {
+                    "@id": parent_iri
+                }
+            }
         if 'dcterms:date' in item:
-            payload[f"{PREFIX}date"] = {
+            payload[f"{PREFIX}hasDate"] = {
                 "knora-api:valueAsString": extract_property(item.get("dcterms:date", []), 7),
                 "@type": "knora-api:TextValue"
             }       
-        mediatype = extract_listvalueiri_from_value(extract_property(item.get("dcterms:type", []), 8, only_label=True), "DCMI Type Vocabulary", lists)
+        mediatype = extract_listvalueiri_from_value(extract_property(item.get("dcterms:type", []), 8, only_label=True), "DCMI Type", lists)
         if mediatype:
-            payload[f"{PREFIX}type"] = {
+            payload[f"{PREFIX}hasTypeList"] = {
                 "@type": "knora-api:ListValue",
                 "knora-api:listValueAsListNode": {
                     "@id": mediatype
@@ -445,30 +458,31 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
             }
         format = extract_listvalueiri_from_value(extract_property(item.get("dcterms:format", []), 9), "Internet Media Type", lists)
         if format:
-            payload[f"{PREFIX}format"] = {
+            payload[f"{PREFIX}hasFormatList"] = {
                 "@type": "knora-api:ListValue",
                 "knora-api:listValueAsListNode": {
                     "@id": format
                 }
             }
         if 'dcterms:extent' in item:
-            payload[f"{PREFIX}extent"] = {
+            payload[f"{PREFIX}hasExtent"] = {
                 "knora-api:valueAsString": extract_property(item.get("dcterms:extent", []), 25),
                 "@type": "knora-api:TextValue"
             }
         if 'dcterms:rights' in item:
-            payload[f"{PREFIX}rights"] = {
+            payload[f"{PREFIX}hasRights"] = {
                 "knora-api:valueAsString": extract_property(item.get("dcterms:rights", []), 15),
                 "@type": "knora-api:TextValue"
             }
         if 'dcterms:license' in item:
-            payload[f"{PREFIX}license"] = {
-                "@type": "knora-api:UriValue",
-		        "knora-api:uriValueAsUri": {
-			        "@value": extract_property(item.get("dcterms:license", []), 49),
-			        "@type": "http://www.w3.org/2001/XMLSchema#anyURI"
-		        }
-	        }
+            license_iri = extract_listvalueiri_from_value(extract_property(item.get("dcterms:license", []), 49), "Licenses", lists)
+            if license_iri:
+                payload[f"{PREFIX}hasLicenseList"] = {
+                    "@type": "knora-api:ListValue",
+                    "knora-api:listValueAsListNode": {
+                        "@id": license_iri
+                    }
+                }
         if 'dcterms:creator' in item:
             creators = []
             for data in extract_combined_values(item.get("dcterms:creator", [])): 
@@ -476,7 +490,7 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
                     "knora-api:valueAsString": data,
                     "@type": "knora-api:TextValue"
                 })
-            payload[f"{PREFIX}creator"] = creators
+            payload[f"{PREFIX}hasCreator"] = creators
         if 'dcterms:publisher' in item:
             publishers = []
             for data in extract_combined_values(item.get("dcterms:publisher", [])): 
@@ -484,7 +498,7 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
                     "knora-api:valueAsString": data,
                     "@type": "knora-api:TextValue"
                 })
-            payload[f"{PREFIX}publisher"] = publishers
+            payload[f"{PREFIX}hasPublisher"] = publishers
         if 'dcterms:source' in item:
             sources = []
             for data in extract_combined_values(item.get("dcterms:source", [])): 
@@ -492,7 +506,7 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
                     "knora-api:valueAsString": data,
                     "@type": "knora-api:TextValue"
                 })
-            payload[f"{PREFIX}source"] = sources
+            payload[f"{PREFIX}hasSource"] = sources
         if 'dcterms:relation' in item:
             relations = []
             for data in extract_combined_values(item.get("dcterms:relation", [])): 
@@ -500,7 +514,7 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
                     "knora-api:valueAsString": data,
                     "@type": "knora-api:TextValue"
                 })
-            payload[f"{PREFIX}relation"] = relations
+            payload[f"{PREFIX}hasRelation"] = relations
 
     return payload
 
@@ -580,9 +594,9 @@ def create_resource(payload: dict, token: str) -> None:
 
     response = requests.post(resources_endpoint, json=payload, headers=headers, timeout=10)
     if response.status_code == 200:
-        logging.info(f"{payload[f"{PREFIX}identifier"]["knora-api:valueAsString"]}: resource created on DaSCH")
+        logging.info(f"{payload[f"{PREFIX}hasIdentifier"]["knora-api:valueAsString"]}: resource created on DaSCH")
     else:
-        logging.error(f"{payload[f"{PREFIX}identifier"]["knora-api:valueAsString"]}: resource creation failed: {response.status_code}: {response.text}")
+        logging.error(f"{payload[f"{PREFIX}hasIdentifier"]["knora-api:valueAsString"]}: resource creation failed: {response.status_code}: {response.text}")
         logging.error(payload)
 
 
@@ -597,19 +611,20 @@ def specify_mediaclass(media_type: str) -> str:
     Video files: MP4
     Archive files: ZIP, TAR, GZIP
     (https://docs.dasch.swiss/latest/DSP-API/03-endpoints/api-v2/editing-values/)
+    
+    Maps to new resource classes:
+    - Image: for image types
+    - Document: for PDFs, text files, and archives
     """
 
     valid_images_types = {"image/tiff", "image/jpg", "image/jpeg", "image/png", "image/gif"}
     valid_text_types = {"text/csv", "text/markdown", "text/plain", "application/json"}
     valid_doc_types = {"application/pdf"}
     if media_type in valid_images_types:
-        return f"{PREFIX}sgb_MEDIA_IMAGE"
-    if media_type in valid_text_types:
-        return f"{PREFIX}sgb_MEDIA_TEXT"
-    if media_type in valid_doc_types:
-        return f"{PREFIX}sgb_MEDIA_DOCUMENT"
+        return f"{PREFIX}Image"
     else:
-        return f"{PREFIX}sgb_MEDIA_ARCHIV"
+        # All non-image types are Documents (PDFs, text files, archives)
+        return f"{PREFIX}Document"
     
 
 def main() -> None:
@@ -644,7 +659,7 @@ def main() -> None:
 
     for item in items_data:
         item_id = extract_property(item.get("dcterms:identifier", []), 10)
-        metadata_iri = get_resource_by_id(token, f"{PREFIX}sgb_OBJECT", item_id).get('@id')
+        metadata_iri = get_resource_by_id(token, f"{PREFIX}Parent", item_id).get('@id')
         if metadata_iri:
             object = get_full_resource(token, urllib.parse.quote(metadata_iri, safe=''))
 
@@ -662,9 +677,9 @@ def main() -> None:
                 logging.info(f"{item_id}: object exists already")
                 
         else:
-            payload = construct_payload(item, f"{PREFIX}sgb_OBJECT", project_iri, project_lists,"","")
+            payload = construct_payload(item, f"{PREFIX}Parent", project_iri, project_lists,"","")
             create_resource(payload, token)
-            metadata_iri = get_resource_by_id(token, f"{PREFIX}sgb_OBJECT", item_id).get('@id')
+            metadata_iri = get_resource_by_id(token, f"{PREFIX}Parent", item_id).get('@id')
         media_data = get_media(item.get("o:id", ""))
         if media_data:
             for media in media_data:
@@ -689,8 +704,10 @@ def main() -> None:
                 else:
                     logging.info(f"{media_id}: adding media to {media_class} ...")
                     object_location = media.get("o:original_url", "")
-                    # zip file if it is not a dasch valid format;
-                    internalFilename = upload_file_from_url(object_location,token, zip=(media_class == f"{PREFIX}sgb_MEDIA_ARCHIV"))
+                    media_format = extract_property(media.get("dcterms:format", []), 9)
+                    # zip file if it is not a DSP-valid format (archives, non-standard files)
+                    should_zip = media_class == f"{PREFIX}Document" and media_format not in ["application/pdf", "text/csv", "text/markdown", "text/plain", "application/json"]
+                    internalFilename = upload_file_from_url(object_location,token, zip=should_zip)
                     if internalFilename:
                         media_payload = construct_payload(media, media_class, project_iri, project_lists, metadata_iri,internalFilename)
                         create_resource(media_payload, token)
