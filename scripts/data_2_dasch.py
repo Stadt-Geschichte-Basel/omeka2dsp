@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import random
 import tempfile
-from typing import cast
+from typing import Any, Dict, List, cast
 import urllib
 import zipfile
 
@@ -37,6 +37,15 @@ ONTOLOGY_NAME = PREFIX[:-1]
 NUMBER_RANDOM_OBJECTS = 2
 TEST_DATA = {'abb13025', 'abb14375', 'abb41033', 'abb11536', 'abb28998'}
 
+ICONCLASS_SUBJECT_ENTRY = {
+    "type": "literal",
+    "property_id": 3,
+    "property_label": "Subject",
+    "is_public": True,
+    "@value": "11A|Deity, God (in general) in Christian religion",
+    "@language": "en",
+}
+
 ONTOLOGY_CONTEXT = (
     f"{API_HOST}/ontology/{PROJECT_SHORT_CODE}/{ONTOLOGY_NAME}/v2#"
     if all([API_HOST, PROJECT_SHORT_CODE, ONTOLOGY_NAME])
@@ -66,6 +75,13 @@ def build_context() -> dict:
         ONTOLOGY_NAME: ONTOLOGY_CONTEXT,
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     }
+
+
+def apply_iconclass_subject(records: List[Dict[str, Any]]) -> None:
+    """Force test/sample records to use a known Iconclass subject label."""
+
+    for record in records:
+        record["dcterms:subject"] = [ICONCLASS_SUBJECT_ENTRY.copy()]
 
 # Set up logging
 file_handler = logging.FileHandler("data_2_dasch.log", mode='w')
@@ -103,19 +119,35 @@ def login(email: str, password: str) -> str:
 def get_project():
     endpoint = f"{API_HOST}/admin/projects/shortcode/{PROJECT_SHORT_CODE}"
     response = requests.get(endpoint)
+    project_data = response.json()
+    try:
+        project_id = cast(str, project_data["project"]["id"])
+        ontology_iris = project_data["project"].get("ontologies", [])
+    except KeyError as error:
+        logging.error("Failed to parse project response: %s", error)
+        raise
+
+    if ontology_iris:
+        ontology_context = ontology_iris[0]
+        if not ontology_context.endswith("#"):
+            ontology_context = f"{ontology_context}#"
+        # Update the global context so subsequent payloads use the canonical IRI base.
+        global ONTOLOGY_CONTEXT
+        ONTOLOGY_CONTEXT = ontology_context
+
     if response.status_code == 200:
-        logging.info(f"project Iri: {cast(str, response.json()["project"]["id"])}")
+        logging.info(f"project Iri: {project_id}")
     else:
         logging.error(f"Failed to retrieve project. Status code: {response.status_code}")
         logging.error(f"Response: {response.text}")
-    return cast(str, response.json()["project"]["id"])
+    return project_id
 
 # Get lists
 def get_lists(project_iri):
     url_lists = f"{API_HOST}/admin/lists/?projectIri={project_iri}"
     response_lists = requests.get(url_lists)
+    all_lists = []
     if response_lists.status_code == 200:
-        all_lists = []
         for list in response_lists.json()["lists"]:
             list_id = list["id"]
             # URL encode the list IRI
@@ -128,10 +160,10 @@ def get_lists(project_iri):
             else:
                 logging.error(f"Failed to retrieve complete list for {list_id}. Status code: {response.status_code}")
                 logging.error(f"Response:{response.text}")
-        logging.info(f"Got Lists from project")
+        logging.info("Got Lists from project")
     else:
-        logging.error(f"Failed to retrieve lists. Status code: {response.status_code}")
-        logging.error(f"Response: {response.text}")
+        logging.error(f"Failed to retrieve lists. Status code: {response_lists.status_code}")
+        logging.error(f"Response: {response_lists.text}")
     return all_lists
 
 
@@ -630,7 +662,7 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
             payload[f"{PREFIX}isPartOf"] = is_part_of_entries
 
     if type in MEDIA_RESOURCE_TYPES and parent_iri:
-        payload[f"{PREFIX}linkToParentObject"] = {
+        payload[f"{PREFIX}linkToParentObjectValue"] = {
             "@type": "knora-api:LinkValue",
             "knora-api:linkValueHasTargetIri": {"@id": parent_iri},
         }
@@ -866,6 +898,8 @@ def main() -> None:
     # Fetch item data
     items_data = get_items_from_collection(ITEM_SET_ID)
 
+    constrain_to_iconclass = args.mode in {'sample_data', 'test_data'}
+
     if args.mode == 'sample_data':
         items_data = random.sample(items_data, NUMBER_RANDOM_OBJECTS)
 
@@ -882,6 +916,9 @@ def main() -> None:
             if not remaining_identifiers:
                 break
         items_data = found_objects
+
+    if constrain_to_iconclass:
+        apply_iconclass_subject(items_data)
 
     # get_project()
     token = login(DSP_USER, DSP_PWD)
@@ -913,6 +950,8 @@ def main() -> None:
             create_resource(payload, token)
             metadata_iri = get_resource_by_id(token, METADATA_RESOURCE_TYPE, item_id).get('@id')
         media_data = get_media(item.get("o:id", ""))
+        if constrain_to_iconclass:
+            apply_iconclass_subject(media_data)
         if media_data:
             for media in media_data:
                 media_id = extract_property(media.get("dcterms:identifier", []), 10)
