@@ -3,4 +3,161 @@ title: Data Model
 date-modified: last-modified
 ---
 
-TODO
+## Overview
+
+The Stadt.Geschichte.Basel (SGB) project uses a revised data model definition aligned with DaSCH Service Platform and FAIR principles for open research data. The complete data model is defined in `project.json` at the repository root.
+
+## Project Definition
+
+The project definition has been modernized with:
+
+- **Shortcode**: `4001`
+- **Shortname**: `sgb`
+- **Longname**: Stadt.Geschichte.Basel
+- **Modernized descriptions** in German and English emphasizing interdisciplinary research, open access, and FAIR principles
+- **Expanded keywords** including: Maps, Archaeology, Iconclass, Open Access, Digital Humanities, FAIR, Metadata, and more
+
+## Lists
+
+The data model includes several controlled vocabulary lists:
+
+### Language (`language`)
+ISO 639-1 two-letter language codes:
+- `de` (German)
+- `fr` (French)
+- `la` (Latin)
+- `it` (Italian)
+- `nl` (Dutch)
+- `en` (English)
+
+### Type (`type`)
+DCMI Type Vocabulary for resource types:
+- `dataset`
+- `image`
+
+### Subject (`subject`)
+Iconclass classification system for describing and indexing visual content. Iconclass organizes motifs, themes, and concepts through standardized codes for semantic interoperability.
+
+Example:
+- `11A|Deity, God (in general) in Christian religion`
+
+### License (`license`)
+Standard licenses and rights statements:
+- Creative Commons Public Domain Mark 1.0
+- CC0 1.0 Universal
+- CC BY 4.0
+- CC BY-SA 4.0
+- CC BY-NC-SA 4.0
+- RightsStatements.org InC 1.0
+- RightsStatements.org InC-RUU 1.0
+
+### Temporal (`temporal`)
+Project-specific periodization (Stadt.Geschichte.Basel Era):
+- Frühgeschichte (Prehistory)
+- Antike (Antiquity)
+- Mittelalter (Middle Ages)
+- Frühe Neuzeit (Early Modern Period)
+- 19. Jahrhundert (19th Century)
+- 20. Jahrhundert (20th Century)
+- 21. Jahrhundert (21st Century)
+
+### Format (`format`)
+Internet Media Types (MIME types):
+- `application/geo+json`
+- `application/pdf`
+- `image/jpeg`
+- `image/png`
+- `image/tiff`
+- `text/csv`
+
+## Ontology
+
+The `SGB` ontology extends Dublin Core Terms (dcterms) and includes the following properties:
+
+### Properties
+
+- **hasAbstract**: Abstract of the resource
+- **hasCreator**: Creator(s) of the resource
+- **hasDate**: Date in Extended Date Time Format (EDTF), e.g., 1920, 1920-05, 1920-05-10, 1900/1950, 1960?, 1900~/1950?
+- **hasDescription**: Description of the resource
+- **hasExtent**: Measurement (pixels for raster images, millimetres for vector graphics)
+- **hasFormatList**: Format (linked to format list)
+- **hasIdentifier**: Unique identifier
+- **hasLanguageList**: Language (linked to language list)
+- **hasLicenseList**: License (linked to license list)
+- **hasPublisher**: Publisher(s) of the resource
+- **hasRelation**: Related resources (e.g., HLS, Wikipedia, Wikidata)
+- **hasRights**: Rights information
+- **hasSource**: Provenance and processing (memory institution, call number, digitisation/provenance, editing notes)
+- **hasSubjectList**: Subject classification (linked to subject list)
+- **hasTemporalList**: Temporal period (linked to temporal list)
+- **hasTitle**: Title of the resource
+- **hasTypeList**: Resource type (linked to type list)
+- **isPartOf**: Reference to the corresponding printed volume and open-access edition
+- **linkToParentObject**: Link to parent object
+
+### Resource Classes
+
+#### Document
+Documents like text documents, PDFs, etc.
+- Extends: `DocumentRepresentation`
+- Required properties: `hasTitle`, `hasDescription`
+- Optional properties: All other properties listed above
+
+#### Image
+Visual representations including images and photographs.
+- Extends: `StillImageRepresentation`, `dcterms:Image`
+- Required properties: `hasTitle`, `hasDescription`
+- Optional properties: All other properties listed above
+- Supports images and photographs of physical objects, paintings, prints, drawings, diagrams, maps
+
+#### Parent
+Übergeordnetes Objekt (Parent object) for hierarchical organization.
+- Extends: `Resource`
+- Required properties: `hasTitle`, `hasTemporalList`
+- Optional properties: `hasIdentifier`, `hasSubjectList`, `hasDescription`, `hasLanguageList`, `isPartOf`
+
+#### ResourceWithoutMedia
+Resource without media file, typically due to copyright restrictions.
+- Extends: `Resource`
+- Required properties: `hasTitle`, `hasDescription`
+- Optional properties: All other properties listed above
+- Used for resources where media files cannot be provided due to copyright
+
+## Implementation Notes
+
+### Property Cardinalities
+
+Properties are defined with specific cardinalities:
+- `0-1`: Optional, single value
+- `1`: Required, single value
+- `0-n`: Optional, multiple values
+
+### GUI Elements
+
+Properties use different GUI elements for data entry:
+- `SimpleText`: Simple text input
+- `Textarea`: Multi-line text
+- `Richtext`: Formatted text with HTML support
+- `List`: Selection from controlled vocabulary
+- `Searchbox`: Link to other resources
+
+## Usage
+
+The `project.json` file can be used with DSP-Tools to create or update the project on the DaSCH Service Platform:
+
+```bash
+# Create project
+dsp-tools create -s your-dsp-host -u admin@example.com -p password project.json
+
+# Validate project definition
+dsp-tools validate project.json
+```
+
+## References
+
+- [DaSCH Documentation](https://docs.dasch.swiss/)
+- [Dublin Core Terms](http://purl.org/dc/terms/)
+- [Iconclass](https://iconclass.org/)
+- [Extended Date Time Format (EDTF)](https://www.loc.gov/standards/datetime/)
+- [DCMI Type Vocabulary](https://www.dublincore.org/specifications/dublin-core/dcmi-type-vocabulary/)

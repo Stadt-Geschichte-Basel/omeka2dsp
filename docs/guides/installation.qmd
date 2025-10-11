@@ -163,12 +163,14 @@ Your DSP project must have a compatible data model. The system expects:
 
 ### 2. Create Data Model
 
-If you need to create the data model, use the provided JSON:
+If you need to create the data model, use the provided `project.json`:
 
 ``` bash
 # Using DSP-Tools (requires system administrator rights)
-dsp-tools create -s your-dsp-host -u admin@example.com -p password data/data_model_dasch.json
+dsp-tools create -s your-dsp-host -u admin@example.com -p password project.json
 ```
+
+Note: The `project.json` file in the repository root contains the revised project definition with modernized metadata, expanded keywords, and updated ontology aligned with DaSCH and FAIR principles.
 
 ### 3. Verify Lists Setup
 
@@ -197,7 +199,7 @@ The system expects the following directory structure:
 ```         
 omeka2dsp/
 ├── data/                          # Configuration and cache files
-│   ├── data_model_dasch.json      # DSP data model definition
+│   ├── data_model_dasch.json      # Legacy DSP data model (deprecated)
 │   ├── data_lists.json            # DSP lists summary (generated)
 │   ├── data_lists_detail.json     # Detailed lists (generated)
 │   ├── project_data.json          # Project info (generated)
@@ -209,6 +211,7 @@ omeka2dsp/
 │   ├── api_get_project.py         # Project info fetcher
 │   ├── api_get_lists.py           # Lists fetcher
 │   └── api_get_lists_detailed.py  # Detailed lists fetcher
+├── project.json                   # DSP project definition (revised)
 ├── .env                           # Environment configuration
 ├── .gitignore                     # Git ignore rules
 ├── README.md                      # Basic documentation
