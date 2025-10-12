@@ -123,7 +123,7 @@ DSP_USER=your_dsp_username
 DSP_PWD=your_dsp_password
 
 # Optional Configuration
-PREFIX=SGB
+ONTOLOGY_NAME=SGB
 ```
 
 ### 3. Validate Configuration

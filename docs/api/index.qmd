@@ -301,7 +301,7 @@ value = extract_value_from_entry({
 **Parameters**:
 
 -   `item`: Omeka item data
--   `type`: DSP resource type (e.g., "SGB:Parent", "SGB:Image")
+-   `type`: DSP resource type (e.g., "SGB:Parent", "SGB:Image", "SGB:Document")
 -   `project_iri`: Project IRI for resource association
 -   `lists`: DSP lists for value mapping
 -   `parent_iri`: Parent resource IRI for linking
@@ -313,21 +313,21 @@ value = extract_value_from_entry({
 
 **Key Transformations**:
 
-| Omeka Property        | DSP Property        | Value Type        | Notes                                   |
-|-----------------------|---------------------|-------------------|-----------------------------------------|
-| `dcterms:title`       | `rdfs:label`        | String            | Resource label                          |
-| `dcterms:identifier`  | `hasIdentifier`     | TextValue         | Unique identifier                       |
-| `dcterms:description` | `hasDescription`    | TextValue         | Item description                        |
-| `dcterms:creator`     | `hasCreator`        | TextValue Array   | Multi-valued creator entries            |
-| `dcterms:date`        | `hasDate`           | TextValue         | EDTF date string                        |
-| `dcterms:subject`     | `hasSubjectList`    | ListValue Array   | Iconclass subject list                  |
-| `dcterms:type`        | `hasTypeList`       | ListValue         | DCMI Type vocabulary                    |
-| `dcterms:format`      | `hasFormatList`     | ListValue         | Internet media type list                |
-| `dcterms:language`    | `hasLanguageList`   | ListValue         | ISO 639-1 codes                         |
-| `dcterms:source`      | `hasSource`         | TextValue Array   | Provenance/source notes                 |
-| `dcterms:relation`    | `hasRelation`       | TextValue Array   | Related resources                       |
-| `dcterms:rights`      | `hasRights`         | TextValue         | Rights statement                        |
-| `dcterms:license`     | `hasLicenseList`    | ListValue         | Controlled license list (CC/Rights)     |
+| Omeka Property | DSP Property | Value Type | Notes |
+|----------------|----------------|----------------|-------------------------|
+| `dcterms:title` | `rdfs:label` | String | Resource label |
+| `dcterms:identifier` | `hasIdentifier` | TextValue | Unique identifier |
+| `dcterms:description` | `hasDescription` | TextValue | Item description |
+| `dcterms:creator` | `hasCreator` | TextValue Array | Multi-valued creator entries |
+| `dcterms:date` | `hasDate` | TextValue | EDTF date string |
+| `dcterms:subject` | `hasSubjectList` | ListValue Array | Iconclass subject list |
+| `dcterms:type` | `hasTypeList` | ListValue | DCMI Type vocabulary |
+| `dcterms:format` | `hasFormatList` | ListValue | Internet media type list |
+| `dcterms:language` | `hasLanguageList` | ListValue | ISO 639-1 codes |
+| `dcterms:source` | `hasSource` | TextValue Array | Provenance/source notes |
+| `dcterms:relation` | `hasRelation` | TextValue Array | Related resources |
+| `dcterms:rights` | `hasRights` | TextValue | Rights statement |
+| `dcterms:license` | `hasLicenseList` | ListValue | Controlled license list (CC/Rights) |
 
 **Example**:
 
@@ -515,8 +515,7 @@ internal_filename = upload_file_from_url(
 **Mapping**:
 
 -   `image/*` → `SGB:Image`
--   `application/pdf`, `text/*`, `application/zip` → `SGB:Document`
--   All others → `SGB:ResourceWithoutMedia` (default)
+-   `application/pdf`, `text/*`, archives → `SGB:Document`
 
 **Example**:
 
@@ -790,7 +789,7 @@ Standalone script to fetch detailed DSP list information.
 | `INGEST_HOST` | string | Yes | DSP ingest service URL | None |
 | `DSP_USER` | string | Yes | DSP username | None |
 | `DSP_PWD` | string | Yes | DSP password | None |
-| `PREFIX` | string | No | Ontology prefix | "SGB" |
+| `ONTOLOGY_NAME` | string | No | Ontology name | "SGB" |
 | `OMEKA_API_URL` | string | No | Omeka API base URL | "https://omeka.unibe.ch/api/" |
 | `KEY_IDENTITY` | string | Yes | Omeka API key identity | None |
 | `KEY_CREDENTIAL` | string | Yes | Omeka API key credential | None |

@@ -30,9 +30,8 @@ API_HOST = os.getenv("API_HOST")
 INGEST_HOST = os.getenv("INGEST_HOST")
 DSP_USER = os.getenv("DSP_USER")
 DSP_PWD = os.getenv("DSP_PWD")
-RAW_PREFIX = os.getenv("PREFIX", "SGB")
-PREFIX = RAW_PREFIX if RAW_PREFIX.endswith(":") else f"{RAW_PREFIX}:"
-ONTOLOGY_NAME = PREFIX[:-1]
+ONTOLOGY_NAME = os.getenv("ONTOLOGY_NAME", "SGB")
+PREFIX = f"{PREFIX}"
 
 NUMBER_RANDOM_OBJECTS = 2
 TEST_DATA = {'abb13025', 'abb14375', 'abb41033', 'abb11536', 'abb28998'}
@@ -225,16 +224,16 @@ def get_resource_by_id(token: str, object_class: str, identifier: str) -> dict:
     }
     query = f"""
         PREFIX knora-api: <http://api.knora.org/ontology/knora-api/v2#>
-        PREFIX {ONTOLOGY_NAME}: <{ONTOLOGY_CONTEXT}>
+        PREFIX {PREFIX} <{ONTOLOGY_CONTEXT}>
         CONSTRUCT {{
             ?metadata knora-api:isMainResource true .
-            ?metadata {ONTOLOGY_NAME}:hasIdentifier ?identifierValue .
-            ?metadata {ONTOLOGY_NAME}:hasTitle ?title .
+            ?metadata {PREFIX}hasIdentifier ?identifierValue .
+            ?metadata {PREFIX}hasTitle ?title .
         }} WHERE {{
             ?metadata a {object_class} .
-            ?metadata {ONTOLOGY_NAME}:hasIdentifier ?identifierValue .
+            ?metadata {PREFIX}hasIdentifier ?identifierValue .
             ?identifierValue knora-api:valueAsString ?identifier .
-            ?metadata {ONTOLOGY_NAME}:hasTitle ?title .
+            ?metadata {PREFIX}hasTitle ?title .
             FILTER(?identifier = "{identifier}")
         }}
         """

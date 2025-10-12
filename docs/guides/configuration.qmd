@@ -52,16 +52,16 @@ INGEST_HOST=https://ingest.dasch.swiss
 DSP_USER=your.email@example.com
 DSP_PWD=your_secure_password
 
-# Ontology prefix (default works for most cases)
-PREFIX=SGB
+# Ontology name (default works for most cases)
+ONTOLOGY_NAME=SGB
 ```
 
 **DSP Configuration Notes**:
 
--   `PROJECT_SHORT_CODE`: 4-character alphanumeric project identifier
+-   `PROJECT_SHORT_CODE`: 4-character project identifier (e.g., "4001" for Stadt.Geschichte.Basel)
 -   `API_HOST`: Main DSP API endpoint (varies by instance)
 -   `INGEST_HOST`: File upload service endpoint
--   `PREFIX`: Must match your DSP ontology namespace
+-   `ONTOLOGY_NAME`: Ontology name (default: "SGB" for the new ontology)
 
 ### Environment File Template
 
@@ -107,8 +107,8 @@ INGEST_HOST=https://ingest.dasch.swiss
 DSP_USER=username@example.com
 DSP_PWD=secure_password_here
 
-# Ontology prefix (usually don't change)
-PREFIX=SGB
+# Ontology name (default: SGB)
+ONTOLOGY_NAME=SGB
 
 # ===========================================
 # OPTIONAL CONFIGURATION
