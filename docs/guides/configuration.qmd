@@ -42,7 +42,7 @@ ITEM_SET_ID=10780
 
 ``` bash
 # DSP project identifier (shortcode)
-PROJECT_SHORT_CODE=0712
+PROJECT_SHORT_CODE=4001
 
 # DSP API endpoints
 API_HOST=https://api.dasch.swiss
@@ -52,16 +52,16 @@ INGEST_HOST=https://ingest.dasch.swiss
 DSP_USER=your.email@example.com
 DSP_PWD=your_secure_password
 
-# Ontology prefix (default works for most cases)
-PREFIX=StadtGeschichteBasel_v1:
+# Ontology name (default works for most cases)
+ONTOLOGY_NAME=SGB
 ```
 
 **DSP Configuration Notes**:
 
--   `PROJECT_SHORT_CODE`: 4-character alphanumeric project identifier
+-   `PROJECT_SHORT_CODE`: 4-character project identifier (e.g., "4001" for Stadt.Geschichte.Basel)
 -   `API_HOST`: Main DSP API endpoint (varies by instance)
 -   `INGEST_HOST`: File upload service endpoint
--   `PREFIX`: Must match your DSP ontology namespace
+-   `ONTOLOGY_NAME`: Ontology name (default: "SGB" for the new ontology)
 
 ### Environment File Template
 
@@ -97,7 +97,7 @@ ITEM_SET_ID=10780
 # ===========================================
 
 # DSP project shortcode (4 characters)
-PROJECT_SHORT_CODE=0712
+PROJECT_SHORT_CODE=4001
 
 # DSP API endpoints
 API_HOST=https://api.dasch.swiss
@@ -107,8 +107,8 @@ INGEST_HOST=https://ingest.dasch.swiss
 DSP_USER=username@example.com
 DSP_PWD=secure_password_here
 
-# Ontology prefix (usually don't change)
-PREFIX=StadtGeschichteBasel_v1:
+# Ontology name (default: SGB)
+ONTOLOGY_NAME=SGB
 
 # ===========================================
 # OPTIONAL CONFIGURATION
@@ -219,22 +219,20 @@ Configure how Omeka values map to DSP list nodes:
 {
   "list_mappings": {
     "DCMI Type Vocabulary": {
-      "Image": "image",
-      "Text": "text", 
-      "Collection": "collection",
-      "Interactive Resource": "interactive"
+      "image": "type_image",
+      "dataset": "type_dataset"
     },
     "Internet Media Type": {
-      "image/jpeg": "image-jpeg",
-      "image/png": "image-png",
-      "application/pdf": "application-pdf",
-      "text/plain": "text-plain"
+      "image/jpeg": "format_image_jpeg",
+      "image/png": "format_image_png",
+      "application/pdf": "format_application_pdf",
+      "text/csv": "format_text_csv"
     },
-    "ISO 639 Language Codes": {
-      "German": "de",
-      "English": "en", 
-      "French": "fr",
-      "Italian": "it"
+    "ISO 639-1": {
+      "de": "language_de",
+      "en": "language_en",
+      "fr": "language_fr",
+      "it": "language_it"
     }
   }
 }
@@ -247,11 +245,11 @@ Configure DSP resource classes for different content types:
 ``` python
 # Resource class configuration
 RESOURCE_CLASSES = {
-    'metadata': f'{PREFIX}sgb_OBJECT',
-    'image': f'{PREFIX}sgb_MEDIA_IMAGE',
-    'document': f'{PREFIX}sgb_MEDIA_ARCHIV',
-    'audio': f'{PREFIX}sgb_MEDIA_ARCHIV',
-    'video': f'{PREFIX}sgb_MEDIA_ARCHIV'
+    'metadata': f'{PREFIX}Parent',
+    'image': f'{PREFIX}Image',
+    'document': f'{PREFIX}Document',
+    'audio': f'{PREFIX}ResourceWithoutMedia',
+    'video': f'{PREFIX}ResourceWithoutMedia'
 }
 
 # Media type to class mapping
@@ -261,8 +259,7 @@ MEDIA_TYPE_MAPPING = {
     'image/gif': 'image',
     'image/tiff': 'image',
     'application/pdf': 'document',
-    'text/plain': 'document',
-    'text/html': 'document',
+    'text/csv': 'document',
     'application/zip': 'document',
     'audio/mpeg': 'audio',
     'video/mp4': 'video'

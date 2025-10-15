@@ -181,7 +181,7 @@ resource_data = get_full_resource(token, urllib.parse.quote(resource_iri, safe='
 **Parameters**:
 
 -   `token`: JWT authentication token
--   `object_class`: DSP resource class (e.g., "sgb_OBJECT")
+-   `object_class`: DSP resource class (e.g., "SGB:Parent")
 -   `identifier`: Unique identifier to search for
 
 **Returns**:
@@ -193,7 +193,7 @@ resource_data = get_full_resource(token, urllib.parse.quote(resource_iri, safe='
 **Example**:
 
 ``` python
-resource = get_resource_by_id(token, f"{PREFIX}sgb_OBJECT", "abb13025")
+resource = get_resource_by_id(token, f"{PREFIX}Parent", "abb13025")
 if resource:
     print(f"Found resource: {resource['@id']}")
 ```
@@ -217,7 +217,7 @@ if resource:
 **Example**:
 
 ``` python
-payload = construct_payload(omeka_item, f"{PREFIX}sgb_OBJECT", project_iri, lists, "", "")
+payload = construct_payload(omeka_item, f"{PREFIX}Parent", project_iri, lists, "", "")
 create_resource(payload, token)
 ```
 
@@ -301,7 +301,7 @@ value = extract_value_from_entry({
 **Parameters**:
 
 -   `item`: Omeka item data
--   `type`: DSP resource type (e.g., "sgb_OBJECT", "sgb_MEDIA_IMAGE")
+-   `type`: DSP resource type (e.g., "SGB:Parent", "SGB:Image", "SGB:Document")
 -   `project_iri`: Project IRI for resource association
 -   `lists`: DSP lists for value mapping
 -   `parent_iri`: Parent resource IRI for linking
@@ -313,26 +313,28 @@ value = extract_value_from_entry({
 
 **Key Transformations**:
 
-| Omeka Property        | DSP Property  | Value Type      | Notes                |
-|-------------------|------------------|------------------|------------------|
-| `dcterms:title`       | `rdfs:label`  | String          | Required field       |
-| `dcterms:identifier`  | `identifier`  | TextValue       | Unique identifier    |
-| `dcterms:description` | `description` | TextValue       | Item description     |
-| `dcterms:creator`     | `creator`     | TextValue       | Creator information  |
-| `dcterms:date`        | `date`        | TextValue       | Date information     |
-| `dcterms:subject`     | `subject`     | TextValue Array | Subject tags         |
-| `dcterms:type`        | `type`        | ListValue       | Mapped to DSP lists  |
-| `dcterms:format`      | `format`      | ListValue       | Media format mapping |
-| `dcterms:language`    | `language`    | ListValue       | Language mapping     |
-| `dcterms:rights`      | `rights`      | TextValue       | Rights information   |
-| `dcterms:license`     | `license`     | UriValue        | License URL          |
+| Omeka Property | DSP Property | Value Type | Notes |
+|----------------|----------------|----------------|-------------------------|
+| `dcterms:title` | `rdfs:label` | String | Resource label |
+| `dcterms:identifier` | `hasIdentifier` | TextValue | Unique identifier |
+| `dcterms:description` | `hasDescription` | TextValue | Item description |
+| `dcterms:creator` | `hasCreator` | TextValue Array | Multi-valued creator entries |
+| `dcterms:date` | `hasDate` | TextValue | EDTF date string |
+| `dcterms:subject` | `hasSubjectList` | ListValue Array | Iconclass subject list |
+| `dcterms:type` | `hasTypeList` | ListValue | DCMI Type vocabulary |
+| `dcterms:format` | `hasFormatList` | ListValue | Internet media type list |
+| `dcterms:language` | `hasLanguageList` | ListValue | ISO 639-1 codes |
+| `dcterms:source` | `hasSource` | TextValue Array | Provenance/source notes |
+| `dcterms:relation` | `hasRelation` | TextValue Array | Related resources |
+| `dcterms:rights` | `hasRights` | TextValue | Rights statement |
+| `dcterms:license` | `hasLicenseList` | ListValue | Controlled license list (CC/Rights) |
 
 **Example**:
 
 ``` python
 payload = construct_payload(
     item=omeka_item,
-    type=f"{PREFIX}sgb_OBJECT",
+    type=f"{PREFIX}Parent",
     project_iri=project_iri,
     lists=project_lists,
     parent_iri="",
@@ -512,15 +514,14 @@ internal_filename = upload_file_from_url(
 
 **Mapping**:
 
--   `image/*` → `sgb_MEDIA_IMAGE`
--   `application/pdf`, `text/*`, `application/zip` → `sgb_MEDIA_ARCHIV`
--   All others → `sgb_MEDIA_ARCHIV` (default)
+-   `image/*` → `SGB:Image`
+-   `application/pdf`, `text/*`, archives → `SGB:Document`
 
 **Example**:
 
 ``` python
 media_class = specify_mediaclass("image/jpeg")
-# Returns: "StadtGeschichteBasel_v1:sgb_MEDIA_IMAGE"
+# Returns: "SGB:Image"
 ```
 
 ### Utility Functions
@@ -788,7 +789,7 @@ Standalone script to fetch detailed DSP list information.
 | `INGEST_HOST` | string | Yes | DSP ingest service URL | None |
 | `DSP_USER` | string | Yes | DSP username | None |
 | `DSP_PWD` | string | Yes | DSP password | None |
-| `PREFIX` | string | No | Ontology prefix | "StadtGeschichteBasel_v1:" |
+| `ONTOLOGY_NAME` | string | No | Ontology name | "SGB" |
 | `OMEKA_API_URL` | string | No | Omeka API base URL | "https://omeka.unibe.ch/api/" |
 | `KEY_IDENTITY` | string | Yes | Omeka API key identity | None |
 | `KEY_CREDENTIAL` | string | Yes | Omeka API key credential | None |
