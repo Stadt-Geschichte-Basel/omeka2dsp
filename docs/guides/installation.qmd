@@ -123,7 +123,7 @@ DSP_USER=your_dsp_username
 DSP_PWD=your_dsp_password
 
 # Optional Configuration
-PREFIX=SGB:
+ONTOLOGY_NAME=SGB
 ```
 
 ### 3. Validate Configuration
@@ -145,21 +145,26 @@ Your DSP project must have a compatible data model. The system expects:
 
 #### Required Resource Classes:
 
--   `sgb_OBJECT`: Main metadata objects
--   `sgb_MEDIA_IMAGE`: Image files
--   `sgb_MEDIA_ARCHIV`: Archive files (PDFs, documents)
+-   `SGB:Parent`: Main metadata objects
+-   `SGB:Image`: Still image media
+-   `SGB:Document`: Document and text-based media
+-   `SGB:ResourceWithoutMedia`: Records without a deliverable file
 
 #### Required Properties:
 
--   `identifier`: Unique item identifier
--   `title`: Resource title
--   `description`: Resource description
--   `creator`: Creator information
--   `date`: Date information
--   `subject`: Subject classifications
--   `type`: Resource type (mapped to lists)
--   `format`: File format (mapped to lists)
--   `language`: Language (mapped to lists)
+-   `hasIdentifier`: Unique item identifier
+-   `hasTitle`: Resource title
+-   `hasDescription`: Resource description or abstract
+-   `hasCreator`: Creator information
+-   `hasDate`: Date information in EDTF format
+-   `hasSubjectList`: Subject classifications (Iconclass list)
+-   `hasTypeList`: Resource type (DCMI list)
+-   `hasFormatList`: File format (Internet Media Type list)
+-   `hasLanguageList`: Language (ISO 639-1 list)
+-   `hasLicenseList`: Rights statement / licence selection
+-   `hasRights`: Human-readable rights statement
+-   `hasSource`: Provenance information
+-   `linkToParentObject`: Link from media items to their parent metadata resource
 
 ### 2. Create Data Model
 
@@ -190,7 +195,7 @@ Required lists include:
 
 -   **DCMI Type Vocabulary**: For resource types
 -   **Internet Media Type**: For file formats
--   **ISO 639 Language Codes**: For languages
+-   **ISO 639-1**: For languages
 
 ## Directory Structure Setup
 

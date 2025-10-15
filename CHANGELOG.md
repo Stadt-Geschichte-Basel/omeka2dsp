@@ -18,11 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Project shortcode updated to 4001, shortname to sgb
 - Comprehensive data model documentation in `docs/datamodel/index.qmd`
 
-### Changed
-
-- Updated installation guide to reference `project.json` instead of deprecated `data/data_model_dasch.json`
-- Updated directory structure documentation to reflect new project definition location
-
 ### Documentation
 
 - Docs for Zenodo added

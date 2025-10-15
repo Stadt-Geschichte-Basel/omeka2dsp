@@ -349,7 +349,7 @@ graph LR
 | **Omeka API** | `OMEKA_API_URL`, `KEY_IDENTITY`, `KEY_CREDENTIAL`, `ITEM_SET_ID` | Connect to source Omeka instance |
 | **DSP API** | `PROJECT_SHORT_CODE`, `API_HOST`, `INGEST_HOST` | Connect to target DSP instance |
 | **Authentication** | `DSP_USER`, `DSP_PWD` | Authenticate with DSP |
-| **Processing** | `PREFIX`, `NUMBER_RANDOM_OBJECTS`, `TEST_DATA` | Control processing behavior |
+| **Processing** | `ONTOLOGY_NAME`, `NUMBER_RANDOM_OBJECTS`, `TEST_DATA` | Control processing behavior |
 
 ## Error Handling Architecture
 
