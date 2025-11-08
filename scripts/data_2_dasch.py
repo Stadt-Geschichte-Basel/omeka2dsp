@@ -31,7 +31,7 @@ INGEST_HOST = os.getenv("INGEST_HOST")
 DSP_USER = os.getenv("DSP_USER")
 DSP_PWD = os.getenv("DSP_PWD")
 ONTOLOGY_NAME = os.getenv("ONTOLOGY_NAME", "SGB")
-PREFIX = f"{PREFIX}"
+PREFIX = f"{ONTOLOGY_NAME}:"
 
 NUMBER_RANDOM_OBJECTS = 2
 TEST_DATA = {'abb13025', 'abb14375', 'abb41033', 'abb11536', 'abb28998'}
@@ -349,6 +349,32 @@ def sync_array_value(prop, prop_type, dasch_array, omeka_array):
     return changes
 
 
+def sync_mixed_value_array(prop, dasch_array, omeka_array):
+    """
+    Sync array values that can be either TextValue or UriValue.
+    Each value's type is determined by its content (URI or text).
+    This is used for issue #7 fields like creator, publisher, source, relation.
+    """
+    dasch_set = {value for value in dasch_array if value}
+    omeka_set = {value for value in omeka_array if value}
+
+    to_create = omeka_set - dasch_set  
+    to_delete = dasch_set - omeka_set  
+
+    changes = []
+    for value in to_create:
+        # Determine type based on content
+        prop_type = "UriValue" if (value.startswith("http://") or value.startswith("https://")) else "TextValue"
+        changes.append({"field": prop, "prop_type": prop_type, "type": "create", "value": value})
+    
+    for value in to_delete:
+        # For deletion, we don't need to specify the type, but we'll determine it anyway
+        prop_type = "UriValue" if (value.startswith("http://") or value.startswith("https://")) else "TextValue"
+        changes.append({"field": prop, "prop_type": prop_type, "type": "delete", "value": value})
+
+    return changes
+
+
 def check_values(dasch_item, omeka_item, lists):
     modified_values = []
     title = sync_value(
@@ -411,9 +437,9 @@ def check_values(dasch_item, omeka_item, lists):
 
     # Check object specific fields
     if dasch_item["@type"] == METADATA_RESOURCE_TYPE:
-        is_part_of = sync_array_value(
+        # Support mixed TextValue/UriValue for isPartOf (issue #7)
+        is_part_of = sync_mixed_value_array(
             "isPartOf",
-            "TextValue",
             extract_dasch_propvalue_multiple(dasch_item, "isPartOf"),
             extract_combined_values(omeka_item.get("dcterms:isPartOf", [])),
         )
@@ -422,18 +448,17 @@ def check_values(dasch_item, omeka_item, lists):
 
     # Check media specific fields
     if dasch_item["@type"] in MEDIA_RESOURCE_TYPES:
-        creator = sync_array_value(
+        # Support mixed TextValue/UriValue for creator, publisher, source, relation (issue #7)
+        creator = sync_mixed_value_array(
             "hasCreator",
-            "TextValue",
             extract_dasch_propvalue_multiple(dasch_item, "hasCreator"),
             extract_combined_values(omeka_item.get("dcterms:creator", [])),
         )
         if creator:
             modified_values.extend(creator)
 
-        publisher = sync_array_value(
+        publisher = sync_mixed_value_array(
             "hasPublisher",
-            "TextValue",
             extract_dasch_propvalue_multiple(dasch_item, "hasPublisher"),
             extract_combined_values(omeka_item.get("dcterms:publisher", [])),
         )
@@ -458,20 +483,20 @@ def check_values(dasch_item, omeka_item, lists):
         if extent:
             modified_values.append(extent)
 
-        resource_type = sync_value(
+        # Support multiple type values (issue #7)
+        type_iris = []
+        for type_label in extract_combined_values(omeka_item.get("dcterms:type", [])):
+            type_iri = extract_listvalueiri_from_value(type_label, "type", lists)
+            if type_iri:
+                type_iris.append(type_iri)
+        resource_types = sync_array_value(
             "hasTypeList",
             "ListValue",
-            extract_dasch_propvalue(dasch_item, "hasTypeList"),
-            extract_listvalueiri_from_value(
-                extract_property(
-                    omeka_item.get("dcterms:type", []), 8, only_label=True
-                ),
-                "type",
-                lists,
-            ),
+            extract_dasch_propvalue_multiple(dasch_item, "hasTypeList"),
+            type_iris,
         )
-        if resource_type:
-            modified_values.append(resource_type)
+        if resource_types:
+            modified_values.extend(resource_types)
 
         format_value = sync_value(
             "hasFormatList",
@@ -486,18 +511,16 @@ def check_values(dasch_item, omeka_item, lists):
         if format_value:
             modified_values.append(format_value)
 
-        source = sync_array_value(
+        source = sync_mixed_value_array(
             "hasSource",
-            "TextValue",
             extract_dasch_propvalue_multiple(dasch_item, "hasSource"),
             extract_combined_values(omeka_item.get("dcterms:source", [])),
         )
         if source:
             modified_values.extend(source)
 
-        relation = sync_array_value(
+        relation = sync_mixed_value_array(
             "hasRelation",
-            "TextValue",
             extract_dasch_propvalue_multiple(dasch_item, "hasRelation"),
             extract_combined_values(omeka_item.get("dcterms:relation", [])),
         )
@@ -525,6 +548,18 @@ def check_values(dasch_item, omeka_item, lists):
         )
         if license_value:
             modified_values.append(license_value)
+
+        # Optional: abstract mapping (issue #7)
+        abstract_values = extract_combined_values(omeka_item.get("dcterms:abstract", []))
+        abstract_value = abstract_values[0] if abstract_values else ""
+        abstract = sync_value(
+            "hasAbstract",
+            "TextValue",
+            extract_dasch_propvalue(dasch_item, "hasAbstract"),
+            abstract_value,
+        )
+        if abstract:
+            modified_values.append(abstract)
 
     return modified_values
     
@@ -590,6 +625,32 @@ def extract_listvalueiri_from_value(value, list_key, lists):
     )
     return None
 
+
+def build_text_or_uri_values(values):
+    """
+    Build a list of TextValue or UriValue objects based on content.
+    URIs (starting with http:// or https://) become UriValue, others become TextValue.
+    This addresses issue #7.
+    """
+    result = []
+    for val in values:
+        if isinstance(val, str):
+            if val.startswith("http://") or val.startswith("https://"):
+                result.append({
+                    "@type": "knora-api:UriValue",
+                    "knora-api:uriValueAsUri": {
+                        "@value": val,
+                        "@type": "http://www.w3.org/2001/XMLSchema#anyURI"
+                    }
+                })
+            else:
+                result.append({
+                    "@type": "knora-api:TextValue",
+                    "knora-api:valueAsString": val
+                })
+    return result
+
+
 def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaFilename):
     payload = {
         "@context": build_context(),
@@ -648,15 +709,10 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
             "knora-api:listValueAsListNode": {"@id": language_iri},
         }
 
+    # Support URIs in isPartOf (issue #7)
     if "dcterms:isPartOf" in item:
-        is_part_of_entries = []
-        for data in extract_combined_values(item.get("dcterms:isPartOf", [])):
-            is_part_of_entries.append(
-                {
-                    "knora-api:valueAsString": data,
-                    "@type": "knora-api:TextValue",
-                }
-            )
+        is_part_of_values = extract_combined_values(item.get("dcterms:isPartOf", []))
+        is_part_of_entries = build_text_or_uri_values(is_part_of_values)
         if is_part_of_entries:
             payload[f"{PREFIX}isPartOf"] = is_part_of_entries
 
@@ -685,16 +741,17 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
                 "@type": "knora-api:TextValue",
             }
 
-        mediatype_iri = extract_listvalueiri_from_value(
-            extract_property(item.get("dcterms:type", []), 8, only_label=True),
-            "type",
-            lists,
-        )
-        if mediatype_iri:
-            payload[f"{PREFIX}hasTypeList"] = {
-                "@type": "knora-api:ListValue",
-                "knora-api:listValueAsListNode": {"@id": mediatype_iri},
-            }
+        # Support multiple type values (issue #7)
+        type_values = []
+        for type_label in extract_combined_values(item.get("dcterms:type", [])):
+            type_iri = extract_listvalueiri_from_value(type_label, "type", lists)
+            if type_iri:
+                type_values.append({
+                    "@type": "knora-api:ListValue",
+                    "knora-api:listValueAsListNode": {"@id": type_iri},
+                })
+        if type_values:
+            payload[f"{PREFIX}hasTypeList"] = type_values
 
         format_iri = extract_listvalueiri_from_value(
             extract_property(item.get("dcterms:format", []), 9), "format", lists
@@ -709,6 +766,15 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
         if extent_value:
             payload[f"{PREFIX}hasExtent"] = {
                 "knora-api:valueAsString": extent_value,
+                "@type": "knora-api:TextValue",
+            }
+
+        # Optional: abstract mapping (issue #7)
+        abstract_values = extract_combined_values(item.get("dcterms:abstract", []))
+        if abstract_values:
+            # Take the first abstract value if multiple exist
+            payload[f"{PREFIX}hasAbstract"] = {
+                "knora-api:valueAsString": abstract_values[0],
                 "@type": "knora-api:TextValue",
             }
 
@@ -728,51 +794,28 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
                 "knora-api:listValueAsListNode": {"@id": license_iri},
             }
 
+        # Support URIs for creator, publisher, source, relation (issue #7)
         if "dcterms:creator" in item:
-            creators = []
-            for data in extract_combined_values(item.get("dcterms:creator", [])):
-                creators.append(
-                    {
-                        "knora-api:valueAsString": data,
-                        "@type": "knora-api:TextValue",
-                    }
-                )
+            creator_values = extract_combined_values(item.get("dcterms:creator", []))
+            creators = build_text_or_uri_values(creator_values)
             if creators:
                 payload[f"{PREFIX}hasCreator"] = creators
 
         if "dcterms:publisher" in item:
-            publishers = []
-            for data in extract_combined_values(item.get("dcterms:publisher", [])):
-                publishers.append(
-                    {
-                        "knora-api:valueAsString": data,
-                        "@type": "knora-api:TextValue",
-                    }
-                )
+            publisher_values = extract_combined_values(item.get("dcterms:publisher", []))
+            publishers = build_text_or_uri_values(publisher_values)
             if publishers:
                 payload[f"{PREFIX}hasPublisher"] = publishers
 
         if "dcterms:source" in item:
-            sources = []
-            for data in extract_combined_values(item.get("dcterms:source", [])):
-                sources.append(
-                    {
-                        "knora-api:valueAsString": data,
-                        "@type": "knora-api:TextValue",
-                    }
-                )
+            source_values = extract_combined_values(item.get("dcterms:source", []))
+            sources = build_text_or_uri_values(source_values)
             if sources:
                 payload[f"{PREFIX}hasSource"] = sources
 
         if "dcterms:relation" in item:
-            relations = []
-            for data in extract_combined_values(item.get("dcterms:relation", [])):
-                relations.append(
-                    {
-                        "knora-api:valueAsString": data,
-                        "@type": "knora-api:TextValue",
-                    }
-                )
+            relation_values = extract_combined_values(item.get("dcterms:relation", []))
+            relations = build_text_or_uri_values(relation_values)
             if relations:
                 payload[f"{PREFIX}hasRelation"] = relations
 
@@ -953,6 +996,12 @@ def main() -> None:
             apply_iconclass_subject(media_data)
         if media_data:
             for media in media_data:
+                # Skip private media (issues #13, #14, #12)
+                if not media.get("o:is_public", True):
+                    media_id = extract_property(media.get("dcterms:identifier", []), 10)
+                    logging.info(f"{media_id}: skipping private media")
+                    continue
+                
                 media_id = extract_property(media.get("dcterms:identifier", []), 10)
                 media_class = specify_mediaclass(extract_property(media.get("dcterms:format", []), 9))
                 mediadata_iri = get_resource_by_id(token, media_class, media_id).get('@id')
