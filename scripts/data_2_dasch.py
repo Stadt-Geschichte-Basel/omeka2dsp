@@ -1,21 +1,20 @@
 import argparse
-from argparse import Namespace
 import logging
 import os
-from pathlib import Path
 import random
 import tempfile
-from typing import Any, Dict, List, cast
 import urllib
 import zipfile
+from argparse import Namespace
+from pathlib import Path
+from typing import Any, Dict, List, cast
 
 import requests
-
 from process_data_from_omeka import (
+    extract_combined_values,
+    extract_property,
     get_items_from_collection,
     get_media,
-    extract_combined_values,
-    extract_property
 )
 
 # TODO: - improve error handling
@@ -23,7 +22,7 @@ from process_data_from_omeka import (
 #       - refactoring
 
 # Configuration
-ITEM_SET_ID = os.getenv("ITEM_SET_ID", '10780')
+ITEM_SET_ID = os.getenv("ITEM_SET_ID", "10780")
 
 PROJECT_SHORT_CODE = os.getenv("PROJECT_SHORT_CODE")
 API_HOST = os.getenv("API_HOST")
@@ -34,7 +33,7 @@ ONTOLOGY_NAME = os.getenv("ONTOLOGY_NAME", "SGB")
 PREFIX = f"{ONTOLOGY_NAME}:"
 
 NUMBER_RANDOM_OBJECTS = 2
-TEST_DATA = {'abb13025', 'abb14375', 'abb41033', 'abb11536', 'abb28998'}
+TEST_DATA = {"abb13025", "abb14375", "abb41033", "abb11536", "abb28998"}
 
 ICONCLASS_SUBJECT_ENTRY = {
     "type": "literal",
@@ -82,15 +81,16 @@ def apply_iconclass_subject(records: List[Dict[str, Any]]) -> None:
     for record in records:
         record["dcterms:subject"] = [ICONCLASS_SUBJECT_ENTRY.copy()]
 
+
 # Set up logging
-file_handler = logging.FileHandler("data_2_dasch.log", mode='w')
+file_handler = logging.FileHandler("data_2_dasch.log", mode="w")
 file_handler.setLevel(logging.INFO)
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.INFO)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[stream_handler, file_handler]
+    handlers=[stream_handler, file_handler],
 )
 
 
@@ -102,8 +102,14 @@ def parse_arguments() -> Namespace:
     """
 
     parser = argparse.ArgumentParser(description="--mode")
-    parser.add_argument("-m", "--mode", type=str, choices=['all_data', 'sample_data', 'test_data'], default='all_data',
-                        help=f"which data should be processed? possible options: 'all_data' (all data), 'sample_data' ({NUMBER_RANDOM_OBJECTS} random metadata objects),'test_data' (10 selected test metadata objects)")
+    parser.add_argument(
+        "-m",
+        "--mode",
+        type=str,
+        choices=["all_data", "sample_data", "test_data"],
+        default="all_data",
+        help=f"which data should be processed? possible options: 'all_data' (all data), 'sample_data' ({NUMBER_RANDOM_OBJECTS} random metadata objects),'test_data' (10 selected test metadata objects)",
+    )
     args = parser.parse_args()
 
     return args
@@ -111,9 +117,12 @@ def parse_arguments() -> Namespace:
 
 def login(email: str, password: str) -> str:
     endpoint = f"{API_HOST}/v2/authentication"
-    response = requests.post(endpoint, json={"email": email, "password": password}, timeout=10)
+    response = requests.post(
+        endpoint, json={"email": email, "password": password}, timeout=10
+    )
     logging.info("Login successful")
     return cast(str, response.json()["token"])
+
 
 def get_project():
     endpoint = f"{API_HOST}/admin/projects/shortcode/{PROJECT_SHORT_CODE}"
@@ -137,9 +146,12 @@ def get_project():
     if response.status_code == 200:
         logging.info(f"project Iri: {project_id}")
     else:
-        logging.error(f"Failed to retrieve project. Status code: {response.status_code}")
+        logging.error(
+            f"Failed to retrieve project. Status code: {response.status_code}"
+        )
         logging.error(f"Response: {response.text}")
     return project_id
+
 
 # Get lists
 def get_lists(project_iri):
@@ -150,29 +162,32 @@ def get_lists(project_iri):
         for list in response_lists.json()["lists"]:
             list_id = list["id"]
             # URL encode the list IRI
-            encoded_list_id = urllib.parse.quote(list_id, safe='')
+            encoded_list_id = urllib.parse.quote(list_id, safe="")
             # Construct the API endpoint for this specific list ID
             url = f"{API_HOST}/v2/lists/{encoded_list_id}"
             response = requests.get(url)
             if response.status_code == 200:
                 all_lists.append(response.json())
             else:
-                logging.error(f"Failed to retrieve complete list for {list_id}. Status code: {response.status_code}")
+                logging.error(
+                    f"Failed to retrieve complete list for {list_id}. Status code: {response.status_code}"
+                )
                 logging.error(f"Response:{response.text}")
         logging.info("Got Lists from project")
     else:
-        logging.error(f"Failed to retrieve lists. Status code: {response_lists.status_code}")
+        logging.error(
+            f"Failed to retrieve lists. Status code: {response_lists.status_code}"
+        )
         logging.error(f"Response: {response_lists.text}")
     return all_lists
 
 
 def get_full_resource(token: str, resource_iri: str) -> dict:
     endpoint = f"{API_HOST}/v2/resources/{resource_iri}"
-    headers = {
-        "Authorization": f"Bearer {token}"
-    }
+    headers = {"Authorization": f"Bearer {token}"}
     response = requests.get(endpoint, headers=headers)
     return response.json()
+
 
 def extract_dasch_propvalue(item, prop):
 
@@ -181,6 +196,7 @@ def extract_dasch_propvalue(item, prop):
         prop_value = item[full_property]
         return extract_value_from_entry(prop_value)
     return ""
+
 
 def extract_dasch_propvalue_multiple(item, prop):
     full_property = f"{PREFIX}{prop}"
@@ -202,10 +218,11 @@ def extract_dasch_propvalue_multiple(item, prop):
                 values.append(value)
     return values
 
+
 def extract_value_from_entry(entry):
-    entry_type = entry.get('@type')
+    entry_type = entry.get("@type")
     value = None
-    
+
     if entry_type == "knora-api:TextValue":
         value = entry.get("knora-api:valueAsString")
     elif entry_type == "knora-api:ListValue":
@@ -216,11 +233,12 @@ def extract_value_from_entry(entry):
         value = entry.get("knora-api:uriValueAsUri", {}).get("@value")
     return value
 
+
 def get_resource_by_id(token: str, object_class: str, identifier: str) -> dict:
     endpoint = f"{API_HOST}/v2/searchextended"
     headers = {
         "Authorization": f"Bearer {token}",
-        "Content-Type": "application/sparql-query; charset=utf-8"
+        "Content-Type": "application/sparql-query; charset=utf-8",
     }
     query = f"""
         PREFIX knora-api: <http://api.knora.org/ontology/knora-api/v2#>
@@ -237,7 +255,7 @@ def get_resource_by_id(token: str, object_class: str, identifier: str) -> dict:
             FILTER(?identifier = "{identifier}")
         }}
         """
-    response = requests.post(endpoint, data=query.encode('utf-8'), headers=headers)
+    response = requests.post(endpoint, data=query.encode("utf-8"), headers=headers)
     if response.status_code == 200:
         return response.json()
     else:
@@ -254,9 +272,7 @@ def update_value(token, item, value, field, field_type, type_of_change):
         "@context": context_data,
         "@id": item["@id"],
         "@type": item["@type"],
-        f"{PREFIX}{field}": {
-            "@type": complete_field_type
-        }
+        f"{PREFIX}{field}": {"@type": complete_field_type},
     }
 
     if type_of_change in ["delete", "update"]:
@@ -266,13 +282,22 @@ def update_value(token, item, value, field, field_type, type_of_change):
         elif isinstance(existing_value, list):
             value_id = None
             for obj in existing_value:
-                if field_type == "TextValue" and obj.get("knora-api:valueAsString") == value:
+                if (
+                    field_type == "TextValue"
+                    and obj.get("knora-api:valueAsString") == value
+                ):
                     value_id = obj["@id"]
                     break
-                elif field_type == "ListValue" and obj.get("knora-api:listValueAsListNode", {}).get("@id") == value:
+                elif (
+                    field_type == "ListValue"
+                    and obj.get("knora-api:listValueAsListNode", {}).get("@id") == value
+                ):
                     value_id = obj["@id"]
                     break
-                elif field_type == "UriValue" and obj.get("knora-api:uriValueAsUri", {}).get("@value") == value:
+                elif (
+                    field_type == "UriValue"
+                    and obj.get("knora-api:uriValueAsUri", {}).get("@value") == value
+                ):
                     value_id = obj["@id"]
                     break
         else:
@@ -290,11 +315,11 @@ def update_value(token, item, value, field, field_type, type_of_change):
         if field_type == "UriValue":
             payload[f"{PREFIX}{field}"]["knora-api:uriValueAsUri"] = {
                 "@value": value,
-                "@type": "http://www.w3.org/2001/XMLSchema#anyURI"
+                "@type": "http://www.w3.org/2001/XMLSchema#anyURI",
             }
         if field_type == "linkvalue":
             payload[f"{PREFIX}{field}"]["knora-api:linkValueHasTargetIri"] = {
-                "@id": value 
+                "@id": value
             }
 
     if type_of_change == "delete":
@@ -311,7 +336,9 @@ def update_value(token, item, value, field, field_type, type_of_change):
     else:
         response = requests.post(endpoint, json=payload, headers=headers, timeout=10)
 
-    identifier_value = extract_dasch_propvalue(item, "hasIdentifier") or "unknown identifier"
+    identifier_value = (
+        extract_dasch_propvalue(item, "hasIdentifier") or "unknown identifier"
+    )
     if response.status_code == 200:
         logging.info(f"{identifier_value}: {type_of_change}d {field} '{value}'")
     else:
@@ -320,31 +347,54 @@ def update_value(token, item, value, field, field_type, type_of_change):
         )
         # logging.error(payload)
 
+
 def arrays_equal(array1, array2):
     if len(array1) != len(array2):
         return False
     return set(array1) == set(array2)
 
+
 def sync_value(prop, prop_type, dasch_value, omeka_value):
     dasch_value = dasch_value or ""
     omeka_value = omeka_value or ""
     if dasch_value == "" and omeka_value != "":
-        return {"field": prop, "prop_type": prop_type, "type": "create", "value": omeka_value}
+        return {
+            "field": prop,
+            "prop_type": prop_type,
+            "type": "create",
+            "value": omeka_value,
+        }
     elif dasch_value != "" and omeka_value == "":
-        return {"field": prop, "prop_type": prop_type, "type": "delete", "value": omeka_value}
+        return {
+            "field": prop,
+            "prop_type": prop_type,
+            "type": "delete",
+            "value": omeka_value,
+        }
     elif dasch_value != "" and omeka_value != "" and dasch_value != omeka_value:
-        return {"field": prop, "prop_type": prop_type, "type": "update", "value": omeka_value}
+        return {
+            "field": prop,
+            "prop_type": prop_type,
+            "type": "update",
+            "value": omeka_value,
+        }
 
 
 def sync_array_value(prop, prop_type, dasch_array, omeka_array):
     dasch_set = {value for value in dasch_array if value}
     omeka_set = {value for value in omeka_array if value}
 
-    to_create = omeka_set - dasch_set  
-    to_delete = dasch_set - omeka_set  
+    to_create = omeka_set - dasch_set
+    to_delete = dasch_set - omeka_set
 
-    changes = [{"field": prop, "prop_type": prop_type, "type": "create", "value": value} for value in to_create]
-    changes += [{"field": prop, "prop_type": prop_type, "type": "delete", "value": value} for value in to_delete]
+    changes = [
+        {"field": prop, "prop_type": prop_type, "type": "create", "value": value}
+        for value in to_create
+    ]
+    changes += [
+        {"field": prop, "prop_type": prop_type, "type": "delete", "value": value}
+        for value in to_delete
+    ]
 
     return changes
 
@@ -358,19 +408,31 @@ def sync_mixed_value_array(prop, dasch_array, omeka_array):
     dasch_set = {value for value in dasch_array if value}
     omeka_set = {value for value in omeka_array if value}
 
-    to_create = omeka_set - dasch_set  
-    to_delete = dasch_set - omeka_set  
+    to_create = omeka_set - dasch_set
+    to_delete = dasch_set - omeka_set
 
     changes = []
     for value in to_create:
         # Determine type based on content
-        prop_type = "UriValue" if (value.startswith("http://") or value.startswith("https://")) else "TextValue"
-        changes.append({"field": prop, "prop_type": prop_type, "type": "create", "value": value})
-    
+        prop_type = (
+            "UriValue"
+            if (value.startswith("http://") or value.startswith("https://"))
+            else "TextValue"
+        )
+        changes.append(
+            {"field": prop, "prop_type": prop_type, "type": "create", "value": value}
+        )
+
     for value in to_delete:
         # For deletion, we don't need to specify the type, but we'll determine it anyway
-        prop_type = "UriValue" if (value.startswith("http://") or value.startswith("https://")) else "TextValue"
-        changes.append({"field": prop, "prop_type": prop_type, "type": "delete", "value": value})
+        prop_type = (
+            "UriValue"
+            if (value.startswith("http://") or value.startswith("https://"))
+            else "TextValue"
+        )
+        changes.append(
+            {"field": prop, "prop_type": prop_type, "type": "delete", "value": value}
+        )
 
     return changes
 
@@ -550,7 +612,9 @@ def check_values(dasch_item, omeka_item, lists):
             modified_values.append(license_value)
 
         # Optional: abstract mapping (issue #7)
-        abstract_values = extract_combined_values(omeka_item.get("dcterms:abstract", []))
+        abstract_values = extract_combined_values(
+            omeka_item.get("dcterms:abstract", [])
+        )
         abstract_value = abstract_values[0] if abstract_values else ""
         abstract = sync_value(
             "hasAbstract",
@@ -562,7 +626,7 @@ def check_values(dasch_item, omeka_item, lists):
             modified_values.append(abstract)
 
     return modified_values
-    
+
 
 def _normalise_labels(raw_value):
     labels = set()
@@ -594,7 +658,9 @@ def extract_listvalueiri_from_value(value, list_key, lists):
             labels.add(name)
         return bool(labels & possible_labels)
 
-    reference = next((list_data for list_data in lists if list_matches(list_data)), None)
+    reference = next(
+        (list_data for list_data in lists if list_matches(list_data)), None
+    )
 
     if not reference:
         logging.warning(
@@ -636,22 +702,25 @@ def build_text_or_uri_values(values):
     for val in values:
         if isinstance(val, str):
             if val.startswith("http://") or val.startswith("https://"):
-                result.append({
-                    "@type": "knora-api:UriValue",
-                    "knora-api:uriValueAsUri": {
-                        "@value": val,
-                        "@type": "http://www.w3.org/2001/XMLSchema#anyURI"
+                result.append(
+                    {
+                        "@type": "knora-api:UriValue",
+                        "knora-api:uriValueAsUri": {
+                            "@value": val,
+                            "@type": "http://www.w3.org/2001/XMLSchema#anyURI",
+                        },
                     }
-                })
+                )
             else:
-                result.append({
-                    "@type": "knora-api:TextValue",
-                    "knora-api:valueAsString": val
-                })
+                result.append(
+                    {"@type": "knora-api:TextValue", "knora-api:valueAsString": val}
+                )
     return result
 
 
-def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaFilename):
+def construct_payload(
+    item, type, project_iri, lists, parent_iri, internalMediaFilename
+):
     payload = {
         "@context": build_context(),
         "@type": type,
@@ -746,10 +815,12 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
         for type_label in extract_combined_values(item.get("dcterms:type", [])):
             type_iri = extract_listvalueiri_from_value(type_label, "type", lists)
             if type_iri:
-                type_values.append({
-                    "@type": "knora-api:ListValue",
-                    "knora-api:listValueAsListNode": {"@id": type_iri},
-                })
+                type_values.append(
+                    {
+                        "@type": "knora-api:ListValue",
+                        "knora-api:listValueAsListNode": {"@id": type_iri},
+                    }
+                )
         if type_values:
             payload[f"{PREFIX}hasTypeList"] = type_values
 
@@ -802,7 +873,9 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
                 payload[f"{PREFIX}hasCreator"] = creators
 
         if "dcterms:publisher" in item:
-            publisher_values = extract_combined_values(item.get("dcterms:publisher", []))
+            publisher_values = extract_combined_values(
+                item.get("dcterms:publisher", [])
+            )
             publishers = build_text_or_uri_values(publisher_values)
             if publishers:
                 payload[f"{PREFIX}hasPublisher"] = publishers
@@ -821,6 +894,7 @@ def construct_payload(item, type, project_iri, lists, parent_iri, internalMediaF
 
     return payload
 
+
 def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
     """
     Downloads a file from a URL and uploads it to the specified endpoint.
@@ -837,7 +911,7 @@ def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
         response = requests.get(file_url, stream=True, timeout=10)
     except requests.exceptions.RequestException as err:
         logging.error(f"File download error: {err}")
-        raise     
+        raise
     # Extract the original filename from the URL
     original_filename = Path(urllib.parse.urlparse(file_url).path).name
     if not original_filename:
@@ -858,17 +932,21 @@ def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
     # Prepare the upload
     final_filename = original_filename if not zip else temp_file_path.name
     encoded_filename = urllib.parse.quote(final_filename)
-    endpoint = f"{INGEST_HOST}/projects/{PROJECT_SHORT_CODE}/assets/ingest/{encoded_filename}"
+    endpoint = (
+        f"{INGEST_HOST}/projects/{PROJECT_SHORT_CODE}/assets/ingest/{encoded_filename}"
+    )
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/octet-stream",
     }
-    
+
     try:
         # Upload the file
         with open(temp_file_path, "rb") as file_data:
-            upload_response = requests.post(endpoint, data=file_data, headers=headers, timeout=30)
-        
+            upload_response = requests.post(
+                endpoint, data=file_data, headers=headers, timeout=30
+            )
+
         # Clean up the temporary file
         temp_file_path.unlink()
 
@@ -883,7 +961,7 @@ def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
             return None
     except requests.exceptions.RequestException as err:
         logging.error(f"File upload error: {err}")
-   
+
     return None
 
 
@@ -895,8 +973,12 @@ def create_resource(payload: dict, token: str) -> None:
         "X-Asset-Ingested": "true",
     }
 
-    response = requests.post(resources_endpoint, json=payload, headers=headers, timeout=10)
-    identifier_value = payload.get(f"{PREFIX}hasIdentifier", {}).get("knora-api:valueAsString", "unknown identifier")
+    response = requests.post(
+        resources_endpoint, json=payload, headers=headers, timeout=10
+    )
+    identifier_value = payload.get(f"{PREFIX}hasIdentifier", {}).get(
+        "knora-api:valueAsString", "unknown identifier"
+    )
     if response.status_code == 200:
         logging.info(f"{identifier_value}: resource created on DaSCH")
     else:
@@ -919,7 +1001,13 @@ def specify_mediaclass(media_type: str) -> str:
     (https://docs.dasch.swiss/latest/DSP-API/03-endpoints/api-v2/editing-values/)
     """
 
-    valid_images_types = {"image/tiff", "image/jpg", "image/jpeg", "image/png", "image/gif"}
+    valid_images_types = {
+        "image/tiff",
+        "image/jpg",
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+    }
     valid_text_types = {"text/csv", "text/markdown", "text/plain", "application/json"}
     valid_doc_types = {"application/pdf"}
     if media_type in valid_images_types:
@@ -931,7 +1019,7 @@ def specify_mediaclass(media_type: str) -> str:
         media_type,
     )
     return f"{PREFIX}ResourceWithoutMedia"
-    
+
 
 def main() -> None:
 
@@ -940,21 +1028,21 @@ def main() -> None:
     # Fetch item data
     items_data = get_items_from_collection(ITEM_SET_ID)
 
-    constrain_to_iconclass = args.mode in {'sample_data', 'test_data'}
+    constrain_to_iconclass = args.mode in {"sample_data", "test_data"}
 
-    if args.mode == 'sample_data':
+    if args.mode == "sample_data":
         items_data = random.sample(items_data, NUMBER_RANDOM_OBJECTS)
 
-    if args.mode == 'test_data':
+    if args.mode == "test_data":
         found_objects = []
         remaining_identifiers = TEST_DATA.copy()
 
         for obj in items_data:
-            for identifier in obj.get('dcterms:identifier', []):
-                if identifier['@value'] in remaining_identifiers:
+            for identifier in obj.get("dcterms:identifier", []):
+                if identifier["@value"] in remaining_identifiers:
                     found_objects.append(obj)
-                    remaining_identifiers.remove(identifier['@value'])
-                    
+                    remaining_identifiers.remove(identifier["@value"])
+
             if not remaining_identifiers:
                 break
         items_data = found_objects
@@ -970,27 +1058,42 @@ def main() -> None:
 
     for item in items_data:
         item_id = extract_property(item.get("dcterms:identifier", []), 10)
-        metadata_iri = get_resource_by_id(token, METADATA_RESOURCE_TYPE, item_id).get('@id')
+        metadata_iri = get_resource_by_id(token, METADATA_RESOURCE_TYPE, item_id).get(
+            "@id"
+        )
         if metadata_iri:
-            object = get_full_resource(token, urllib.parse.quote(metadata_iri, safe=''))
+            object = get_full_resource(token, urllib.parse.quote(metadata_iri, safe=""))
 
-            if 'knora-api:lastModificationDate' in object:
-                dasch_date = object['knora-api:lastModificationDate']['@value']
+            if "knora-api:lastModificationDate" in object:
+                dasch_date = object["knora-api:lastModificationDate"]["@value"]
             else:
-                dasch_date = object['knora-api:creationDate']['@value']
-            if item['o:modified']['@value'] > dasch_date:
-                logging.info(f"{item_id}: object exists already, but it was modified. Update object ...")
+                dasch_date = object["knora-api:creationDate"]["@value"]
+            if item["o:modified"]["@value"] > dasch_date:
+                logging.info(
+                    f"{item_id}: object exists already, but it was modified. Update object ..."
+                )
                 modified_values = check_values(object, item, project_lists)
                 # print(modified_values)
                 for value in modified_values:
-                    update_value(token, object,value["value"],value["field"],value["prop_type"],value["type"])
+                    update_value(
+                        token,
+                        object,
+                        value["value"],
+                        value["field"],
+                        value["prop_type"],
+                        value["type"],
+                    )
             else:
                 logging.info(f"{item_id}: object exists already")
 
         else:
-            payload = construct_payload(item, METADATA_RESOURCE_TYPE, project_iri, project_lists,"",None)
+            payload = construct_payload(
+                item, METADATA_RESOURCE_TYPE, project_iri, project_lists, "", None
+            )
             create_resource(payload, token)
-            metadata_iri = get_resource_by_id(token, METADATA_RESOURCE_TYPE, item_id).get('@id')
+            metadata_iri = get_resource_by_id(
+                token, METADATA_RESOURCE_TYPE, item_id
+            ).get("@id")
         media_data = get_media(item.get("o:id", ""))
         if constrain_to_iconclass:
             apply_iconclass_subject(media_data)
@@ -1001,23 +1104,38 @@ def main() -> None:
                     media_id = extract_property(media.get("dcterms:identifier", []), 10)
                     logging.info(f"{media_id}: skipping private media")
                     continue
-                
-                media_id = extract_property(media.get("dcterms:identifier", []), 10)
-                media_class = specify_mediaclass(extract_property(media.get("dcterms:format", []), 9))
-                mediadata_iri = get_resource_by_id(token, media_class, media_id).get('@id')
-                if mediadata_iri:
-                    object = get_full_resource(token, urllib.parse.quote(mediadata_iri, safe=''))
 
-                    if 'knora-api:lastModificationDate' in object:
-                        dasch_date = object['knora-api:lastModificationDate']['@value']
+                media_id = extract_property(media.get("dcterms:identifier", []), 10)
+                media_class = specify_mediaclass(
+                    extract_property(media.get("dcterms:format", []), 9)
+                )
+                mediadata_iri = get_resource_by_id(token, media_class, media_id).get(
+                    "@id"
+                )
+                if mediadata_iri:
+                    object = get_full_resource(
+                        token, urllib.parse.quote(mediadata_iri, safe="")
+                    )
+
+                    if "knora-api:lastModificationDate" in object:
+                        dasch_date = object["knora-api:lastModificationDate"]["@value"]
                     else:
-                        dasch_date = object['knora-api:creationDate']['@value']
-                    if media['o:modified']['@value'] > dasch_date:
-                        logging.info(f"{media_id}: media exists already, but it was modified. Update object ...")
+                        dasch_date = object["knora-api:creationDate"]["@value"]
+                    if media["o:modified"]["@value"] > dasch_date:
+                        logging.info(
+                            f"{media_id}: media exists already, but it was modified. Update object ..."
+                        )
                         modified_values = check_values(object, media, project_lists)
                         # print(modified_values)
                         for value in modified_values:
-                            update_value(token, object,value["value"],value["field"],value["prop_type"],value["type"])
+                            update_value(
+                                token,
+                                object,
+                                value["value"],
+                                value["field"],
+                                value["prop_type"],
+                                value["type"],
+                            )
                     else:
                         logging.info(f"{media_id}: media exists already")
                 else:
@@ -1026,9 +1144,19 @@ def main() -> None:
                     # upload the original file for supported media types
                     internalFilename = None
                     if media_class != f"{PREFIX}ResourceWithoutMedia":
-                        internalFilename = upload_file_from_url(object_location,token)
-                    if media_class == f"{PREFIX}ResourceWithoutMedia" or internalFilename:
-                        media_payload = construct_payload(media, media_class, project_iri, project_lists, metadata_iri,internalFilename)
+                        internalFilename = upload_file_from_url(object_location, token)
+                    if (
+                        media_class == f"{PREFIX}ResourceWithoutMedia"
+                        or internalFilename
+                    ):
+                        media_payload = construct_payload(
+                            media,
+                            media_class,
+                            project_iri,
+                            project_lists,
+                            metadata_iri,
+                            internalFilename,
+                        )
                         create_resource(media_payload, token)
                     else:
                         logging.error(f"{media_id}: could not create resource")
