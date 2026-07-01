@@ -3,22 +3,40 @@ Unit tests for data_2_dasch.py changes
 Tests for issues #6, #7, #12, #13, #14
 """
 
-import sys
 import os
+import sys
 
 # Add the scripts directory to the path so we can import the module
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 
-# Import the functions we're testing
-# Note: This will fail if environment variables are not set, so we'll mock them
-os.environ.setdefault("ONTOLOGY_NAME", "SGB")
-os.environ.setdefault("API_HOST", "https://api.test.com")
-os.environ.setdefault("PROJECT_SHORT_CODE", "TEST")
-os.environ.setdefault("INGEST_HOST", "https://ingest.test.com")
-os.environ.setdefault("DSP_USER", "test@test.com")
-os.environ.setdefault("DSP_PWD", "testpwd")
+# Import the functions we're testing.
+# Override the environment explicitly (not setdefault) so pre-existing values on
+# CI or a dev machine cannot make PREFIX differ from "SGB:"; restore afterwards.
+_TEST_ENV = {
+    "ONTOLOGY_NAME": "SGB",
+    "API_HOST": "https://api.test.com",
+    "PROJECT_SHORT_CODE": "TEST",
+    "INGEST_HOST": "https://ingest.test.com",
+    "DSP_USER": "test@test.com",
+    "DSP_PWD": "testpwd",
+}
+_PREVIOUS_ENV = {key: os.environ.get(key) for key in _TEST_ENV}
+os.environ.update(_TEST_ENV)
 
-from data_2_dasch import build_text_or_uri_values, sync_mixed_value_array, PREFIX
+
+def teardown_module():
+    for key, previous in _PREVIOUS_ENV.items():
+        if previous is None:
+            os.environ.pop(key, None)
+        else:
+            os.environ[key] = previous
+
+
+from data_2_dasch import (  # noqa: E402  # isort: skip  (import after env setup)
+    PREFIX,
+    build_text_or_uri_values,
+    sync_mixed_value_array,
+)
 
 
 def test_prefix_definition():
@@ -46,8 +64,12 @@ def test_build_text_or_uri_values_uri_only():
 
     assert len(result) == 2
     assert all(r["@type"] == "knora-api:UriValue" for r in result)
-    assert result[0]["knora-api:uriValueAsUri"]["@value"] == "https://example.com/person1"
-    assert result[1]["knora-api:uriValueAsUri"]["@value"] == "http://example.org/person2"
+    assert (
+        result[0]["knora-api:uriValueAsUri"]["@value"] == "https://example.com/person1"
+    )
+    assert (
+        result[1]["knora-api:uriValueAsUri"]["@value"] == "http://example.org/person2"
+    )
     print("✓ build_text_or_uri_values (URI only) test passed")
 
 
@@ -60,7 +82,9 @@ def test_build_text_or_uri_values_mixed():
     assert result[0]["@type"] == "knora-api:TextValue"
     assert result[0]["knora-api:valueAsString"] == "John Doe"
     assert result[1]["@type"] == "knora-api:UriValue"
-    assert result[1]["knora-api:uriValueAsUri"]["@value"] == "https://example.com/person1"
+    assert (
+        result[1]["knora-api:uriValueAsUri"]["@value"] == "https://example.com/person1"
+    )
     assert result[2]["@type"] == "knora-api:TextValue"
     assert result[2]["knora-api:valueAsString"] == "Jane Smith"
     print("✓ build_text_or_uri_values (mixed) test passed")

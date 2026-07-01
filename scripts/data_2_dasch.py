@@ -32,6 +32,10 @@ DSP_PWD = os.getenv("DSP_PWD")
 ONTOLOGY_NAME = os.getenv("ONTOLOGY_NAME", "SGB")
 PREFIX = f"{ONTOLOGY_NAME}:"
 
+# Default timeout (seconds) for outbound HTTP requests so a hung endpoint cannot
+# block the migration indefinitely.
+DEFAULT_TIMEOUT = 30
+
 NUMBER_RANDOM_OBJECTS = 2
 TEST_DATA = {"abb13025", "abb14375", "abb41033", "abb11536", "abb28998"}
 
@@ -126,7 +130,7 @@ def login(email: str, password: str) -> str:
 
 def get_project():
     endpoint = f"{API_HOST}/admin/projects/shortcode/{PROJECT_SHORT_CODE}"
-    response = requests.get(endpoint)
+    response = requests.get(endpoint, timeout=DEFAULT_TIMEOUT)
     project_data = response.json()
     try:
         project_id = cast(str, project_data["project"]["id"])
@@ -156,7 +160,7 @@ def get_project():
 # Get lists
 def get_lists(project_iri):
     url_lists = f"{API_HOST}/admin/lists/?projectIri={project_iri}"
-    response_lists = requests.get(url_lists)
+    response_lists = requests.get(url_lists, timeout=DEFAULT_TIMEOUT)
     all_lists = []
     if response_lists.status_code == 200:
         for list in response_lists.json()["lists"]:
@@ -165,7 +169,7 @@ def get_lists(project_iri):
             encoded_list_id = urllib.parse.quote(list_id, safe="")
             # Construct the API endpoint for this specific list ID
             url = f"{API_HOST}/v2/lists/{encoded_list_id}"
-            response = requests.get(url)
+            response = requests.get(url, timeout=DEFAULT_TIMEOUT)
             if response.status_code == 200:
                 all_lists.append(response.json())
             else:
@@ -185,7 +189,7 @@ def get_lists(project_iri):
 def get_full_resource(token: str, resource_iri: str) -> dict:
     endpoint = f"{API_HOST}/v2/resources/{resource_iri}"
     headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get(endpoint, headers=headers)
+    response = requests.get(endpoint, headers=headers, timeout=DEFAULT_TIMEOUT)
     return response.json()
 
 
@@ -255,7 +259,9 @@ def get_resource_by_id(token: str, object_class: str, identifier: str) -> dict:
             FILTER(?identifier = "{identifier}")
         }}
         """
-    response = requests.post(endpoint, data=query.encode("utf-8"), headers=headers)
+    response = requests.post(
+        endpoint, data=query.encode("utf-8"), headers=headers, timeout=DEFAULT_TIMEOUT
+    )
     if response.status_code == 200:
         return response.json()
     else:
@@ -988,6 +994,15 @@ def create_resource(payload: dict, token: str) -> None:
         logging.error(payload)
 
 
+def is_media_private(media: dict) -> bool:
+    """Return True if Omeka marks this media as private (issues #12, #13, #14).
+
+    Honors both Omeka privacy conventions: ``o:is_public`` set to ``False`` and
+    ``o:private`` set to ``True``. Defaults to public when neither flag is present.
+    """
+    return media.get("o:private") is True or media.get("o:is_public", True) is False
+
+
 def specify_mediaclass(media_type: str) -> str:
     """
     DSP-API v2 currently supports using SIPI to store the following types of files:
@@ -1099,16 +1114,17 @@ def main() -> None:
             apply_iconclass_subject(media_data)
         if media_data:
             for media in media_data:
-                # Skip private media (issues #13, #14, #12)
-                if not media.get("o:is_public", True):
-                    media_id = extract_property(media.get("dcterms:identifier", []), 10)
-                    logging.info(f"{media_id}: skipping private media")
-                    continue
-
                 media_id = extract_property(media.get("dcterms:identifier", []), 10)
                 media_class = specify_mediaclass(
                     extract_property(media.get("dcterms:format", []), 9)
                 )
+                # Private media (issues #12, #13, #14): keep a metadata record but never
+                # upload the file.
+                if is_media_private(media):
+                    logging.info(
+                        f"{media_id}: private media -> ResourceWithoutMedia (file not uploaded)"
+                    )
+                    media_class = f"{PREFIX}ResourceWithoutMedia"
                 mediadata_iri = get_resource_by_id(token, media_class, media_id).get(
                     "@id"
                 )
