@@ -203,24 +203,14 @@ def extract_dasch_propvalue(item, prop):
 
 
 def extract_dasch_propvalue_multiple(item, prop):
-    full_property = f"{PREFIX}{prop}"
-    values = []
-    # Get the value(s) of the property, either as a list or a single entry
-    prop_values = item.get(full_property)
-    # If the property exists and is either a list or a dict (single value case)
-    if prop_values:
-        # If the property is a list, iterate over the entries
-        if isinstance(prop_values, list):
-            for entry in prop_values:
-                value = extract_value_from_entry(entry)
-                if value:
-                    values.append(value)
-        # If it's a single dictionary (not a list), extract the value directly
-        elif isinstance(prop_values, dict):
-            value = extract_value_from_entry(prop_values)
-            if value:
-                values.append(value)
-    return values
+    entries = item.get(f"{PREFIX}{prop}") or []
+    if isinstance(entries, dict):
+        entries = [entries]
+    return [
+        value
+        for value in (extract_value_from_entry(entry) for entry in entries)
+        if value
+    ]
 
 
 def extract_value_from_entry(entry):
@@ -286,26 +276,14 @@ def update_value(token, item, value, field, field_type, type_of_change):
         if isinstance(existing_value, dict):
             value_id = existing_value.get("@id")
         elif isinstance(existing_value, list):
-            value_id = None
-            for obj in existing_value:
-                if (
-                    field_type == "TextValue"
-                    and obj.get("knora-api:valueAsString") == value
-                ):
-                    value_id = obj["@id"]
-                    break
-                elif (
-                    field_type == "ListValue"
-                    and obj.get("knora-api:listValueAsListNode", {}).get("@id") == value
-                ):
-                    value_id = obj["@id"]
-                    break
-                elif (
-                    field_type == "UriValue"
-                    and obj.get("knora-api:uriValueAsUri", {}).get("@value") == value
-                ):
-                    value_id = obj["@id"]
-                    break
+            value_id = next(
+                (
+                    obj["@id"]
+                    for obj in existing_value
+                    if extract_value_from_entry(obj) == value
+                ),
+                None,
+            )
         else:
             value_id = None
         if value_id:
@@ -354,10 +332,8 @@ def update_value(token, item, value, field, field_type, type_of_change):
         # logging.error(payload)
 
 
-def arrays_equal(array1, array2):
-    if len(array1) != len(array2):
-        return False
-    return set(array1) == set(array2)
+def _uri_or_text(value):
+    return "UriValue" if value.startswith(("http://", "https://")) else "TextValue"
 
 
 def sync_value(prop, prop_type, dasch_value, omeka_value):
@@ -414,33 +390,19 @@ def sync_mixed_value_array(prop, dasch_array, omeka_array):
     dasch_set = {value for value in dasch_array if value}
     omeka_set = {value for value in omeka_array if value}
 
-    to_create = omeka_set - dasch_set
-    to_delete = dasch_set - omeka_set
-
-    changes = []
-    for value in to_create:
-        # Determine type based on content
-        prop_type = (
-            "UriValue"
-            if (value.startswith("http://") or value.startswith("https://"))
-            else "TextValue"
+    return [
+        {
+            "field": prop,
+            "prop_type": _uri_or_text(value),
+            "type": change_type,
+            "value": value,
+        }
+        for change_type, values in (
+            ("create", omeka_set - dasch_set),
+            ("delete", dasch_set - omeka_set),
         )
-        changes.append(
-            {"field": prop, "prop_type": prop_type, "type": "create", "value": value}
-        )
-
-    for value in to_delete:
-        # For deletion, we don't need to specify the type, but we'll determine it anyway
-        prop_type = (
-            "UriValue"
-            if (value.startswith("http://") or value.startswith("https://"))
-            else "TextValue"
-        )
-        changes.append(
-            {"field": prop, "prop_type": prop_type, "type": "delete", "value": value}
-        )
-
-    return changes
+        for value in values
+    ]
 
 
 def check_values(dasch_item, omeka_item, lists):
@@ -706,21 +668,22 @@ def build_text_or_uri_values(values):
     """
     result = []
     for val in values:
-        if isinstance(val, str):
-            if val.startswith("http://") or val.startswith("https://"):
-                result.append(
-                    {
-                        "@type": "knora-api:UriValue",
-                        "knora-api:uriValueAsUri": {
-                            "@value": val,
-                            "@type": "http://www.w3.org/2001/XMLSchema#anyURI",
-                        },
-                    }
-                )
-            else:
-                result.append(
-                    {"@type": "knora-api:TextValue", "knora-api:valueAsString": val}
-                )
+        if not isinstance(val, str):
+            continue
+        if _uri_or_text(val) == "UriValue":
+            result.append(
+                {
+                    "@type": "knora-api:UriValue",
+                    "knora-api:uriValueAsUri": {
+                        "@value": val,
+                        "@type": "http://www.w3.org/2001/XMLSchema#anyURI",
+                    },
+                }
+            )
+        else:
+            result.append(
+                {"@type": "knora-api:TextValue", "knora-api:valueAsString": val}
+            )
     return result
 
 
@@ -1036,6 +999,31 @@ def specify_mediaclass(media_type: str) -> str:
     return f"{PREFIX}ResourceWithoutMedia"
 
 
+def sync_existing(token, resource_iri, source, lists, label, kind):
+    """Update an existing DaSCH resource if the Omeka source was modified since."""
+    resource = get_full_resource(token, urllib.parse.quote(resource_iri, safe=""))
+
+    if "knora-api:lastModificationDate" in resource:
+        dasch_date = resource["knora-api:lastModificationDate"]["@value"]
+    else:
+        dasch_date = resource["knora-api:creationDate"]["@value"]
+    if source["o:modified"]["@value"] > dasch_date:
+        logging.info(
+            f"{label}: {kind} exists already, but it was modified. Update object ..."
+        )
+        for value in check_values(resource, source, lists):
+            update_value(
+                token,
+                resource,
+                value["value"],
+                value["field"],
+                value["prop_type"],
+                value["type"],
+            )
+    else:
+        logging.info(f"{label}: {kind} exists already")
+
+
 def main() -> None:
 
     args = parse_arguments()
@@ -1077,30 +1065,7 @@ def main() -> None:
             "@id"
         )
         if metadata_iri:
-            object = get_full_resource(token, urllib.parse.quote(metadata_iri, safe=""))
-
-            if "knora-api:lastModificationDate" in object:
-                dasch_date = object["knora-api:lastModificationDate"]["@value"]
-            else:
-                dasch_date = object["knora-api:creationDate"]["@value"]
-            if item["o:modified"]["@value"] > dasch_date:
-                logging.info(
-                    f"{item_id}: object exists already, but it was modified. Update object ..."
-                )
-                modified_values = check_values(object, item, project_lists)
-                # print(modified_values)
-                for value in modified_values:
-                    update_value(
-                        token,
-                        object,
-                        value["value"],
-                        value["field"],
-                        value["prop_type"],
-                        value["type"],
-                    )
-            else:
-                logging.info(f"{item_id}: object exists already")
-
+            sync_existing(token, metadata_iri, item, project_lists, item_id, "object")
         else:
             payload = construct_payload(
                 item, METADATA_RESOURCE_TYPE, project_iri, project_lists, "", None
@@ -1129,31 +1094,9 @@ def main() -> None:
                     "@id"
                 )
                 if mediadata_iri:
-                    object = get_full_resource(
-                        token, urllib.parse.quote(mediadata_iri, safe="")
+                    sync_existing(
+                        token, mediadata_iri, media, project_lists, media_id, "media"
                     )
-
-                    if "knora-api:lastModificationDate" in object:
-                        dasch_date = object["knora-api:lastModificationDate"]["@value"]
-                    else:
-                        dasch_date = object["knora-api:creationDate"]["@value"]
-                    if media["o:modified"]["@value"] > dasch_date:
-                        logging.info(
-                            f"{media_id}: media exists already, but it was modified. Update object ..."
-                        )
-                        modified_values = check_values(object, media, project_lists)
-                        # print(modified_values)
-                        for value in modified_values:
-                            update_value(
-                                token,
-                                object,
-                                value["value"],
-                                value["field"],
-                                value["prop_type"],
-                                value["type"],
-                            )
-                    else:
-                        logging.info(f"{media_id}: media exists already")
                 else:
                     logging.info(f"{media_id}: adding media to {media_class} ...")
                     object_location = media.get("o:original_url", "")
