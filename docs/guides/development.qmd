@@ -296,9 +296,9 @@ def debug_item_processing(item):
 
     ``` python
     # Check property extraction
-    props = item.get("dcterms:subject", [])
-    subjects = extract_combined_values(props)
-    print(f"Extracted subjects: {subjects}")
+    props = item.get("dcterms:creator", [])
+    creators = extract_combined_values(props)
+    print(f"Extracted creators: {creators}")
     ```
 
 ### Debug Mode

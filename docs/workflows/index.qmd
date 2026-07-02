@@ -234,13 +234,11 @@ flowchart TD
     F4 --> G
     F5 --> G
     
-    G --> G1[dcterms:subject → subject]
     G --> G2[dcterms:language → language]
     G --> G3[dcterms:rights → rights]
     G --> G4[dcterms:license → license]
     
-    G1 --> H[Map List Values]
-    G2 --> H
+    G2 --> H[Map List Values]
     G3 --> H
     G4 --> H
     

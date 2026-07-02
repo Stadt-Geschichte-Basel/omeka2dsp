@@ -38,8 +38,7 @@ DCMI Type Vocabulary for resource types:
 ### Subject (`subject`)
 Iconclass classification system for describing and indexing visual content. Iconclass organizes motifs, themes, and concepts through standardized codes for semantic interoperability.
 
-Example:
-- `11A|Deity, God (in general) in Christian religion`
+**Not used.** Classifying all records with Iconclass was dropped due to time and personnel restrictions (see issue #7). The list and the `hasSubjectList` property remain in the deployed ontology but are not populated; the migration does not write subject values and removes any left over from earlier runs.
 
 ### License (`license`)
 Standard licenses and rights statements:
@@ -89,7 +88,7 @@ The `SGB` ontology extends Dublin Core Terms (dcterms) and includes the followin
 - **hasRelation**: Related resources (e.g., HLS, Wikipedia, Wikidata)
 - **hasRights**: Rights information
 - **hasSource**: Provenance and processing (memory institution, call number, digitisation/provenance, editing notes)
-- **hasSubjectList**: Subject classification (linked to subject list)
+- **hasSubjectList**: Subject classification (linked to subject list; not populated — see Subject above)
 - **hasTemporalList**: Temporal period (linked to temporal list)
 - **hasTitle**: Title of the resource
 - **hasTypeList**: Resource type (linked to type list)
