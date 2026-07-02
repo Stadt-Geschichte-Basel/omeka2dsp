@@ -27,6 +27,7 @@ dev = [
     "pytest-cov>=2.12",
 ]
 
-# ponytail: plain script repo, nothing imports src/ — no build backend needed
+# This is a plain script repo (everything lives in scripts/), not an installable
+# package, so uv only manages the virtualenv and dependencies without building.
 [tool.uv]
 package = false

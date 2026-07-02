@@ -3,7 +3,7 @@ import logging
 import os
 import random
 import tempfile
-import urllib
+import urllib.parse
 import zipfile
 from argparse import Namespace
 from pathlib import Path
