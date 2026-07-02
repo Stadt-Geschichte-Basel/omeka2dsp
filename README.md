@@ -138,14 +138,14 @@ For detailed data model documentation, see [Data Model Reference](/docs/datamode
 This project is maintained by [Stadt.Geschichte.Basel](https://github.com/Stadt-Geschichte-Basel).
 Support is provided **publicly** through GitHub.
 
-| Type                            | Platform                                                                              |
-| ------------------------------- | ------------------------------------------------------------------------------------- |
-| 🚨 **Bug Reports**              | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
-| 📊 **Report bad data**          | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
-| 📚 **Docs Issue**               | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
-| 🎁 **Feature Requests**         | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
+| Type                           | Platform                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------- |
+| 🚨 **Bug Reports**             | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
+| 📊 **Report bad data**         | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
+| 📚 **Docs Issue**              | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
+| 🎁 **Feature Requests**        | [GitHub Issues](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)           |
 | 🛡 **Security vulnerabilities** | [SECURITY.md](SECURITY.md)                                                            |
-| 💬 **General Questions**        | [GitHub Discussions](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/discussions) |
+| 💬 **General Questions**       | [GitHub Discussions](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/discussions) |
 
 ## 🗺 Roadmap
 
