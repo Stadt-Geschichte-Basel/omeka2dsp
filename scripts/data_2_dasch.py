@@ -73,16 +73,21 @@ def build_context() -> dict:
     }
 
 
-# Set up logging
-file_handler = logging.FileHandler("data_2_dasch.log", mode="w")
-file_handler.setLevel(logging.INFO)
-stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[stream_handler, file_handler],
-)
+def setup_logging() -> None:
+    """Log to stdout and a fresh data_2_dasch.log.
+
+    Called from main() rather than at import time so that importing this module
+    (tests, remove_subject_values.py) does not truncate the migration log.
+    """
+    file_handler = logging.FileHandler("data_2_dasch.log", mode="w")
+    file_handler.setLevel(logging.INFO)
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[stream_handler, file_handler],
+    )
 
 
 def parse_arguments() -> Namespace:
@@ -996,7 +1001,7 @@ def sync_existing(token, resource_iri, source, lists, label, kind):
 
 
 def main() -> None:
-
+    setup_logging()
     args = parse_arguments()
 
     # Fetch item data
