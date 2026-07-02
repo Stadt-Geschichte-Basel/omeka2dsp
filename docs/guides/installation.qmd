@@ -157,7 +157,7 @@ Your DSP project must have a compatible data model. The system expects:
 -   `hasDescription`: Resource description or abstract
 -   `hasCreator`: Creator information
 -   `hasDate`: Date information in EDTF format
--   `hasSubjectList`: Subject classifications (Iconclass list)
+-   `hasSubjectList`: Subject classifications (Iconclass list; present in the ontology but not populated — Iconclass classification was dropped for time and personnel reasons, see issue #7)
 -   `hasTypeList`: Resource type (DCMI list)
 -   `hasFormatList`: File format (Internet Media Type list)
 -   `hasLanguageList`: Language (ISO 639-1 list)

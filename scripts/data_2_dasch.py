@@ -7,7 +7,7 @@ import urllib.parse
 import zipfile
 from argparse import Namespace
 from pathlib import Path
-from typing import Any, Dict, List, cast
+from typing import cast
 
 import requests
 from process_data_from_omeka import (
@@ -39,15 +39,6 @@ DEFAULT_TIMEOUT = 30
 NUMBER_RANDOM_OBJECTS = 2
 TEST_DATA = {"abb13025", "abb14375", "abb41033", "abb11536", "abb28998"}
 
-ICONCLASS_SUBJECT_ENTRY = {
-    "type": "literal",
-    "property_id": 3,
-    "property_label": "Subject",
-    "is_public": True,
-    "@value": "11A|Deity, God (in general) in Christian religion",
-    "@language": "en",
-}
-
 ONTOLOGY_CONTEXT = (
     f"{API_HOST}/ontology/{PROJECT_SHORT_CODE}/{ONTOLOGY_NAME}/v2#"
     if all([API_HOST, PROJECT_SHORT_CODE, ONTOLOGY_NAME])
@@ -60,8 +51,11 @@ MEDIA_RESOURCE_TYPES = {
     f"{PREFIX}ResourceWithoutMedia",
 }
 
+# dcterms:subject is deliberately not migrated: classifying all records with
+# Iconclass was dropped for time and personnel reasons (issue #7). Existing
+# hasSubjectList values on DaSCH are deleted (see check_values and
+# scripts/remove_subject_values.py).
 LIST_LABELS = {
-    "subject": {"Iconclass subject heading", "Iconclass Sachbegriff"},
     "temporal": {"Stadt.Geschichte.Basel Era", "Stadt.Geschichte.Basel Epoche"},
     "type": {"DCMI Type", "DCMI Type Vocabulary"},
     "format": {"Internet Media Type"},
@@ -79,23 +73,21 @@ def build_context() -> dict:
     }
 
 
-def apply_iconclass_subject(records: List[Dict[str, Any]]) -> None:
-    """Force test/sample records to use a known Iconclass subject label."""
+def setup_logging() -> None:
+    """Log to stdout and a fresh data_2_dasch.log.
 
-    for record in records:
-        record["dcterms:subject"] = [ICONCLASS_SUBJECT_ENTRY.copy()]
-
-
-# Set up logging
-file_handler = logging.FileHandler("data_2_dasch.log", mode="w")
-file_handler.setLevel(logging.INFO)
-stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[stream_handler, file_handler],
-)
+    Called from main() rather than at import time so that importing this module
+    (tests, remove_subject_values.py) does not truncate the migration log.
+    """
+    file_handler = logging.FileHandler("data_2_dasch.log", mode="w")
+    file_handler.setLevel(logging.INFO)
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[stream_handler, file_handler],
+    )
 
 
 def parse_arguments() -> Namespace:
@@ -425,16 +417,13 @@ def check_values(dasch_item, omeka_item, lists):
     if description:
         modified_values.append(description)
 
-    subjects = []
-    for data in extract_combined_values(omeka_item.get("dcterms:subject", [])):
-        subject_iri = extract_listvalueiri_from_value(data, "subject", lists)
-        if subject_iri:
-            subjects.append(subject_iri)
+    # Subjects are not migrated (issue #7); delete any values written by
+    # earlier runs so DaSCH stays free of subject tags.
     subject = sync_array_value(
         "hasSubjectList",
         "ListValue",
         extract_dasch_propvalue_multiple(dasch_item, "hasSubjectList"),
-        subjects,
+        [],
     )
     if subject:
         modified_values.extend(subject)
@@ -715,19 +704,6 @@ def construct_payload(
             "knora-api:valueAsString": description_value,
             "@type": "knora-api:TextValue",
         }
-
-    subjects = []
-    for data in extract_combined_values(item.get("dcterms:subject", [])):
-        subject_iri = extract_listvalueiri_from_value(data, "subject", lists)
-        if subject_iri:
-            subjects.append(
-                {
-                    "@type": "knora-api:ListValue",
-                    "knora-api:listValueAsListNode": {"@id": subject_iri},
-                }
-            )
-    if subjects:
-        payload[f"{PREFIX}hasSubjectList"] = subjects
 
     temporal_iri = extract_listvalueiri_from_value(
         extract_property(item.get("dcterms:temporal", []), 41), "temporal", lists
@@ -1025,13 +1001,11 @@ def sync_existing(token, resource_iri, source, lists, label, kind):
 
 
 def main() -> None:
-
+    setup_logging()
     args = parse_arguments()
 
     # Fetch item data
     items_data = get_items_from_collection(ITEM_SET_ID)
-
-    constrain_to_iconclass = args.mode in {"sample_data", "test_data"}
 
     if args.mode == "sample_data":
         items_data = random.sample(items_data, NUMBER_RANDOM_OBJECTS)
@@ -1049,9 +1023,6 @@ def main() -> None:
             if not remaining_identifiers:
                 break
         items_data = found_objects
-
-    if constrain_to_iconclass:
-        apply_iconclass_subject(items_data)
 
     # get_project()
     token = login(DSP_USER, DSP_PWD)
@@ -1075,8 +1046,6 @@ def main() -> None:
                 token, METADATA_RESOURCE_TYPE, item_id
             ).get("@id")
         media_data = get_media(item.get("o:id", ""))
-        if constrain_to_iconclass:
-            apply_iconclass_subject(media_data)
         if media_data:
             for media in media_data:
                 media_id = extract_property(media.get("dcterms:identifier", []), 10)
