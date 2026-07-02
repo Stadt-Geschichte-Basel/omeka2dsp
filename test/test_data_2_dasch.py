@@ -1,38 +1,11 @@
 """
 Unit tests for data_2_dasch.py changes
 Tests for issues #6, #7, #12, #13, #14
+
+Import path and environment come from conftest.py.
 """
 
-import os
-import sys
-
-# Add the scripts directory to the path so we can import the module
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
-
-# Import the functions we're testing.
-# Override the environment explicitly (not setdefault) so pre-existing values on
-# CI or a dev machine cannot make PREFIX differ from "SGB:"; restore afterwards.
-_TEST_ENV = {
-    "ONTOLOGY_NAME": "SGB",
-    "API_HOST": "https://api.test.com",
-    "PROJECT_SHORT_CODE": "TEST",
-    "INGEST_HOST": "https://ingest.test.com",
-    "DSP_USER": "test@test.com",
-    "DSP_PWD": "testpwd",
-}
-_PREVIOUS_ENV = {key: os.environ.get(key) for key in _TEST_ENV}
-os.environ.update(_TEST_ENV)
-
-
-def teardown_module():
-    for key, previous in _PREVIOUS_ENV.items():
-        if previous is None:
-            os.environ.pop(key, None)
-        else:
-            os.environ[key] = previous
-
-
-from data_2_dasch import (  # noqa: E402  # isort: skip  (import after env setup)
+from data_2_dasch import (
     PREFIX,
     build_text_or_uri_values,
     sync_mixed_value_array,
@@ -161,28 +134,3 @@ def test_sync_mixed_value_array_mixed_changes():
     assert len(creates) == 2
     assert len(deletes) == 2
     print("✓ sync_mixed_value_array (mixed changes) test passed")
-
-
-if __name__ == "__main__":
-    print("Running tests for data_2_dasch.py changes...")
-    print()
-
-    # Test PREFIX definition (issue #6)
-    test_prefix_definition()
-
-    # Test build_text_or_uri_values (issue #7)
-    test_build_text_or_uri_values_text_only()
-    test_build_text_or_uri_values_uri_only()
-    test_build_text_or_uri_values_mixed()
-    test_build_text_or_uri_values_empty()
-
-    # Test sync_mixed_value_array (issue #7)
-    test_sync_mixed_value_array_no_changes()
-    test_sync_mixed_value_array_additions()
-    test_sync_mixed_value_array_deletions()
-    test_sync_mixed_value_array_mixed_changes()
-
-    print()
-    print("=" * 60)
-    print("All tests passed! ✓")
-    print("=" * 60)

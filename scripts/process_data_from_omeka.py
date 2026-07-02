@@ -1,6 +1,6 @@
 import logging
 import os
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 import requests
 
@@ -9,30 +9,6 @@ OMEKA_API_URL = os.getenv("OMEKA_API_URL", 'https://omeka.unibe.ch/api/')
 KEY_IDENTITY = os.getenv("KEY_IDENTITY")
 KEY_CREDENTIAL = os.getenv("KEY_CREDENTIAL")
 ITEM_SET_ID = os.getenv("ITEM_SET_ID", '10780')
-
-
-# --- Helper Functions for Data Extraction ---
-def is_valid_url(url):
-    """Checks if a URL is valid."""
-    try:
-        result = urlparse(url)
-        return all([result.scheme, result.netloc])
-    except ValueError:
-        return False
-
-
-def download_file(url, dest_path):
-    """Downloads a file from a given URL to the specified destination path."""
-    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-    try:
-        with requests.get(url, stream=True) as r:
-            r.raise_for_status()
-            with open(dest_path, "wb") as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    f.write(chunk)
-    except requests.exceptions.RequestException as err:
-        logging.error(f"File download error: {err}")
-        raise
 
 
 def get_paginated_items(url, params):
@@ -72,14 +48,10 @@ def get_media(item_id):
 
 
 # --- Data Extraction and Transformation Functions ---
-def extract_property(props, prop_id, as_uri=False, only_label=False):
-    """Extracts a property value or URI from properties based on property ID."""
+def extract_property(props, prop_id):
+    """Extracts a property value from properties based on property ID."""
     for prop in props:
         if prop.get("property_id") == prop_id:
-            if as_uri:
-                return f"[{prop.get('o:label', '')}]({prop.get('@id', '')})"
-            if only_label: 
-                return prop.get('o:label', '')
             return prop.get("@value", "")
     return ""
 
