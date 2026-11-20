@@ -32,8 +32,11 @@ def test_ids_come_from_options_and_file(tmp_path):
 def test_empty_ids_file_stops_before_network(monkeypatch, tmp_path):
     """An empty selection must not select the full item set."""
     monkeypatch.chdir(tmp_path)
+    for name in REQUIRED:
+        monkeypatch.setenv(name, "set")
     monkeypatch.setattr(requests.Session, "request", no_network)
     (tmp_path / "empty.txt").write_text("\n  \n")
     result = CliRunner().invoke(app, ["sync", "--ids-file", "empty.txt"])
     assert result.exit_code == 1
+    assert "nothing to sync" in result.output
     assert read_ids(None, tmp_path / "empty.txt") == frozenset()
