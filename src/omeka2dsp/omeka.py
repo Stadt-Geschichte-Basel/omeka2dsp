@@ -26,12 +26,9 @@ def _pages(
     records: list[Any] = []
     next_url: str | None = url
     while next_url:
-        try:
-            response = session.get(next_url, params=params)
-            response.raise_for_status()
-        except requests.exceptions.RequestException as error:
-            log.error(f"Error fetching items: {error}")
-            break
+        # A failed page stops the run. A partial list would skip records.
+        response = session.get(next_url, params=params)
+        response.raise_for_status()
         records.extend(response.json())
         next_url = response.links.get("next", {}).get("url")
         params = None

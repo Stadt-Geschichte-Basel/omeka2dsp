@@ -1,5 +1,8 @@
 import json
 
+import pytest
+import requests
+
 from fakes import SETTINGS, response, session
 from omeka2dsp.omeka import api_items, media_by_item, select, snapshot
 from omeka2dsp.values import OmekaRecord
@@ -38,3 +41,16 @@ def test_items_follow_the_next_link():
     )
     assert [i.identifier for i in api_items(SETTINGS, http)] == ["a", "b"]
     assert "item_set_id=10780" in transport.sent[0]["url"]
+
+
+def test_failed_page_stops_the_run():
+    http, _ = session(
+        {
+            ("GET", "page=2"): response(500),
+            ("GET", "/items"): response(
+                200, [item("a")], "https://omeka/api/items?page=2"
+            ),
+        }
+    )
+    with pytest.raises(requests.HTTPError):
+        api_items(SETTINGS, http)
