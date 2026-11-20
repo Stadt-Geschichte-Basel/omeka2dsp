@@ -1,0 +1,142 @@
+{
+	"@context": {
+		"SGB": "https://api.test.com/ontology/TEST/SGB/v2#",
+		"knora-api": "http://api.knora.org/ontology/knora-api/v2#",
+		"rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+		"rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+		"xsd": "http://www.w3.org/2001/XMLSchema#"
+	},
+	"@type": "SGB:Image",
+	"SGB:hasAbstract": {
+		"@type": "knora-api:TextValue",
+		"knora-api:valueAsString": "Karte&#59 Basel"
+	},
+	"SGB:hasCreator": [
+		{
+			"@type": "knora-api:TextValue",
+			"knora-api:textValueAsXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<text><a href=\"https://www.wikidata.org/wiki/Q61073\">Sebastian Münster</a></text>",
+			"knora-api:textValueHasMapping": {
+				"@id": "http://rdfh.ch/standoff/mappings/StandardMapping"
+			}
+		},
+		{
+			"@type": "knora-api:TextValue",
+			"knora-api:valueAsString": "testtest"
+		}
+	],
+	"SGB:hasDate": {
+		"@type": "knora-api:TextValue",
+		"knora-api:valueAsString": "1538"
+	},
+	"SGB:hasDescription": {
+		"@type": "knora-api:TextValue",
+		"knora-api:valueAsString": "Die Karte zeigt Basel als befestigte Grenzstadt (rechts) sowie ihre geografische Lage zwischen dem Breisgau, dem Sundgau und den eidgenössischen Gebieten (links)."
+	},
+	"SGB:hasExtent": {
+		"@type": "knora-api:TextValue",
+		"knora-api:valueAsString": "9752x5559"
+	},
+	"SGB:hasFormatList": {
+		"@type": "knora-api:ListValue",
+		"knora-api:listValueAsListNode": {
+			"@id": "http://rdfh.ch/lists/0856/pqZ0HAqaSU-86J4unTl13A"
+		}
+	},
+	"SGB:hasIdentifier": {
+		"@type": "knora-api:TextValue",
+		"knora-api:valueAsString": "m10039"
+	},
+	"SGB:hasLanguageList": {
+		"@type": "knora-api:ListValue",
+		"knora-api:listValueAsListNode": {
+			"@id": "http://rdfh.ch/lists/lang/de"
+		}
+	},
+	"SGB:hasLicenseList": {
+		"@type": "knora-api:ListValue",
+		"knora-api:listValueAsListNode": {
+			"@id": "http://rdfh.ch/lists/license/https://creativecommons.org/publicdomain/mark/1.0/"
+		}
+	},
+	"SGB:hasPublisher": [
+		{
+			"@type": "knora-api:TextValue",
+			"knora-api:textValueAsXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<text><a href=\"https://dls.staatsarchiv.bs.ch/\">Staatsarchiv Basel-Stadt</a></text>",
+			"knora-api:textValueHasMapping": {
+				"@id": "http://rdfh.ch/standoff/mappings/StandardMapping"
+			}
+		},
+		{
+			"@type": "knora-api:TextValue",
+			"knora-api:valueAsString": "test"
+		}
+	],
+	"SGB:hasRelation": [
+		{
+			"@type": "knora-api:TextValue",
+			"knora-api:textValueAsXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<text><a href=\"https://hls-dhs-dss.ch/de/articles/010764/2008-07-08/\">Sebastian Münster, Historisches Lexikon Schweiz</a></text>",
+			"knora-api:textValueHasMapping": {
+				"@id": "http://rdfh.ch/standoff/mappings/StandardMapping"
+			}
+		},
+		{
+			"@type": "knora-api:TextValue",
+			"knora-api:valueAsString": "testtesttesttest"
+		}
+	],
+	"SGB:hasRights": {
+		"@type": "knora-api:TextValue",
+		"knora-api:valueAsString": "Bilddaten gemeinfrei - Staatsarchiv Basel-Stadt, PLA 15, 1-3"
+	},
+	"SGB:hasSource": [
+		{
+			"@type": "knora-api:TextValue",
+			"knora-api:textValueAsXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<text><a href=\"https://dls.staatsarchiv.bs.ch/records/189838\">Staatsarchiv Basel-Stadt, PLA 15, 1-3</a></text>",
+			"knora-api:textValueHasMapping": {
+				"@id": "http://rdfh.ch/standoff/mappings/StandardMapping"
+			}
+		},
+		{
+			"@type": "knora-api:TextValue",
+			"knora-api:valueAsString": "testtesttest"
+		}
+	],
+	"SGB:hasTemporalList": {
+		"@type": "knora-api:ListValue",
+		"knora-api:listValueAsListNode": {
+			"@id": "http://rdfh.ch/lists/era/Frühe Neuzeit"
+		}
+	},
+	"SGB:hasTitle": {
+		"@type": "knora-api:TextValue",
+		"knora-api:valueAsString": "Die Löblich und wyt berümpt Stat Basel"
+	},
+	"SGB:hasTypeList": [
+		{
+			"@type": "knora-api:ListValue",
+			"knora-api:listValueAsListNode": {
+				"@id": "http://rdfh.ch/lists/0856/DtrI0KnqTGuMhc1nLXS8ig"
+			}
+		}
+	],
+	"SGB:isPartOf": [
+		{
+			"@type": "knora-api:TextValue",
+			"knora-api:valueAsString": "Band 4"
+		}
+	],
+	"SGB:linkToParentObjectValue": {
+		"@type": "knora-api:LinkValue",
+		"knora-api:linkValueHasTargetIri": {
+			"@id": "http://rdfh.ch/4001/parent"
+		}
+	},
+	"knora-api:attachedToProject": {
+		"@id": "http://rdfh.ch/projects/4001"
+	},
+	"knora-api:hasStillImageFileValue": {
+		"@type": "knora-api:StillImageFileValue",
+		"knora-api:fileValueHasFilename": "x.jp2"
+	},
+	"rdfs:label": "Die Löblich und wyt berümpt Stat Basel"
+}
