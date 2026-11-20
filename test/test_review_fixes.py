@@ -1,7 +1,8 @@
 """Guards from the PR #20 review: no deletions or erasures on a failed step."""
 
-import data_2_dasch as d
 import pytest
+
+import data_2_dasch as d
 from data_2_dasch import PREFIX
 
 LISTS = [

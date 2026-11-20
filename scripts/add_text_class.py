@@ -12,8 +12,9 @@ import sys
 import urllib.parse
 from pathlib import Path
 
-import data_2_dasch as d
 import requests
+
+import data_2_dasch as d
 
 CARDINALITIES = {
     "1": ("owl:cardinality", 1),
