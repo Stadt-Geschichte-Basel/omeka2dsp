@@ -52,4 +52,4 @@ class Session:
 
 def dsp(routes=None) -> tuple[Dsp, Session]:
     session = Session(routes)
-    return Dsp(SETTINGS, session, "token"), session  # ty: ignore[invalid-argument-type]
+    return Dsp(SETTINGS, session, "token"), session

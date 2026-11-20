@@ -1,0 +1,37 @@
+import json
+
+from fakes import SETTINGS, Response, Session
+from omeka2dsp.omeka import api_items, media_by_item, select, snapshot
+from omeka2dsp.values import OmekaRecord
+
+
+def item(identifier, o_id=1):
+    return {"o:id": o_id, "dcterms:identifier": [{"@value": identifier}]}
+
+
+def test_snapshot_prefers_transformed(tmp_path):
+    (tmp_path / "items_raw.json").write_text(json.dumps([item("raw")]))
+    (tmp_path / "items_transformed.json").write_text(json.dumps([item("clean")]))
+    (tmp_path / "media_raw.json").write_text(json.dumps([]))
+    items, media = snapshot(tmp_path)
+    assert [i.identifier for i in items] == ["clean"] and media == []
+
+
+def test_media_by_item_and_select():
+    media = [
+        OmekaRecord.parse({"o:id": 10, "o:item": {"o:id": 1}}),
+        OmekaRecord.parse({"o:id": 11, "o:item": {"o:id": 2}}),
+    ]
+    assert media_by_item(media) == {1: [media[0]], 2: [media[1]]}
+    items = [OmekaRecord.parse(item("abb1", 1)), OmekaRecord.parse(item("abb2", 2))]
+    assert select(items, {"abb2"}) == [items[1]]
+
+
+def test_items_follow_the_next_link():
+    first = Response(200, [item("a")])
+    first.links = {"next": {"url": "https://omeka/api/items?page=2"}}
+    session = Session(
+        {("GET", "page=2"): Response(200, [item("b")]), ("GET", "/items"): first}
+    )
+    assert [i.identifier for i in api_items(SETTINGS, session)] == ["a", "b"]
+    assert session.sent[0]["params"]["item_set_id"] == "10780"
