@@ -21,13 +21,16 @@ SNAPSHOT_SUFFIXES = ("_transformed", "", "_raw")
 
 
 def _pages(
-    session: requests.Session, url: str, params: dict[str, Any] | None
+    session: requests.Session,
+    url: str,
+    params: dict[str, Any] | None,
+    timeout: float,
 ) -> list[Any]:
     records: list[Any] = []
     next_url: str | None = url
     while next_url:
         # A failed page stops the run. A partial list would skip records.
-        response = session.get(next_url, params=params)
+        response = session.get(next_url, params=params, timeout=timeout)
         response.raise_for_status()
         records.extend(response.json())
         next_url = response.links.get("next", {}).get("url")
@@ -46,7 +49,10 @@ def api_items(settings: Settings, session: requests.Session) -> list[OmekaRecord
     """All items of the item set."""
     params = {"item_set_id": settings.item_set_id, "per_page": 100, **_keys(settings)}
     url = urljoin(settings.omeka_api_url, "items")
-    return [OmekaRecord.parse(raw) for raw in _pages(session, url, params)]
+    return [
+        OmekaRecord.parse(raw)
+        for raw in _pages(session, url, params, settings.http_timeout)
+    ]
 
 
 def api_media(
@@ -54,7 +60,10 @@ def api_media(
 ) -> list[OmekaRecord]:
     params = {"item_id": item.id, **_keys(settings)}
     url = urljoin(settings.omeka_api_url, "media")
-    return [OmekaRecord.parse(raw) for raw in _pages(session, url, params)]
+    return [
+        OmekaRecord.parse(raw)
+        for raw in _pages(session, url, params, settings.http_timeout)
+    ]
 
 
 def _read(directory: Path, name: str) -> list[OmekaRecord]:

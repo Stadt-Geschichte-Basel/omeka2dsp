@@ -54,3 +54,9 @@ def test_failed_page_stops_the_run():
     )
     with pytest.raises(requests.HTTPError):
         api_items(SETTINGS, http)
+
+
+def test_omeka_requests_use_the_timeout():
+    http, transport = session({("GET", "/items"): response(200, [])})
+    api_items(SETTINGS, http)
+    assert transport.sent[0]["timeout"] == SETTINGS.http_timeout
