@@ -11,6 +11,7 @@ import logging
 import urllib.parse
 
 import requests
+
 from data_2_dasch import (
     API_HOST,
     DEFAULT_TIMEOUT,

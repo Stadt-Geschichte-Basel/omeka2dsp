@@ -5,6 +5,17 @@ email, or any other method with the owners of this repository before making a ch
 
 Please note we have a [code of conduct](CODE_OF_CONDUCT.md), please follow it in all your interactions with the project.
 
+## Checks
+
+Run these checks before you open a pull request.
+CI runs the same commands.
+
+```bash
+uv run --locked --extra dev pytest test/ -v
+uv run --locked --extra dev ruff check scripts test
+uv run --locked --extra dev ruff format --check scripts test
+```
+
 ## Pull Request Process
 
 1. Ensure any install or build dependencies are removed before the end of the layer when doing a
