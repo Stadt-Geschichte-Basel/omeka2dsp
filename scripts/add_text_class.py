@@ -12,9 +12,8 @@ import sys
 import urllib.parse
 from pathlib import Path
 
-import requests
-
 import data_2_dasch as d
+import requests
 
 CARDINALITIES = {
     "1": ("owl:cardinality", 1),
@@ -38,7 +37,10 @@ def class_request(model: dict, ontology_iri: str, last_modified: dict) -> dict:
         }
         for c in text["cardinalities"]
     ]
-    lang = lambda values: [{"@language": k, "@value": v} for k, v in values.items()]  # noqa: E731
+
+    def lang(values):
+        return [{"@language": k, "@value": v} for k, v in values.items()]
+
     return {
         "@id": ontology_iri,
         "@type": "owl:Ontology",

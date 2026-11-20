@@ -26,6 +26,8 @@ from data_2_dasch import (
     update_value,
 )
 
+log = logging.getLogger(__name__)
+
 
 def find_resources_with_subject(token: str, object_class: str) -> list:
     """Return IRIs of resources of the given class that have a hasSubjectList value.
@@ -58,8 +60,8 @@ def find_resources_with_subject(token: str, object_class: str) -> list:
             timeout=DEFAULT_TIMEOUT,
         )
         if response.status_code != 200:
-            logging.error(f"Search failed for {object_class}: {response.status_code}")
-            logging.error(response.text)
+            log.error(f"Search failed for {object_class}: {response.status_code}")
+            log.error(response.text)
             break
         result = response.json()
         # A single hit comes back as the resource itself, multiple hits under @graph.
@@ -96,7 +98,7 @@ def main() -> None:
             for value in extract_dasch_propvalue_multiple(resource, "hasSubjectList"):
                 total += 1
                 if args.dry_run:
-                    logging.info(
+                    log.info(
                         f"[dry-run] would delete hasSubjectList '{value}' "
                         f"from {resource_iri}"
                     )
@@ -104,7 +106,7 @@ def main() -> None:
                     update_value(
                         token, resource, value, "hasSubjectList", "ListValue", "delete"
                     )
-    logging.info(f"{'Found' if args.dry_run else 'Deleted'} {total} subject value(s)")
+    log.info(f"{'Found' if args.dry_run else 'Deleted'} {total} subject value(s)")
 
 
 if __name__ == "__main__":

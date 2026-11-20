@@ -29,6 +29,8 @@ from process_data_from_omeka import (
 )
 from snapshot_source import load_snapshot, media_by_item, select
 
+log = logging.getLogger(__name__)
+
 # TODO: - improve error handling
 #       - improve logging
 #       - refactoring
@@ -148,7 +150,7 @@ def login(email: str, password: str) -> str:
         endpoint, json={"email": email, "password": password}, timeout=10
     )
     response.raise_for_status()
-    logging.info("Login successful")
+    log.info("Login successful")
     return cast(str, response.json()["token"])
 
 
@@ -160,7 +162,7 @@ def get_project():
         project_id = cast(str, project_data["project"]["id"])
         ontology_iris = project_data["project"].get("ontologies", [])
     except KeyError as error:
-        logging.error("Failed to parse project response: %s", error)
+        log.error("Failed to parse project response: %s", error)
         raise
 
     if ontology_iris:
@@ -172,12 +174,10 @@ def get_project():
         ONTOLOGY_CONTEXT = ontology_context
 
     if response.status_code == 200:
-        logging.info(f"project Iri: {project_id}")
+        log.info(f"project Iri: {project_id}")
     else:
-        logging.error(
-            f"Failed to retrieve project. Status code: {response.status_code}"
-        )
-        logging.error(f"Response: {response.text}")
+        log.error(f"Failed to retrieve project. Status code: {response.status_code}")
+        log.error(f"Response: {response.text}")
     return project_id
 
 
@@ -194,19 +194,13 @@ def get_lists(project_iri):
             # Construct the API endpoint for this specific list ID
             url = f"{API_HOST}/v2/lists/{encoded_list_id}"
             response = requests.get(url, timeout=DEFAULT_TIMEOUT)
-            if response.status_code == 200:
-                all_lists.append(response.json())
-            else:
-                logging.error(
-                    f"Failed to retrieve complete list for {list_id}. Status code: {response.status_code}"
-                )
-                logging.error(f"Response:{response.text}")
-        logging.info("Got Lists from project")
+            # Abort: a missing list would turn every lookup into a deletion.
+            response.raise_for_status()
+            all_lists.append(response.json())
+        log.info("Got Lists from project")
     else:
-        logging.error(
-            f"Failed to retrieve lists. Status code: {response_lists.status_code}"
-        )
-        logging.error(f"Response: {response_lists.text}")
+        response_lists.raise_for_status()
+        raise RuntimeError(f"Lists request returned {response_lists.status_code}")
     return all_lists
 
 
@@ -279,8 +273,8 @@ def get_resource_by_id(token: str, object_class: str, identifier: str) -> dict:
     if response.status_code == 200:
         return response.json()
     else:
-        logging.error(f"Error: {response.status_code}")
-        logging.error(response.text)
+        log.error(f"Error: {response.status_code}")
+        log.error(response.text)
         return {}
 
 
@@ -359,14 +353,12 @@ def update_value(token, item, value, field, field_type, type_of_change):
         extract_dasch_propvalue(item, "hasIdentifier") or "unknown identifier"
     )
     if response.status_code == 200:
-        logging.info(
-            f"{identifier_value}: {type_of_change}d {field} '{describe(value)}'"
-        )
+        log.info(f"{identifier_value}: {type_of_change}d {field} '{describe(value)}'")
     else:
-        logging.error(
+        log.error(
             f"{identifier_value}: update of {field} failed: {response.status_code}: {response.text}"
         )
-        # logging.error(payload)
+        # log.error(payload)
 
 
 def sync_value(prop, prop_type, dasch_value, omeka_value):
@@ -414,6 +406,18 @@ def sync_array_value(prop, prop_type, dasch_array, omeka_array):
     return changes
 
 
+def list_value_change(field, dasch_value, label, key, lists):
+    """Sync one list value. A source label that does not resolve keeps DSP as is.
+
+    Without this, a failed lookup would look like an absent value and delete it.
+    """
+    iri = extract_listvalueiri_from_value(label, key, lists)
+    if label and not iri:
+        log.warning(f"{field}: '{label}' is not in list '{key}'; DSP value kept")
+        return None
+    return sync_value(field, "ListValue", dasch_value, iri)
+
+
 def check_values(dasch_item, omeka_item, lists):
     modified_values = []
     title = sync_value(
@@ -445,28 +449,22 @@ def check_values(dasch_item, omeka_item, lists):
     if subject:
         modified_values.extend(subject)
 
-    temporal = sync_value(
+    temporal = list_value_change(
         "hasTemporalList",
-        "ListValue",
         extract_dasch_propvalue(dasch_item, "hasTemporalList"),
-        extract_listvalueiri_from_value(
-            extract_property(omeka_item.get("dcterms:temporal", []), 41),
-            "temporal",
-            lists,
-        ),
+        extract_property(omeka_item.get("dcterms:temporal", []), 41),
+        "temporal",
+        lists,
     )
     if temporal:
         modified_values.append(temporal)
 
-    language = sync_value(
+    language = list_value_change(
         "hasLanguageList",
-        "ListValue",
         extract_dasch_propvalue(dasch_item, "hasLanguageList"),
-        extract_listvalueiri_from_value(
-            extract_property(omeka_item.get("dcterms:language", []), 12),
-            "language",
-            lists,
-        ),
+        extract_property(omeka_item.get("dcterms:language", []), 12),
+        "language",
+        lists,
     )
     if language:
         modified_values.append(language)
@@ -520,29 +518,28 @@ def check_values(dasch_item, omeka_item, lists):
             modified_values.append(extent)
 
         # Support multiple type values (issue #7)
-        type_iris = []
-        for type_label in value_labels(omeka_item.get("dcterms:type", [])):
-            type_iri = extract_listvalueiri_from_value(type_label, "type", lists)
-            if type_iri:
-                type_iris.append(type_iri)
+        type_iris = [
+            extract_listvalueiri_from_value(type_label, "type", lists)
+            for type_label in value_labels(omeka_item.get("dcterms:type", []))
+        ]
         resource_types = sync_array_value(
             "hasTypeList",
             "ListValue",
             extract_dasch_propvalue_multiple(dasch_item, "hasTypeList"),
-            type_iris,
+            [iri for iri in type_iris if iri],
         )
+        if None in type_iris:
+            # An unresolved label is not an absent value: delete nothing.
+            resource_types = [c for c in resource_types if c["type"] != "delete"]
         if resource_types:
             modified_values.extend(resource_types)
 
-        format_value = sync_value(
+        format_value = list_value_change(
             "hasFormatList",
-            "ListValue",
             extract_dasch_propvalue(dasch_item, "hasFormatList"),
-            extract_listvalueiri_from_value(
-                extract_property(omeka_item.get("dcterms:format", []), 9),
-                "format",
-                lists,
-            ),
+            extract_property(omeka_item.get("dcterms:format", []), 9),
+            "format",
+            lists,
         )
         if format_value:
             modified_values.append(format_value)
@@ -572,15 +569,12 @@ def check_values(dasch_item, omeka_item, lists):
         if rights:
             modified_values.append(rights)
 
-        license_value = sync_value(
+        license_value = list_value_change(
             "hasLicenseList",
-            "ListValue",
             extract_dasch_propvalue(dasch_item, "hasLicenseList"),
-            extract_listvalueiri_from_value(
-                extract_property(omeka_item.get("dcterms:license", []), 49),
-                "license",
-                lists,
-            ),
+            extract_property(omeka_item.get("dcterms:license", []), 49),
+            "license",
+            lists,
         )
         if license_value:
             modified_values.append(license_value)
@@ -648,7 +642,7 @@ def extract_listvalueiri_from_value(value, list_key, lists):
     )
 
     if not reference:
-        logging.warning(
+        log.warning(
             "No list found for key '%s' while looking up value '%s'",
             list_key,
             lookup_value,
@@ -672,7 +666,7 @@ def extract_listvalueiri_from_value(value, list_key, lists):
         }:
             return node.get("@id")
 
-    logging.warning(
+    log.warning(
         "No match found for value '%s' in list with key '%s'",
         lookup_value,
         list_key,
@@ -873,7 +867,7 @@ def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
     try:
         response = requests.get(file_url, stream=True, timeout=10)
     except requests.exceptions.RequestException as err:
-        logging.error(f"File download error: {err}")
+        log.error(f"File download error: {err}")
         raise
     # Extract the original filename from the URL
     original_filename = Path(urllib.parse.urlparse(file_url).path).name
@@ -882,7 +876,7 @@ def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
 
     response.raise_for_status()
     if hashlib.sha256(response.content).hexdigest() in PLACEHOLDER_SHA256:
-        logging.error(f"{file_url}: file is the placeholder image; not uploaded")
+        log.error(f"{file_url}: file is the placeholder image; not uploaded")
         return None
 
     # Save the file to a temporary location
@@ -924,18 +918,18 @@ def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
         if upload_response.status_code == 200:
             return cast(str, upload_response.json()["internalFilename"])
         else:
-            logging.error(
+            log.error(
                 f"Unexpected response status {upload_response.status_code}: "
                 f"{upload_response.text}"
             )
             return None
     except requests.exceptions.RequestException as err:
-        logging.error(f"File upload error: {err}")
+        log.error(f"File upload error: {err}")
 
     return None
 
 
-def create_resource(payload: dict, token: str) -> None:
+def create_resource(payload: dict, token: str) -> bool:
     # https://docs.dasch.swiss/latest/DSP-API/03-endpoints/api-v2/editing-resources/#creating-a-resource
     resources_endpoint = f"{API_HOST}/v2/resources"
     headers = {
@@ -950,12 +944,13 @@ def create_resource(payload: dict, token: str) -> None:
         "knora-api:valueAsString", "unknown identifier"
     )
     if response.status_code == 200:
-        logging.info(f"{identifier_value}: resource created on DaSCH")
+        log.info(f"{identifier_value}: resource created on DaSCH")
     else:
-        logging.error(
+        log.error(
             f"{identifier_value}: resource creation failed: {response.status_code}: {response.text}"
         )
-        logging.error(payload)
+        log.error(payload)
+    return response.status_code == 200
 
 
 # Omeka uses one placeholder image for sources that we may not publish.
@@ -1025,7 +1020,7 @@ def specify_mediaclass(media_type: str) -> str:
         return f"{PREFIX}Document"
     if media_type in valid_text_types:
         return f"{PREFIX}Text"
-    logging.warning(
+    log.warning(
         "Unsupported or missing media type '%s'; falling back to ResourceWithoutMedia",
         media_type,
     )
@@ -1041,10 +1036,10 @@ def sync_existing(token, resource_iri, source, lists, label, kind, dry_run=False
     resource = get_full_resource(token, urllib.parse.quote(resource_iri, safe=""))
     changes = check_values(resource, source, lists)
     if not changes:
-        logging.info(f"{label}: {kind} exists already, no changes")
+        log.info(f"{label}: {kind} exists already, no changes")
     for value in changes:
         if dry_run:
-            logging.info(
+            log.info(
                 f"{label}: would {value['type']} {value['field']} "
                 f"'{describe(value['value'])}'"
             )
@@ -1064,7 +1059,7 @@ def sync_file_permissions(token, resource, private, label, dry_run=False):
     """Hide the file of a private media resource; keep its metadata public."""
     for prop, value in file_permission_changes(resource, private):
         if dry_run:
-            logging.info(f"{label}: would restrict file permissions ({prop})")
+            log.info(f"{label}: would restrict file permissions ({prop})")
             continue
         payload = {
             "@context": build_context(),
@@ -1083,9 +1078,9 @@ def sync_file_permissions(token, resource, private, label, dry_run=False):
             timeout=DEFAULT_TIMEOUT,
         )
         if response.status_code == 200:
-            logging.info(f"{label}: restricted file permissions ({prop})")
+            log.info(f"{label}: restricted file permissions ({prop})")
         else:
-            logging.error(
+            log.error(
                 f"{label}: file permission update failed: "
                 f"{response.status_code}: {response.text}"
             )
@@ -1121,7 +1116,7 @@ def check_payload(payload, source, ontology, label):
     """Log preflight problems. Return True when the payload is safe to send."""
     problems = preflight(payload, source, ontology, PREFIX)
     for problem in problems:
-        logging.error(f"{label}: preflight: {problem}")
+        log.error(f"{label}: preflight: {problem}")
     return not problems
 
 
@@ -1130,9 +1125,7 @@ def load_items(args):
     if args.snapshot:
         items, media = load_snapshot(args.snapshot)
         grouped = media_by_item(media)
-        logging.info(
-            f"Snapshot {args.snapshot}: {len(items)} items, {len(media)} media"
-        )
+        log.info(f"Snapshot {args.snapshot}: {len(items)} items, {len(media)} media")
 
         def get_item_media(item):
             return grouped.get(item.get("o:id"), [])
@@ -1146,9 +1139,9 @@ def load_items(args):
     if args.ids:
         ids = {i.strip() for i in args.ids.split(",") if i.strip()}
         items = select(items, ids)
-        logging.info(f"Selected {len(items)} of {len(ids)} requested ids")
+        log.info(f"Selected {len(items)} of {len(ids)} requested ids")
     elif args.mode == "sample_data":
-        items = random.sample(items, NUMBER_RANDOM_OBJECTS)
+        items = random.sample(items, min(NUMBER_RANDOM_OBJECTS, len(items)))
     elif args.mode == "test_data":
         items = select(items, TEST_DATA)
     return items, get_item_media
@@ -1172,7 +1165,7 @@ def erase_resource(token, resource) -> bool:
         timeout=DEFAULT_TIMEOUT,
     )
     if response.status_code != 200:
-        logging.error(
+        log.error(
             f"{resource['@id']}: erase failed: {response.status_code}: {response.text}"
         )
     return response.status_code == 200
@@ -1190,62 +1183,68 @@ def sync_media(
 ):
     media_id = extract_property(media.get("dcterms:identifier", []), 10)
     # Private (issues #12, #13, #14) and placeholder media: keep a metadata
-    # record but never upload the file.
+    # record but never upload or show the file.
     media_class = media_class_for(media)
+    hide_file = is_placeholder(media) or is_media_private(media)
     if is_placeholder(media):
-        logging.info(f"{media_id}: placeholder -> metadata only")
+        log.info(f"{media_id}: placeholder -> metadata only")
     elif is_media_private(media):
-        logging.info(f"{media_id}: private media -> metadata only")
+        log.info(f"{media_id}: private media -> metadata only")
 
     mediadata_iri, found_class = find_media(token, media_id, media_class)
-    if mediadata_iri and found_class != media_class:
-        if media_id not in recreate:
-            logging.warning(
-                f"{media_id}: exists as {found_class}, source now maps to "
-                f"{media_class}; syncing values only (use --recreate to fix)"
-            )
-        elif dry_run:
-            logging.info(
-                f"{media_id}: would erase {found_class} and recreate as {media_class}"
-            )
-            return
-        else:
-            old = get_full_resource(token, urllib.parse.quote(mediadata_iri, safe=""))
-            if not erase_resource(token, old):
-                return
-            logging.info(f"{media_id}: erased {found_class} {mediadata_iri}")
-            mediadata_iri = None
-    if mediadata_iri:
+    replace = bool(mediadata_iri) and found_class != media_class
+    if replace and media_id not in recreate:
+        log.warning(
+            f"{media_id}: exists as {found_class}, source now maps to "
+            f"{media_class}; syncing values only (use --recreate to fix)"
+        )
+        replace = False
+    if mediadata_iri and not replace:
         resource = sync_existing(
             token, mediadata_iri, media, lists, media_id, "media", dry_run
         )
-        sync_file_permissions(
-            token, resource, is_media_private(media), media_id, dry_run
-        )
+        sync_file_permissions(token, resource, hide_file, media_id, dry_run)
         return
 
-    # Check the metadata before the file upload, so a bad record uploads nothing.
+    # A new record or a replacement. Validate the payload and ingest the file
+    # before anything is erased, so a failure leaves the old record in place.
     draft = construct_payload(
         media, media_class, project_iri, lists, metadata_iri, None
     )
     if not check_payload(draft, media, ontology, media_id):
         return
     if dry_run:
-        logging.info(f"{media_id}: would create {media_class}")
+        if replace:
+            log.info(
+                f"{media_id}: would erase {found_class} and recreate as {media_class}"
+            )
+        else:
+            log.info(f"{media_id}: would create {media_class}")
         return
 
-    logging.info(f"{media_id}: adding media to {media_class} ...")
     internal_filename = None
     if media_class != f"{PREFIX}ResourceWithoutMedia":
         internal_filename = upload_file_from_url(media.get("o:original_url", ""), token)
         if not internal_filename:
-            logging.error(f"{media_id}: could not create resource")
+            log.error(f"{media_id}: could not ingest the file; nothing changed")
             return
-        logging.info(f"{media_id}: ingested as {internal_filename}")
+        log.info(f"{media_id}: ingested as {internal_filename}")
+
+    if replace:
+        old = get_full_resource(token, urllib.parse.quote(mediadata_iri, safe=""))
+        if not erase_resource(token, old):
+            return
+        log.info(f"{media_id}: erased {found_class} {mediadata_iri}")
+
+    log.info(f"{media_id}: adding media to {media_class} ...")
     payload = construct_payload(
         media, media_class, project_iri, lists, metadata_iri, internal_filename
     )
-    create_resource(payload, token)
+    if not create_resource(payload, token) and replace:
+        log.error(
+            f"{media_id}: old record erased, but the new one failed; "
+            "run again to create it"
+        )
 
 
 def main() -> None:
@@ -1258,7 +1257,7 @@ def main() -> None:
     project_lists = get_lists(project_iri)
     ontology = get_ontology(token)
     if args.dry_run:
-        logging.info("Dry run: no writes to DSP")
+        log.info("Dry run: no writes to DSP")
     recreate = {i.strip() for i in (args.recreate or "").split(",") if i.strip()}
 
     for item in items_data:
@@ -1283,12 +1282,16 @@ def main() -> None:
             if not check_payload(payload, item, ontology, item_id):
                 continue
             if args.dry_run:
-                logging.info(f"{item_id}: would create {METADATA_RESOURCE_TYPE}")
+                log.info(f"{item_id}: would create {METADATA_RESOURCE_TYPE}")
             else:
                 create_resource(payload, token)
                 metadata_iri = get_resource_by_id(
                     token, METADATA_RESOURCE_TYPE, item_id
                 ).get("@id")
+        if not metadata_iri and not args.dry_run:
+            # Without a parent, media would be created unlinked: skip them.
+            log.error(f"{item_id}: no parent resource on DSP; media skipped")
+            continue
         for media in get_item_media(item) or []:
             sync_media(
                 token,
