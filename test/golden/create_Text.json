@@ -119,12 +119,6 @@
 			}
 		}
 	],
-	"SGB:isPartOf": [
-		{
-			"@type": "knora-api:TextValue",
-			"knora-api:valueAsString": "Band 4"
-		}
-	],
 	"SGB:linkToParentObjectValue": {
 		"@type": "knora-api:LinkValue",
 		"knora-api:linkValueHasTargetIri": {

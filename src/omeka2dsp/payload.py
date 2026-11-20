@@ -3,7 +3,7 @@
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from omeka2dsp.fields import FIELDS, MEDIA, Kind, Project, fields_for
+from omeka2dsp.fields import Kind, Project, fields_for
 from omeka2dsp.lists import DspList
 from omeka2dsp.media import FILE_VALUES, PRIVATE_FILE_PERMISSIONS
 from omeka2dsp.plan import Change
@@ -38,10 +38,6 @@ def entry(value_type: str, value: str | Entry) -> Entry:
     return {"@type": value_type, key: content}
 
 
-# Old behaviour: media payloads also get isPartOf.
-_IS_PART_OF = next(field for field in FIELDS if field.prop == "isPartOf")
-
-
 def create(
     project: Project,
     resource_class: str,
@@ -57,10 +53,7 @@ def create(
         "knora-api:attachedToProject": {"@id": project.iri},
         "rdfs:label": first_literal(record.get("dcterms:title")),
     }
-    fields = fields_for(resource_class)
-    if resource_class in MEDIA:
-        fields += (_IS_PART_OF,)
-    for field in fields:
+    for field in fields_for(resource_class):
         if field.kind is Kind.LINK:
             if parent_iri:
                 link = entry(field.value_type, parent_iri)

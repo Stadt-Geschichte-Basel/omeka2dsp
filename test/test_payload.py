@@ -22,6 +22,13 @@ def test_text_payload_has_text_file_value():
     assert body["SGB:linkToParentObjectValue"]["@type"] == "knora-api:LinkValue"
 
 
+def test_media_payload_has_no_is_part_of():
+    """The ontology allows isPartOf only on Parent."""
+    record = OmekaRecord.parse({"dcterms:isPartOf": [{"@value": "Band 4"}]})
+    assert "SGB:isPartOf" in payload.create(PROJECT, "Parent", record, [])
+    assert "SGB:isPartOf" not in payload.create(PROJECT, "Image", record, [])
+
+
 def test_change_bodies():
     def value(action, **kw):
         change = Change(
