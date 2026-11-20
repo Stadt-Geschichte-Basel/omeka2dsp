@@ -54,3 +54,18 @@ def test_prefix_definition():
     """Test that PREFIX is correctly defined (issue #6)"""
     assert PREFIX == "SGB:", f"PREFIX should be 'SGB:' but got '{PREFIX}'"
     print("✓ PREFIX definition test passed")
+
+
+def test_failed_upload_creates_no_resource(monkeypatch):
+    import data_2_dasch as d
+
+    created, uploads = [], []
+    monkeypatch.setattr(d, "find_media", lambda *a: (None, None))
+    monkeypatch.setattr(d, "construct_payload", lambda *a: {})
+    monkeypatch.setattr(d, "check_payload", lambda *a: True)
+    monkeypatch.setattr(d, "media_class_for", lambda m: f"{d.PREFIX}Image")
+    monkeypatch.setattr(d, "upload_file_from_url", lambda *a, **k: uploads.append(a))
+    monkeypatch.setattr(d, "create_resource", lambda *a: created.append(a))
+    media = {"o:original_url": "https://example.org/a.jpg"}
+    d.sync_media("token", media, "iri", "project", {}, {}, dry_run=False)
+    assert uploads and created == []

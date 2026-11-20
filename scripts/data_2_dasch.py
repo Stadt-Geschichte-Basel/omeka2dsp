@@ -853,7 +853,7 @@ def ingest_filename(filename: str) -> str:
     return filename
 
 
-def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
+def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str | None:
     """
     Downloads a file from a URL and uploads it to the specified endpoint.
 
@@ -862,7 +862,8 @@ def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
         token (str): The authentication token for the upload endpoint.
 
     Returns:
-        str: The internal filename returned by the upload endpoint.
+        str | None: The internal filename returned by the upload endpoint, or
+        None when the file is a placeholder or the upload fails.
     """
     # Download the file from the URL
     try:
