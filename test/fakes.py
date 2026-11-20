@@ -1,7 +1,10 @@
-"""A fake requests.Session that records the requests and returns set responses."""
+"""A requests transport that records requests and returns set responses."""
 
 import json
 from typing import Any
+
+import requests
+from requests.adapters import BaseAdapter
 
 from omeka2dsp.dsp import Dsp
 from omeka2dsp.settings import Settings
@@ -15,41 +18,69 @@ SETTINGS = Settings(
     dsp_pwd="secret",
 )
 
-
-class Response:
-    def __init__(self, status: int = 200, data: Any = None, content: bytes = b""):
-        self.status_code, self._data, self.content = status, data, content
-        self.text = json.dumps(data) if data is not None else ""
-        self.links: dict = {}
-
-    def json(self) -> Any:
-        if self._data is None:
-            raise ValueError("no JSON body")
-        return self._data
-
-    def raise_for_status(self) -> None:
-        if self.status_code >= 400:
-            raise RuntimeError(f"HTTP {self.status_code}")
+Route = tuple[str, str]
 
 
-class Session:
-    """Answer each request with the first matching (method, URL part) response."""
+def response(status: int = 200, data: Any = None, next_url: str | None = None) -> dict:
+    return {"status": status, "data": data, "next": next_url}
 
-    def __init__(self, routes: dict[tuple[str, str], Response] | None = None):
-        self.routes = routes or {}
+
+class Transport(BaseAdapter):
+    """Answer each request with the first route whose method and URL part match."""
+
+    def __init__(self, routes: dict[Route, dict]):
+        super().__init__()
+        self.routes = routes
         self.sent: list[dict[str, Any]] = []
 
-    def request(self, method: str, url: str, **kw: Any) -> Response:
-        self.sent.append({"method": method, "url": url, **kw})
-        for (m, part), response in self.routes.items():
-            if m == method and part in url:
-                return response
-        return Response(200, {})
+    def send(
+        self, request, stream=False, timeout=None, verify=True, cert=None, proxies=None
+    ):
+        body = request.body
+        if (
+            isinstance(body, bytes)
+            and request.headers.get("Content-Type") == "application/json"
+        ):
+            body = json.loads(body)
+        self.sent.append(
+            {
+                "method": request.method,
+                "url": request.url,
+                "body": body,
+                "timeout": timeout,
+            }
+        )
+        answer = next(
+            (
+                r
+                for (method, part), r in self.routes.items()
+                if method == request.method and part in (request.url or "")
+            ),
+            response(200, {}),
+        )
+        result = requests.Response()
+        result.status_code = answer["status"]
+        result._content = json.dumps(answer["data"]).encode()
+        result.encoding = "utf-8"
+        result.url = request.url or ""
+        result.request = request
+        if answer["next"]:
+            result.headers["link"] = f'<{answer["next"]}>; rel="next"'
+        return result
 
-    def get(self, url: str, **kw: Any) -> Response:
-        return self.request("GET", url, **kw)
+    def close(self) -> None:
+        pass
 
 
-def dsp(routes=None) -> tuple[Dsp, Session]:
-    session = Session(routes)
-    return Dsp(SETTINGS, session, "token"), session
+def session(
+    routes: dict[Route, dict] | None = None,
+) -> tuple[requests.Session, Transport]:
+    transport = Transport(routes or {})
+    http = requests.Session()
+    http.mount("https://", transport)
+    return http, transport
+
+
+def dsp(routes: dict[Route, dict] | None = None) -> tuple[Dsp, Transport]:
+    http, transport = session(routes)
+    return Dsp(SETTINGS, http, "token"), transport

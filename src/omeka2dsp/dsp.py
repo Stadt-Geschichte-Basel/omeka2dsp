@@ -3,7 +3,9 @@
 import logging
 import urllib.parse
 from dataclasses import dataclass, replace
-from typing import Any, Literal, Protocol
+from typing import Any, Literal
+
+import requests
 
 from omeka2dsp.fields import Project
 from omeka2dsp.settings import Settings
@@ -11,34 +13,6 @@ from omeka2dsp.settings import Settings
 log = logging.getLogger(__name__)
 
 JsonLd = dict[str, Any]
-
-
-class HttpResponse(Protocol):
-    """The part of requests.Response that the clients use."""
-
-    @property
-    def status_code(self) -> int: ...
-
-    @property
-    def text(self) -> str: ...
-
-    @property
-    def content(self) -> bytes: ...
-
-    @property
-    def links(self) -> dict: ...
-
-    def json(self) -> Any: ...
-
-    def raise_for_status(self) -> None: ...
-
-
-class HttpSession(Protocol):
-    """The part of requests.Session that the clients use."""
-
-    def request(self, method: str, url: str, **kwargs: Any) -> HttpResponse: ...
-
-    def get(self, url: str, **kwargs: Any) -> HttpResponse: ...
 
 
 class DspError(RuntimeError):
@@ -52,7 +26,7 @@ def quote(iri: str) -> str:
 @dataclass(frozen=True)
 class Dsp:
     settings: Settings
-    session: HttpSession
+    session: requests.Session
     token: str = ""
 
     def _send(
@@ -63,7 +37,7 @@ class Dsp:
         auth: bool = True,
         host: str | None = None,
         **kw,
-    ) -> HttpResponse:
+    ) -> requests.Response:
         headers = {**kw.pop("headers", {})}
         if auth:
             headers["Authorization"] = f"Bearer {self.token}"
@@ -79,7 +53,7 @@ class Dsp:
         return response
 
     @classmethod
-    def login(cls, settings: Settings, session: HttpSession) -> "Dsp":
+    def login(cls, settings: Settings, session: requests.Session) -> "Dsp":
         credentials = {
             "email": settings.dsp_user,
             "password": settings.dsp_pwd.get_secret_value(),

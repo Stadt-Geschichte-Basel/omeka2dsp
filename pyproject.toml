@@ -36,18 +36,16 @@ dev = [
 ]
 
 [build-system]
-requires = ["uv_build>=0.9,<0.12"]
+requires = ["uv_build>=0.9,<0.14"]
 build-backend = "uv_build"
 
 [tool.ruff]
 target-version = "py311"
-src = ["src", "scripts", "test"]
+src = ["src", "test"]
 
 [tool.ruff.lint]
 # Keep Ruff's default rules (including RUF100). Do not use lint.select.
-# Scripts configure the root logger in setup_logging(); module loggers are a separate decision.
-ignore = ["LOG015"]
 
 [tool.ty.environment]
 python-version = "3.11"
-extra-paths = ["scripts"]
+extra-paths = ["test"]

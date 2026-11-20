@@ -1,0 +1,98 @@
+"""The omeka2dsp command."""
+
+import json
+import logging
+from pathlib import Path
+from typing import Annotated
+
+import requests
+import typer
+from pydantic import ValidationError
+
+from omeka2dsp import payload
+from omeka2dsp.dsp import Dsp
+from omeka2dsp.settings import Settings
+from omeka2dsp.sync import Options, Selection, run
+
+LOG_FILE = "data_2_dasch.log"
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
+
+log = logging.getLogger(__name__)
+app = typer.Typer(no_args_is_help=True, help="Migrate Omeka records to DSP.")
+
+
+def _settings() -> Settings:
+    """Load the settings. Stop before network access when one is missing."""
+    try:
+        return Settings()
+    except ValidationError as error:
+        names = sorted({str(e["loc"][0]).upper() for e in error.errors()})
+        log.error(f"Missing or empty settings: {', '.join(names)}")
+        raise typer.Exit(1) from None
+
+
+def read_ids(ids: list[str], ids_file: Path | None) -> frozenset[str]:
+    lines = ids_file.read_text(encoding="utf-8").splitlines() if ids_file else []
+    return frozenset(i.strip() for i in [*ids, *lines] if i.strip())
+
+
+@app.command()
+def sync(
+    snapshot: Annotated[
+        Path | None,
+        typer.Option(help="Read items and media from this snapshot directory."),
+    ] = None,
+    ids: Annotated[
+        list[str] | None,
+        typer.Option("--id", help="Select the item with this dcterms:identifier."),
+    ] = None,
+    ids_file: Annotated[
+        Path | None, typer.Option(help="Select the identifiers in this file.")
+    ] = None,
+    sample: Annotated[
+        int | None, typer.Option(min=1, help="Select this number of random items.")
+    ] = None,
+    dry_run: Annotated[
+        bool, typer.Option(help="Check payloads and log changes. Write nothing.")
+    ] = False,
+    recreate: Annotated[
+        list[str] | None,
+        typer.Option(help="Erase this media in the wrong class and create it again."),
+    ] = None,
+) -> None:
+    """Sync the items of the item set and their media to DSP."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format=LOG_FORMAT,
+        handlers=[logging.StreamHandler(), logging.FileHandler(LOG_FILE, mode="w")],
+        force=True,
+    )
+    settings = _settings()
+    selection = Selection(snapshot, read_ids(ids or [], ids_file), sample)
+    run(settings, selection, Options(dry_run, frozenset(recreate or [])))
+
+
+@app.command("add-text-class")
+def add_text_class(
+    apply: Annotated[bool, typer.Option(help="Send the request.")] = False,
+    model: Annotated[Path, typer.Option(help="The DSP data model file.")] = Path(
+        "data/data_model_dasch.json"
+    ),
+) -> None:
+    """Add the Text class of the data model to the DSP ontology.
+
+    This needs a DSP user with project-admin rights.
+    """
+    logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, force=True)
+    settings = _settings()
+    dsp = Dsp.login(settings, requests.Session())
+    project = dsp.project()
+    last_modified = dsp.ontology_metadata(project)["knora-api:lastModificationDate"]
+    body = payload.text_class(
+        json.loads(model.read_text(encoding="utf-8")), project, last_modified
+    )
+    if not apply:
+        typer.echo(json.dumps(body, indent=2, ensure_ascii=False))
+        typer.echo("Dry run. Use --apply to create the class.")
+        return
+    typer.echo(json.dumps(dsp.create_class(body), ensure_ascii=False)[:1000])

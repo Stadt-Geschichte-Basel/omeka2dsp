@@ -1,6 +1,6 @@
 import json
 
-from fakes import SETTINGS, Response, Session
+from fakes import SETTINGS, response, session
 from omeka2dsp.omeka import api_items, media_by_item, select, snapshot
 from omeka2dsp.values import OmekaRecord
 
@@ -28,10 +28,13 @@ def test_media_by_item_and_select():
 
 
 def test_items_follow_the_next_link():
-    first = Response(200, [item("a")])
-    first.links = {"next": {"url": "https://omeka/api/items?page=2"}}
-    session = Session(
-        {("GET", "page=2"): Response(200, [item("b")]), ("GET", "/items"): first}
+    http, transport = session(
+        {
+            ("GET", "page=2"): response(200, [item("b")]),
+            ("GET", "/items"): response(
+                200, [item("a")], "https://omeka/api/items?page=2"
+            ),
+        }
     )
-    assert [i.identifier for i in api_items(SETTINGS, session)] == ["a", "b"]
-    assert session.sent[0]["params"]["item_set_id"] == "10780"
+    assert [i.identifier for i in api_items(SETTINGS, http)] == ["a", "b"]
+    assert "item_set_id=10780" in transport.sent[0]["url"]

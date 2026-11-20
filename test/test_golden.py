@@ -89,15 +89,12 @@ def payloads():
 
 def change_requests():
     """The value requests that sync sends for the example DSP resources."""
-    client, session = fakes.dsp()
+    client, transport = fakes.dsp()
     for resource, source in [(dsp("OBJEKT"), ITEM), (dsp("MEDIA"), MEDIA)]:
         record = OmekaRecord.parse(source)
         for change in plan(PROJECT, record, resource, LISTS).changes:
             client.change(change.action, payload.change(PROJECT, resource, change))
-    sent = [
-        {"method": r["method"], "url": r["url"], "body": r["json"]}
-        for r in session.sent
-    ]
+    sent = [{k: r[k] for k in ("method", "url", "body")} for r in transport.sent]
     return sorted(sent, key=lambda r: json.dumps(r, sort_keys=True))
 
 

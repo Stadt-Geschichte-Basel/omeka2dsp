@@ -10,7 +10,6 @@ from urllib.parse import urljoin
 
 import requests
 
-from omeka2dsp.dsp import HttpSession
 from omeka2dsp.settings import Settings
 from omeka2dsp.values import OmekaRecord
 
@@ -21,7 +20,9 @@ log = logging.getLogger(__name__)
 SNAPSHOT_SUFFIXES = ("_transformed", "", "_raw")
 
 
-def _pages(session: HttpSession, url: str, params: dict[str, Any] | None) -> list[Any]:
+def _pages(
+    session: requests.Session, url: str, params: dict[str, Any] | None
+) -> list[Any]:
     records: list[Any] = []
     next_url: str | None = url
     while next_url:
@@ -44,7 +45,7 @@ def _keys(settings: Settings) -> dict[str, Any]:
     }
 
 
-def api_items(settings: Settings, session: HttpSession) -> list[OmekaRecord]:
+def api_items(settings: Settings, session: requests.Session) -> list[OmekaRecord]:
     """All items of the item set."""
     params = {"item_set_id": settings.item_set_id, "per_page": 100, **_keys(settings)}
     url = urljoin(settings.omeka_api_url, "items")
@@ -52,7 +53,7 @@ def api_items(settings: Settings, session: HttpSession) -> list[OmekaRecord]:
 
 
 def api_media(
-    settings: Settings, session: HttpSession, item: OmekaRecord
+    settings: Settings, session: requests.Session, item: OmekaRecord
 ) -> list[OmekaRecord]:
     params = {"item_id": item.id, **_keys(settings)}
     url = urljoin(settings.omeka_api_url, "media")
