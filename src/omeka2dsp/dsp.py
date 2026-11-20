@@ -70,14 +70,15 @@ class Dsp:
         iri = data["id"]
         log.info(f"project Iri: {iri}")
         name = self.settings.ontology_name
-        ontologies = data.get("ontologies") or [
-            f"{self.settings.api_host}/ontology/{code}/{name}/v2"
-        ]
+        ontologies = [o.rstrip("#") for o in data.get("ontologies") or []]
+        if not ontologies:
+            ontologies = [f"{self.settings.api_host}/ontology/{code}/{name}/v2"]
+        # A project can have more than one ontology: take the configured one.
+        matches = [o for o in ontologies if o.endswith(f"/{name}/v2")]
+        if not matches:
+            raise DspError(f"project {iri} has no ontology {name}: {ontologies}")
         return Project(
-            iri=iri,
-            shortcode=code,
-            ontology_name=name,
-            ontology_iri=ontologies[0].rstrip("#"),
+            iri=iri, shortcode=code, ontology_name=name, ontology_iri=matches[0]
         )
 
     def lists(self, project: Project) -> list[JsonLd]:

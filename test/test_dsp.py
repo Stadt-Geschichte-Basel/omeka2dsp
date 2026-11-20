@@ -57,3 +57,16 @@ def test_reads_check_the_status_first(method, part, call):
     http, _ = session({(method, part): response(500, {"project": {"id": "p"}})})
     with pytest.raises(DspError):
         call(Dsp(SETTINGS, http, "t"))
+
+
+def project_session(ontologies):
+    data = {"project": {"id": "p", "ontologies": ontologies}}
+    return session({("GET", "/admin/projects/"): response(200, data)})[0]
+
+
+def test_project_takes_the_configured_ontology():
+    other, sgb = "http://x/ontology/4001/Other/v2", "http://x/ontology/4001/SGB/v2"
+    project = Dsp(SETTINGS, project_session([other, sgb]), "t").project()
+    assert project.ontology_iri == sgb
+    with pytest.raises(DspError):
+        Dsp(SETTINGS, project_session([other]), "t").project()
