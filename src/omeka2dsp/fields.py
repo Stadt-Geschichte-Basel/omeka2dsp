@@ -13,7 +13,6 @@ class Kind(StrEnum):
     TEXT = "text"
     RICH_TEXT = "rich text"
     LIST = "list"
-    EMPTY = "always empty"
     LINK = "link"
 
 
@@ -21,7 +20,6 @@ VALUE_TYPES = {
     Kind.TEXT: "knora-api:TextValue",
     Kind.RICH_TEXT: "knora-api:TextValue",
     Kind.LIST: "knora-api:ListValue",
-    Kind.EMPTY: "knora-api:ListValue",
     Kind.LINK: "knora-api:LinkValue",
 }
 
@@ -68,8 +66,6 @@ FIELDS: tuple[Field, ...] = (
     _text("hasDescription", "dcterms:description", ALL),
     _list("hasTemporalList", "dcterms:temporal", "temporal", ALL),
     _list("hasLanguageList", "dcterms:language", "language", ALL),
-    # Subjects are not migrated (issue #7). Sync deletes old values.
-    Field(prop="hasSubjectList", term=None, kind=Kind.EMPTY, classes=ALL),
     _rich("isPartOf", "dcterms:isPartOf", frozenset({PARENT})),
     _rich("hasCreator", "dcterms:creator"),
     _rich("hasPublisher", "dcterms:publisher"),

@@ -88,11 +88,10 @@ def test_unresolved_type_label_blocks_type_deletions():
     ]
 
 
-def test_subjects_are_deleted():
+def test_subjects_are_not_synced():
+    """Issue #19: the ontology has no hasSubjectList."""
     resource = {"SGB:hasSubjectList": [listvalue("iri-s", "v1")]}
-    assert changes(resource, {"dcterms:subject": [{"@value": "Stadt"}]}) == [
-        ("hasSubjectList", "delete", "iri-s", "v1")
-    ]
+    assert changes(resource, {"dcterms:subject": [{"@value": "Stadt"}]}) == []
 
 
 def test_plain_citation_becomes_link_by_update():

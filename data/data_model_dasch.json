@@ -143,26 +143,6 @@
 				]
 			},
 			{
-				"name": "subject",
-				"labels": {
-					"de": "Iconclass Sachbegriff",
-					"en": "Iconclass subject heading"
-				},
-				"comments": {
-					"en": "Iconclass is a hierarchical classification system for describing and indexing visual content, primarily in art history. It organizes motifs, themes, and concepts through standardized codes to enable semantic interoperability and precise image retrieval.",
-					"de": "Iconclass ist ein hierarchisches Klassifikationssystem zur Beschreibung und Erschliessung von Bildinhalten, insbesondere in der Kunstgeschichte. Es ordnet Motive, Themen und Konzepte anhand standardisierter Codes, um semantische Interoperabilität und präzise Bildsuche zu ermöglichen."
-				},
-				"nodes": [
-					{
-						"name": "iconclass_11A",
-						"labels": {
-							"de": "11A|Gottheit, Gott (im allgemeinen) in der christlichen Religion",
-							"en": "11A|Deity, God (in general) in Christian religion"
-						}
-					}
-				]
-			},
-			{
 				"name": "license",
 				"labels": {
 					"en": "Licenses"
@@ -494,21 +474,6 @@
 						"gui_element": "Richtext"
 					},
 					{
-						"name": "hasSubjectList",
-						"super": ["hasValue", "dcterms:subject"],
-						"object": "ListValue",
-						"labels": {
-							"en": "subject"
-						},
-						"comments": {
-							"en": "subject"
-						},
-						"gui_element": "List",
-						"gui_attributes": {
-							"hlist": "subject"
-						}
-					},
-					{
 						"name": "hasTemporalList",
 						"super": ["hasValue", "dcterms:temporal"],
 						"object": "ListValue",
@@ -597,11 +562,6 @@
 								"propname": ":hasTitle",
 								"cardinality": "1",
 								"gui_order": 2
-							},
-							{
-								"propname": ":hasSubjectList",
-								"cardinality": "0-1",
-								"gui_order": 3
 							},
 							{
 								"propname": ":hasDescription",
@@ -702,11 +662,6 @@
 								"gui_order": 2
 							},
 							{
-								"propname": ":hasSubjectList",
-								"cardinality": "0-1",
-								"gui_order": 3
-							},
-							{
 								"propname": ":hasDescription",
 								"cardinality": "1",
 								"gui_order": 4
@@ -802,11 +757,6 @@
 								"propname": ":hasTitle",
 								"cardinality": "1",
 								"gui_order": 2
-							},
-							{
-								"propname": ":hasSubjectList",
-								"cardinality": "0-1",
-								"gui_order": 3
 							},
 							{
 								"propname": ":hasDescription",
@@ -908,11 +858,6 @@
 								"gui_order": 2
 							},
 							{
-								"propname": ":hasSubjectList",
-								"cardinality": "0-n",
-								"gui_order": 3
-							},
-							{
 								"propname": ":hasDescription",
 								"cardinality": "0-1",
 								"gui_order": 4
@@ -955,11 +900,6 @@
 								"propname": ":hasTitle",
 								"cardinality": "1",
 								"gui_order": 2
-							},
-							{
-								"propname": ":hasSubjectList",
-								"cardinality": "0-1",
-								"gui_order": 3
 							},
 							{
 								"propname": ":hasDescription",

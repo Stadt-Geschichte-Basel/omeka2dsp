@@ -136,7 +136,7 @@ def plan(
             warnings.append(f"{field.prop}: '{label}' is not in list '{key}'; {kept}")
         if field.kind is Kind.RICH_TEXT:
             changes += _text(field, have, want.values)  # ty: ignore[invalid-argument-type]
-        elif field.kind is Kind.EMPTY or field.many:
+        elif field.many:
             changes += _many(field, have, want.values, deletes=not want.unresolved)
         elif not want.unresolved:
             changes += _scalar(field, have, want.values)
