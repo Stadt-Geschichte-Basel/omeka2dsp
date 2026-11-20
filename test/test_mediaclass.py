@@ -1,4 +1,9 @@
-from data_2_dasch import PREFIX, construct_payload, specify_mediaclass
+from data_2_dasch import (
+    PREFIX,
+    construct_payload,
+    ingest_filename,
+    specify_mediaclass,
+)
 
 
 def test_data_files_go_to_text_class():
@@ -19,3 +24,9 @@ def test_text_payload_has_text_file_value():
         "@type": "knora-api:TextFileValue",
         "knora-api:fileValueHasFilename": "x.csv",
     }
+
+
+def test_geojson_is_ingested_as_json():
+    """DSP ingest refuses .geojson (live test on rdu-13)."""
+    assert ingest_filename("map.geojson") == "map.json"
+    assert ingest_filename("data.csv") == "data.csv"

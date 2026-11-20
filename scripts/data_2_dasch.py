@@ -840,6 +840,17 @@ def construct_payload(
     return payload
 
 
+def ingest_filename(filename: str) -> str:
+    """The filename for DSP ingest, which accepts only some extensions.
+
+    GeoJSON is JSON (RFC 7946). Ingest refuses ".geojson", so the file goes up
+    as ".json". The bytes stay the same; dcterms:format keeps application/geo+json.
+    """
+    if filename.lower().endswith(".geojson"):
+        return filename[: -len(".geojson")] + ".json"
+    return filename
+
+
 def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
     """
     Downloads a file from a URL and uploads it to the specified endpoint.
@@ -875,7 +886,9 @@ def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
         temp_file_path = zip_temp_file_path
 
     # Prepare the upload
-    final_filename = original_filename if not zip else temp_file_path.name
+    final_filename = (
+        ingest_filename(original_filename) if not zip else temp_file_path.name
+    )
     encoded_filename = urllib.parse.quote(final_filename)
     endpoint = (
         f"{INGEST_HOST}/projects/{PROJECT_SHORT_CODE}/assets/ingest/{encoded_filename}"
