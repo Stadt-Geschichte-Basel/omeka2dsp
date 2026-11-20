@@ -10,12 +10,14 @@ from pathlib import Path
 from typing import cast
 
 import requests
+from preflight import preflight
 from process_data_from_omeka import (
     extract_combined_values,
     extract_property,
     get_items_from_collection,
     get_media,
 )
+from snapshot_source import load_snapshot, media_by_item, select
 
 # TODO: - improve error handling
 #       - improve logging
@@ -106,6 +108,18 @@ def parse_arguments() -> Namespace:
         default="all_data",
         help=f"which data should be processed? possible options: 'all_data' (all data), 'sample_data' ({NUMBER_RANDOM_OBJECTS} random metadata objects),'test_data' (10 selected test metadata objects)",
     )
+    parser.add_argument(
+        "--snapshot",
+        help="read items and media from an sgb-data-validator snapshot directory",
+    )
+    parser.add_argument(
+        "--ids", help="comma-separated dcterms:identifier values to process"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="check payloads and log planned changes; write nothing to DSP",
+    )
     args = parser.parse_args()
 
     return args
@@ -116,6 +130,7 @@ def login(email: str, password: str) -> str:
     response = requests.post(
         endpoint, json={"email": email, "password": password}, timeout=10
     )
+    response.raise_for_status()
     logging.info("Login successful")
     return cast(str, response.json()["token"])
 
@@ -324,10 +339,6 @@ def update_value(token, item, value, field, field_type, type_of_change):
         # logging.error(payload)
 
 
-def _uri_or_text(value):
-    return "UriValue" if value.startswith(("http://", "https://")) else "TextValue"
-
-
 def sync_value(prop, prop_type, dasch_value, omeka_value):
     dasch_value = dasch_value or ""
     omeka_value = omeka_value or ""
@@ -374,27 +385,12 @@ def sync_array_value(prop, prop_type, dasch_array, omeka_array):
 
 
 def sync_mixed_value_array(prop, dasch_array, omeka_array):
-    """
-    Sync array values that can be either TextValue or UriValue.
-    Each value's type is determined by its content (URI or text).
-    This is used for issue #7 fields like creator, publisher, source, relation.
-    """
-    dasch_set = {value for value in dasch_array if value}
-    omeka_set = {value for value in omeka_array if value}
+    """Sync a multi-value text property.
 
-    return [
-        {
-            "field": prop,
-            "prop_type": _uri_or_text(value),
-            "type": change_type,
-            "value": value,
-        }
-        for change_type, values in (
-            ("create", omeka_set - dasch_set),
-            ("delete", dasch_set - omeka_set),
-        )
-        for value in values
-    ]
+    The SGB ontology accepts only TextValue for creator, publisher, source,
+    relation and isPartOf, so URLs are sent as text too.
+    """
+    return sync_array_value(prop, "TextValue", dasch_array, omeka_array)
 
 
 def check_values(dasch_item, omeka_item, lists):
@@ -456,7 +452,7 @@ def check_values(dasch_item, omeka_item, lists):
 
     # Check object specific fields
     if dasch_item["@type"] == METADATA_RESOURCE_TYPE:
-        # Support mixed TextValue/UriValue for isPartOf (issue #7)
+        # isPartOf is TextValue only in the SGB ontology
         is_part_of = sync_mixed_value_array(
             "isPartOf",
             extract_dasch_propvalue_multiple(dasch_item, "isPartOf"),
@@ -467,7 +463,7 @@ def check_values(dasch_item, omeka_item, lists):
 
     # Check media specific fields
     if dasch_item["@type"] in MEDIA_RESOURCE_TYPES:
-        # Support mixed TextValue/UriValue for creator, publisher, source, relation (issue #7)
+        # creator, publisher, source, relation are TextValue only in the SGB ontology
         creator = sync_mixed_value_array(
             "hasCreator",
             extract_dasch_propvalue_multiple(dasch_item, "hasCreator"),
@@ -504,7 +500,7 @@ def check_values(dasch_item, omeka_item, lists):
 
         # Support multiple type values (issue #7)
         type_iris = []
-        for type_label in extract_combined_values(omeka_item.get("dcterms:type", [])):
+        for type_label in value_labels(omeka_item.get("dcterms:type", [])):
             type_iri = extract_listvalueiri_from_value(type_label, "type", lists)
             if type_iri:
                 type_iris.append(type_iri)
@@ -585,6 +581,17 @@ def check_values(dasch_item, omeka_item, lists):
     return modified_values
 
 
+def value_labels(props):
+    """Plain labels of Omeka values: o:label for URI values, else @value.
+
+    List lookups need the label, not the <a href> HTML of extract_combined_values.
+    """
+    labels = [
+        (prop.get("o:label") or prop.get("@value") or "").strip() for prop in props
+    ]
+    return [label for label in labels if label]
+
+
 def _normalise_labels(raw_value):
     labels = set()
     if isinstance(raw_value, str):
@@ -638,7 +645,10 @@ def extract_listvalueiri_from_value(value, list_key, lists):
         node_name = node.get("name")
         if node_name:
             node_labels.add(node_name)
-        if lookup_value in node_labels:
+        # DSP list labels can differ in case from Omeka ("image" vs "Image").
+        if isinstance(lookup_value, str) and lookup_value.casefold() in {
+            label.casefold() for label in node_labels
+        }:
             return node.get("@id")
 
     logging.warning(
@@ -649,31 +659,13 @@ def extract_listvalueiri_from_value(value, list_key, lists):
     return None
 
 
-def build_text_or_uri_values(values):
-    """
-    Build a list of TextValue or UriValue objects based on content.
-    URIs (starting with http:// or https://) become UriValue, others become TextValue.
-    This addresses issue #7.
-    """
-    result = []
-    for val in values:
-        if not isinstance(val, str):
-            continue
-        if _uri_or_text(val) == "UriValue":
-            result.append(
-                {
-                    "@type": "knora-api:UriValue",
-                    "knora-api:uriValueAsUri": {
-                        "@value": val,
-                        "@type": "http://www.w3.org/2001/XMLSchema#anyURI",
-                    },
-                }
-            )
-        else:
-            result.append(
-                {"@type": "knora-api:TextValue", "knora-api:valueAsString": val}
-            )
-    return result
+def build_text_values(values):
+    """Build TextValue objects. The SGB ontology has no UriValue properties."""
+    return [
+        {"@type": "knora-api:TextValue", "knora-api:valueAsString": val}
+        for val in values
+        if isinstance(val, str) and val
+    ]
 
 
 def construct_payload(
@@ -726,7 +718,7 @@ def construct_payload(
     # Support URIs in isPartOf (issue #7)
     if "dcterms:isPartOf" in item:
         is_part_of_values = extract_combined_values(item.get("dcterms:isPartOf", []))
-        is_part_of_entries = build_text_or_uri_values(is_part_of_values)
+        is_part_of_entries = build_text_values(is_part_of_values)
         if is_part_of_entries:
             payload[f"{PREFIX}isPartOf"] = is_part_of_entries
 
@@ -757,7 +749,7 @@ def construct_payload(
 
         # Support multiple type values (issue #7)
         type_values = []
-        for type_label in extract_combined_values(item.get("dcterms:type", [])):
+        for type_label in value_labels(item.get("dcterms:type", [])):
             type_iri = extract_listvalueiri_from_value(type_label, "type", lists)
             if type_iri:
                 type_values.append(
@@ -813,7 +805,7 @@ def construct_payload(
         # Support URIs for creator, publisher, source, relation (issue #7)
         if "dcterms:creator" in item:
             creator_values = extract_combined_values(item.get("dcterms:creator", []))
-            creators = build_text_or_uri_values(creator_values)
+            creators = build_text_values(creator_values)
             if creators:
                 payload[f"{PREFIX}hasCreator"] = creators
 
@@ -821,19 +813,19 @@ def construct_payload(
             publisher_values = extract_combined_values(
                 item.get("dcterms:publisher", [])
             )
-            publishers = build_text_or_uri_values(publisher_values)
+            publishers = build_text_values(publisher_values)
             if publishers:
                 payload[f"{PREFIX}hasPublisher"] = publishers
 
         if "dcterms:source" in item:
             source_values = extract_combined_values(item.get("dcterms:source", []))
-            sources = build_text_or_uri_values(source_values)
+            sources = build_text_values(source_values)
             if sources:
                 payload[f"{PREFIX}hasSource"] = sources
 
         if "dcterms:relation" in item:
             relation_values = extract_combined_values(item.get("dcterms:relation", []))
-            relations = build_text_or_uri_values(relation_values)
+            relations = build_text_values(relation_values)
             if relations:
                 payload[f"{PREFIX}hasRelation"] = relations
 
@@ -975,19 +967,23 @@ def specify_mediaclass(media_type: str) -> str:
     return f"{PREFIX}ResourceWithoutMedia"
 
 
-def sync_existing(token, resource_iri, source, lists, label, kind):
-    """Update an existing DaSCH resource if the Omeka source was modified since."""
-    resource = get_full_resource(token, urllib.parse.quote(resource_iri, safe=""))
+def sync_existing(token, resource_iri, source, lists, label, kind, dry_run=False):
+    """Sync an existing DaSCH resource with its Omeka source.
 
-    if "knora-api:lastModificationDate" in resource:
-        dasch_date = resource["knora-api:lastModificationDate"]["@value"]
-    else:
-        dasch_date = resource["knora-api:creationDate"]["@value"]
-    if source["o:modified"]["@value"] > dasch_date:
-        logging.info(
-            f"{label}: {kind} exists already, but it was modified. Update object ..."
-        )
-        for value in check_values(resource, source, lists):
+    The diff always runs: cleaned snapshots keep the old o:modified date, so a
+    date gate would skip their changes. A source without changes makes no writes.
+    """
+    resource = get_full_resource(token, urllib.parse.quote(resource_iri, safe=""))
+    changes = check_values(resource, source, lists)
+    if not changes:
+        logging.info(f"{label}: {kind} exists already, no changes")
+        return
+    for value in changes:
+        if dry_run:
+            logging.info(
+                f"{label}: would {value['type']} {value['field']} '{value['value']}'"
+            )
+        else:
             update_value(
                 token,
                 resource,
@@ -996,39 +992,128 @@ def sync_existing(token, resource_iri, source, lists, label, kind):
                 value["prop_type"],
                 value["type"],
             )
+
+
+def find_media(token, media_id, media_class):
+    """Find a media resource by identifier in any media class.
+
+    A media record can change class (made private, format corrected). DSP cannot
+    change the class of a resource, so we sync the existing one, not a duplicate.
+    """
+    classes = [media_class] + sorted(MEDIA_RESOURCE_TYPES - {media_class})
+    for candidate in classes:
+        iri = get_resource_by_id(token, candidate, media_id).get("@id")
+        if iri:
+            if candidate != media_class:
+                logging.warning(
+                    f"{media_id}: exists as {candidate}, source now maps to "
+                    f"{media_class}; syncing values only"
+                )
+            return iri
+    return None
+
+
+def get_ontology(token):
+    ontology_iri = ONTOLOGY_CONTEXT.rstrip("#")
+    encoded_iri = urllib.parse.quote(ontology_iri, safe="")
+    endpoint = f"{API_HOST}/v2/ontologies/allentities/{encoded_iri}"
+    response = requests.get(
+        endpoint, headers={"Authorization": f"Bearer {token}"}, timeout=DEFAULT_TIMEOUT
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def check_payload(payload, source, ontology, label):
+    """Log preflight problems. Return True when the payload is safe to send."""
+    problems = preflight(payload, source, ontology, PREFIX)
+    for problem in problems:
+        logging.error(f"{label}: preflight: {problem}")
+    return not problems
+
+
+def load_items(args):
+    """Return (items, media lookup) from a snapshot or from the Omeka API."""
+    if args.snapshot:
+        items, media = load_snapshot(args.snapshot)
+        grouped = media_by_item(media)
+        logging.info(
+            f"Snapshot {args.snapshot}: {len(items)} items, {len(media)} media"
+        )
+
+        def get_item_media(item):
+            return grouped.get(item.get("o:id"), [])
+
     else:
-        logging.info(f"{label}: {kind} exists already")
+        items = get_items_from_collection(ITEM_SET_ID)
+
+        def get_item_media(item):
+            return get_media(item.get("o:id", ""))
+
+    if args.ids:
+        ids = {i.strip() for i in args.ids.split(",") if i.strip()}
+        items = select(items, ids)
+        logging.info(f"Selected {len(items)} of {len(ids)} requested ids")
+    elif args.mode == "sample_data":
+        items = random.sample(items, NUMBER_RANDOM_OBJECTS)
+    elif args.mode == "test_data":
+        items = select(items, TEST_DATA)
+    return items, get_item_media
+
+
+def sync_media(token, media, metadata_iri, project_iri, lists, ontology, dry_run):
+    media_id = extract_property(media.get("dcterms:identifier", []), 10)
+    media_class = specify_mediaclass(
+        extract_property(media.get("dcterms:format", []), 9)
+    )
+    # Private media (issues #12, #13, #14): keep a metadata record but never
+    # upload the file.
+    if is_media_private(media):
+        logging.info(
+            f"{media_id}: private media -> ResourceWithoutMedia (file not uploaded)"
+        )
+        media_class = f"{PREFIX}ResourceWithoutMedia"
+
+    mediadata_iri = find_media(token, media_id, media_class)
+    if mediadata_iri:
+        sync_existing(token, mediadata_iri, media, lists, media_id, "media", dry_run)
+        return
+
+    # Check the metadata before the file upload, so a bad record uploads nothing.
+    draft = construct_payload(
+        media, media_class, project_iri, lists, metadata_iri, None
+    )
+    if not check_payload(draft, media, ontology, media_id):
+        return
+    if dry_run:
+        logging.info(f"{media_id}: would create {media_class}")
+        return
+
+    logging.info(f"{media_id}: adding media to {media_class} ...")
+    internal_filename = None
+    if media_class != f"{PREFIX}ResourceWithoutMedia":
+        internal_filename = upload_file_from_url(media.get("o:original_url", ""), token)
+        if not internal_filename:
+            logging.error(f"{media_id}: could not create resource")
+            return
+        logging.info(f"{media_id}: ingested as {internal_filename}")
+    payload = construct_payload(
+        media, media_class, project_iri, lists, metadata_iri, internal_filename
+    )
+    create_resource(payload, token)
 
 
 def main() -> None:
     setup_logging()
     args = parse_arguments()
+    items_data, get_item_media = load_items(args)
 
-    # Fetch item data
-    items_data = get_items_from_collection(ITEM_SET_ID)
-
-    if args.mode == "sample_data":
-        items_data = random.sample(items_data, NUMBER_RANDOM_OBJECTS)
-
-    if args.mode == "test_data":
-        found_objects = []
-        remaining_identifiers = TEST_DATA.copy()
-
-        for obj in items_data:
-            for identifier in obj.get("dcterms:identifier", []):
-                if identifier["@value"] in remaining_identifiers:
-                    found_objects.append(obj)
-                    remaining_identifiers.remove(identifier["@value"])
-
-            if not remaining_identifiers:
-                break
-        items_data = found_objects
-
-    # get_project()
     token = login(DSP_USER, DSP_PWD)
     project_iri = get_project()
-    # get list and list values
     project_lists = get_lists(project_iri)
+    ontology = get_ontology(token)
+    if args.dry_run:
+        logging.info("Dry run: no writes to DSP")
 
     for item in items_data:
         item_id = extract_property(item.get("dcterms:identifier", []), 10)
@@ -1036,58 +1121,38 @@ def main() -> None:
             "@id"
         )
         if metadata_iri:
-            sync_existing(token, metadata_iri, item, project_lists, item_id, "object")
+            sync_existing(
+                token,
+                metadata_iri,
+                item,
+                project_lists,
+                item_id,
+                "object",
+                args.dry_run,
+            )
         else:
             payload = construct_payload(
                 item, METADATA_RESOURCE_TYPE, project_iri, project_lists, "", None
             )
-            create_resource(payload, token)
-            metadata_iri = get_resource_by_id(
-                token, METADATA_RESOURCE_TYPE, item_id
-            ).get("@id")
-        media_data = get_media(item.get("o:id", ""))
-        if media_data:
-            for media in media_data:
-                media_id = extract_property(media.get("dcterms:identifier", []), 10)
-                media_class = specify_mediaclass(
-                    extract_property(media.get("dcterms:format", []), 9)
-                )
-                # Private media (issues #12, #13, #14): keep a metadata record but never
-                # upload the file.
-                if is_media_private(media):
-                    logging.info(
-                        f"{media_id}: private media -> ResourceWithoutMedia (file not uploaded)"
-                    )
-                    media_class = f"{PREFIX}ResourceWithoutMedia"
-                mediadata_iri = get_resource_by_id(token, media_class, media_id).get(
-                    "@id"
-                )
-                if mediadata_iri:
-                    sync_existing(
-                        token, mediadata_iri, media, project_lists, media_id, "media"
-                    )
-                else:
-                    logging.info(f"{media_id}: adding media to {media_class} ...")
-                    object_location = media.get("o:original_url", "")
-                    # upload the original file for supported media types
-                    internalFilename = None
-                    if media_class != f"{PREFIX}ResourceWithoutMedia":
-                        internalFilename = upload_file_from_url(object_location, token)
-                    if (
-                        media_class == f"{PREFIX}ResourceWithoutMedia"
-                        or internalFilename
-                    ):
-                        media_payload = construct_payload(
-                            media,
-                            media_class,
-                            project_iri,
-                            project_lists,
-                            metadata_iri,
-                            internalFilename,
-                        )
-                        create_resource(media_payload, token)
-                    else:
-                        logging.error(f"{media_id}: could not create resource")
+            if not check_payload(payload, item, ontology, item_id):
+                continue
+            if args.dry_run:
+                logging.info(f"{item_id}: would create {METADATA_RESOURCE_TYPE}")
+            else:
+                create_resource(payload, token)
+                metadata_iri = get_resource_by_id(
+                    token, METADATA_RESOURCE_TYPE, item_id
+                ).get("@id")
+        for media in get_item_media(item) or []:
+            sync_media(
+                token,
+                media,
+                metadata_iri,
+                project_iri,
+                project_lists,
+                ontology,
+                args.dry_run,
+            )
 
 
 if __name__ == "__main__":
