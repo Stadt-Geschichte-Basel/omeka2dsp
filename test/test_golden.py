@@ -11,11 +11,20 @@ from pathlib import Path
 import pytest
 
 import data_2_dasch as d
+from omeka2dsp import payload
+from omeka2dsp.fields import Project
+from omeka2dsp.values import OmekaRecord
 
 ROOT = Path(__file__).parent.parent
 GOLDEN = Path(__file__).parent / "golden"
 PARENT_IRI = "http://rdfh.ch/4001/parent"
 PROJECT_IRI = "http://rdfh.ch/projects/4001"
+PROJECT = Project(
+    iri=PROJECT_IRI,
+    shortcode="TEST",
+    ontology_name="SGB",
+    ontology_iri="https://api.test.com/ontology/TEST/SGB/v2",
+)
 
 
 def node(list_iri, label):
@@ -62,12 +71,11 @@ MEDIA = {
 
 
 def payloads():
+    item, media = OmekaRecord.parse(ITEM), OmekaRecord.parse(MEDIA)
     return {
-        "parent": d.construct_payload(ITEM, "SGB:Parent", PROJECT_IRI, LISTS, "", None),
+        "parent": payload.create(PROJECT, "Parent", item, LISTS),
         **{
-            cls: d.construct_payload(
-                MEDIA, f"SGB:{cls}", PROJECT_IRI, LISTS, PARENT_IRI, filename
-            )
+            cls: payload.create(PROJECT, cls, media, LISTS, PARENT_IRI, filename)
             for cls, filename in [
                 ("Image", "x.jp2"),
                 ("Text", "x.csv"),
