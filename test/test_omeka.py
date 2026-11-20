@@ -60,3 +60,12 @@ def test_omeka_requests_use_the_timeout():
     http, transport = session({("GET", "/items"): response(200, [])})
     api_items(SETTINGS, http)
     assert transport.sent[0]["timeout"] == SETTINGS.http_timeout
+
+
+def test_api_url_without_trailing_slash_keeps_its_path():
+    http, transport = session({("GET", "/items"): response(200, [])})
+    settings = SETTINGS.model_copy(
+        update={"omeka_api_url": "https://omeka.test.com/api"}
+    )
+    api_items(settings, http)
+    assert transport.sent[0]["url"].startswith("https://omeka.test.com/api/items")

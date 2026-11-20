@@ -38,6 +38,11 @@ def _pages(
     return records
 
 
+def _endpoint(settings: Settings, name: str) -> str:
+    # urljoin drops the last path part when the base URL has no "/" at the end.
+    return urljoin(settings.omeka_api_url.rstrip("/") + "/", name)
+
+
 def _keys(settings: Settings) -> dict[str, Any]:
     return {
         "key_identity": settings.key_identity,
@@ -48,7 +53,7 @@ def _keys(settings: Settings) -> dict[str, Any]:
 def api_items(settings: Settings, session: requests.Session) -> list[OmekaRecord]:
     """All items of the item set."""
     params = {"item_set_id": settings.item_set_id, "per_page": 100, **_keys(settings)}
-    url = urljoin(settings.omeka_api_url, "items")
+    url = _endpoint(settings, "items")
     return [
         OmekaRecord.parse(raw)
         for raw in _pages(session, url, params, settings.http_timeout)
@@ -59,7 +64,7 @@ def api_media(
     settings: Settings, session: requests.Session, item: OmekaRecord
 ) -> list[OmekaRecord]:
     params = {"item_id": item.id, **_keys(settings)}
-    url = urljoin(settings.omeka_api_url, "media")
+    url = _endpoint(settings, "media")
     return [
         OmekaRecord.parse(raw)
         for raw in _pages(session, url, params, settings.http_timeout)
