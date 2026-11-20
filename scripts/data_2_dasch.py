@@ -3,6 +3,7 @@ import hashlib
 import logging
 import os
 import random
+import sys
 import tempfile
 import urllib.parse
 import zipfile
@@ -143,6 +144,14 @@ def parse_arguments() -> Namespace:
     args = parser.parse_args()
 
     return args
+
+
+def require_credentials() -> tuple[str, str]:
+    """Return (DSP_USER, DSP_PWD). Exit with status 1 when one is empty."""
+    if not DSP_USER or not DSP_PWD:
+        log.error("DSP_USER and DSP_PWD must be set")
+        sys.exit(1)
+    return DSP_USER, DSP_PWD
 
 
 def login(email: str, password: str) -> str:
@@ -1252,9 +1261,10 @@ def sync_media(
 def main() -> None:
     setup_logging()
     args = parse_arguments()
+    user, password = require_credentials()
     items_data, get_item_media = load_items(args)
 
-    token = login(DSP_USER, DSP_PWD)
+    token = login(user, password)
     project_iri = get_project()
     project_lists = get_lists(project_iri)
     ontology = get_ontology(token)

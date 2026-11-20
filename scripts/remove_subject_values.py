@@ -15,8 +15,6 @@ import requests
 from data_2_dasch import (
     API_HOST,
     DEFAULT_TIMEOUT,
-    DSP_PWD,
-    DSP_USER,
     MEDIA_RESOURCE_TYPES,
     METADATA_RESOURCE_TYPE,
     ONTOLOGY_CONTEXT,
@@ -24,6 +22,7 @@ from data_2_dasch import (
     extract_dasch_propvalue_multiple,
     get_full_resource,
     login,
+    require_credentials,
     update_value,
 )
 
@@ -89,7 +88,7 @@ def main() -> None:
         level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
     )
 
-    token = login(DSP_USER, DSP_PWD)
+    token = login(*require_credentials())
     total = 0
     for object_class in [METADATA_RESOURCE_TYPE, *sorted(MEDIA_RESOURCE_TYPES)]:
         for resource_iri in find_resources_with_subject(token, object_class):
