@@ -70,6 +70,16 @@ def test_unresolved_list_label_keeps_dsp_value():
     assert "'xx' is not in list 'language'" in result.warnings[0]
 
 
+def test_uri_only_list_value_keeps_dsp_value():
+    resource = {"SGB:hasLanguageList": listvalue("iri-de", "v1")}
+    uri = {"dcterms:language": [{"@id": "http://id.loc.gov/de", "o:label": "German"}]}
+    result = plan(
+        PROJECT, OmekaRecord.parse(uri), {"@type": "SGB:Parent", **resource}, LISTS
+    )
+    assert result.changes == ()
+    assert "'German' is not in list 'language'" in result.warnings[0]
+
+
 def test_absent_list_value_still_deletes():
     resource = {"SGB:hasLanguageList": listvalue("iri-de", "v1")}
     assert changes(resource, {}) == [("hasLanguageList", "delete", "iri-de", "v1")]

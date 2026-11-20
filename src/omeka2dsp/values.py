@@ -149,6 +149,9 @@ def wanted(field: Field, record: OmekaRecord, lists: Sequence[DspList]) -> Wante
     if field.kind is Kind.RICH_TEXT:
         return Wanted(tuple(text_entries(source)))
     if field.kind is Kind.LIST and field.list_key:
+        if not field.many and source and first_literal(source) == "":
+            # A URI value without a literal is outside the mapping: keep DSP as is.
+            return Wanted((), tuple(labels(source)[:1]) or ("(no label)",))
         found = labels(source) if field.many else [first_literal(source)]
         iris = [(label, resolve(lists, field.list_key, label)) for label in found]
         return Wanted(
