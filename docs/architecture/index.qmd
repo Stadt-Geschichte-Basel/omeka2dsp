@@ -83,11 +83,17 @@ flowchart TD
 ```
 
 A dry run follows the same path. It logs each write and does not send it.
+A dry run does not download or ingest files. Thus a file transfer can fail in a real run after a dry run without errors.
 DSP cannot change the class of a resource. Thus a media in the wrong class gets new values only, until you give `--recreate`.
 
 ## Safety rules
 
-Each failure stops the run or skips one record. A failure never deletes data.
+Each failure stops the run or skips one record.
+A failure does not delete data, with one exception.
+With `--recreate`, sync erases the old record and then creates the new record.
+If the create fails after the erase, the old record is gone.
+The log then shows "old record erased, but the new one failed".
+Run the same command again to create the record. The ingested file is not used again, so the next run ingests the file again.
 Each rule has a test in `test/`.
 
 1. An unresolved list label keeps the DSP value.
