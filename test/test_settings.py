@@ -12,9 +12,13 @@ REQUIRED = {
 }
 
 
+OPTIONAL = ("ONTOLOGY_NAME", "ITEM_SET_ID", "OMEKA_API_URL", "HTTP_TIMEOUT")
+KEYS = ("KEY_IDENTITY", "KEY_CREDENTIAL")
+
+
 @pytest.fixture
 def env(monkeypatch):
-    for name in REQUIRED:
+    for name in (*REQUIRED, *OPTIONAL, *KEYS):
         monkeypatch.delenv(name, raising=False)
     return monkeypatch
 
@@ -37,3 +41,10 @@ def test_missing_or_empty_required_value_fails(env, value):
         env.setenv("DSP_PWD", value)
     with pytest.raises(ValidationError):
         Settings(_env_file=None)
+
+
+def test_empty_api_keys_are_none(env):
+    for name, value in REQUIRED.items():
+        env.setenv(name, value)
+    env.setenv("KEY_IDENTITY", "")
+    assert Settings(_env_file=None).key_identity is None

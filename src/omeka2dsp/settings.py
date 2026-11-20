@@ -23,6 +23,12 @@ class Settings(BaseSettings):
     key_credential: str | None = None
     http_timeout: float = 30
 
+    @field_validator("key_identity", "key_credential", mode="before")
+    @classmethod
+    def _empty_is_none(cls, value: str | None) -> str | None:
+        # requests sends an empty string, but leaves out None.
+        return value or None
+
     @field_validator(
         "api_host", "ingest_host", "project_short_code", "dsp_user", "dsp_pwd"
     )

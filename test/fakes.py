@@ -16,6 +16,12 @@ SETTINGS = Settings(
     project_short_code="TEST",
     dsp_user="user@test.com",
     dsp_pwd="secret",
+    ontology_name="SGB",
+    item_set_id="10780",
+    omeka_api_url="https://omeka.test.com/api/",
+    key_identity=None,
+    key_credential=None,
+    http_timeout=30,
 )
 
 Route = tuple[str, str]
