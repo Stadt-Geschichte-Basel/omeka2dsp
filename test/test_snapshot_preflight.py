@@ -79,3 +79,29 @@ def test_preflight_unknown_class():
     assert preflight({"@type": "SGB:Nope"}, {}, ONTOLOGY, "SGB:") == [
         "unknown class SGB:Nope"
     ]
+
+
+def test_preflight_reports_missing_object_type_and_missing_value_type():
+    ontology = {
+        "@graph": [
+            {
+                "@id": "SGB:Parent",
+                "@type": "owl:Class",
+                "rdfs:subClassOf": [
+                    {"owl:onProperty": {"@id": "SGB:hasTitle"}},
+                    {"owl:onProperty": {"@id": "SGB:hasNote"}},
+                ],
+            },
+            ONTOLOGY["@graph"][1],
+            {"@id": "SGB:hasNote", "@type": "owl:ObjectProperty"},
+        ]
+    }
+    payload = {
+        "@type": "SGB:Parent",
+        "SGB:hasTitle": {"knora-api:valueAsString": "x"},
+        "SGB:hasNote": {"knora-api:valueAsString": "y"},
+    }
+    assert preflight(payload, {}, ontology, "SGB:") == [
+        "SGB:hasTitle: value has no @type",
+        "SGB:hasNote: no knora-api:objectType in the ontology",
+    ]

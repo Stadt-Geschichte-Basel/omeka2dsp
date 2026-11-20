@@ -27,3 +27,6 @@ jobs:
 
       - name: Format check (ruff)
         run: uv run --locked --extra dev ruff format --check scripts test
+
+      - name: Type check (ty)
+        run: uv run --locked --extra dev ty check scripts test

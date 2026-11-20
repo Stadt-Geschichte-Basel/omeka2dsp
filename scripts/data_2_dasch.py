@@ -3,12 +3,13 @@ import hashlib
 import logging
 import os
 import random
+import sys
 import tempfile
 import urllib.parse
 import zipfile
 from argparse import Namespace
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 import requests
 
@@ -143,6 +144,14 @@ def parse_arguments() -> Namespace:
     args = parser.parse_args()
 
     return args
+
+
+def require_credentials() -> tuple[str, str]:
+    """Return (DSP_USER, DSP_PWD). Exit with status 1 when one is empty."""
+    if not DSP_USER or not DSP_PWD:
+        log.error("DSP_USER and DSP_PWD must be set")
+        sys.exit(1)
+    return DSP_USER, DSP_PWD
 
 
 def login(email: str, password: str) -> str:
@@ -283,7 +292,7 @@ def update_value(token, item, value, field, field_type, type_of_change):
 
     context_data = build_context()
     complete_field_type = f"knora-api:{field_type}"
-    payload = {
+    payload: dict[str, Any] = {
         "@context": context_data,
         "@id": item["@id"],
         "@type": item["@type"],
@@ -853,7 +862,7 @@ def ingest_filename(filename: str) -> str:
     return filename
 
 
-def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
+def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str | None:
     """
     Downloads a file from a URL and uploads it to the specified endpoint.
 
@@ -862,7 +871,8 @@ def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
         token (str): The authentication token for the upload endpoint.
 
     Returns:
-        str: The internal filename returned by the upload endpoint.
+        str | None: The internal filename returned by the upload endpoint, or
+        None when the file is a placeholder or the upload fails.
     """
     # Download the file from the URL
     try:
@@ -1251,9 +1261,10 @@ def sync_media(
 def main() -> None:
     setup_logging()
     args = parse_arguments()
+    user, password = require_credentials()
     items_data, get_item_media = load_items(args)
 
-    token = login(DSP_USER, DSP_PWD)
+    token = login(user, password)
     project_iri = get_project()
     project_lists = get_lists(project_iri)
     ontology = get_ontology(token)

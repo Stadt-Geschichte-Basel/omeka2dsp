@@ -69,7 +69,7 @@ def class_request(model: dict, ontology_iri: str, last_modified: dict) -> dict:
 
 def main() -> None:
     d.setup_logging()
-    token = d.login(d.DSP_USER, d.DSP_PWD)
+    token = d.login(*d.require_credentials())
     project_iri = d.get_project()
     headers = {"Authorization": f"Bearer {token}"}
     ontology_iri = d.ONTOLOGY_CONTEXT.rstrip("#")

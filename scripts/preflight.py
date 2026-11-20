@@ -31,7 +31,9 @@ def index_ontology(ontology: dict) -> tuple[dict[str, set[str]], dict[str, str]]
                 if isinstance(r, dict) and "owl:onProperty" in r
             }
         elif kind == "owl:ObjectProperty":
-            object_types[iri] = (entity.get("knora-api:objectType") or {}).get("@id")
+            object_type = (entity.get("knora-api:objectType") or {}).get("@id")
+            if object_type:
+                object_types[iri] = object_type
     return classes, object_types
 
 
@@ -54,8 +56,13 @@ def preflight(payload: dict, item: dict, ontology: dict, prefix: str) -> list[st
             problems.append(f"{prop} is not allowed on {resource_class}")
             continue
         expected = object_types.get(prop)
+        if not expected:
+            problems.append(f"{prop}: no knora-api:objectType in the ontology")
+            continue
         for value in _values(entry):
-            if value.get("@type") != expected:
+            if not value.get("@type"):
+                problems.append(f"{prop}: value has no @type")
+            elif value.get("@type") != expected:
                 problems.append(f"{prop}: {value.get('@type')} is not {expected}")
     for omeka_prop, dsp_prop in LIST_PROPERTIES.items():
         prop = f"{prefix}{dsp_prop}"
