@@ -12,14 +12,19 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Scientific/Engineering :: Information Analysis",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.15"
 dependencies = [
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
     "requests>=2.25.0",
+    "typer>=0.12",
 ]
+
+[project.scripts]
+omeka2dsp = "omeka2dsp.cli:app"
 
 [project.optional-dependencies]
 dev = [
@@ -29,20 +34,17 @@ dev = [
     "ty==0.0.107",
 ]
 
-# This is a plain script repo (everything lives in scripts/), not an installable
-# package, so uv only manages the virtualenv and dependencies without building.
-[tool.uv]
-package = false
+[build-system]
+requires = ["uv_build>=0.9,<0.14"]
+build-backend = "uv_build"
 
 [tool.ruff]
-target-version = "py311"
-src = ["scripts", "test"]
+target-version = "py315"
+src = ["src", "test"]
 
 [tool.ruff.lint]
 # Keep Ruff's default rules (including RUF100). Do not use lint.select.
-# Scripts configure the root logger in setup_logging(); module loggers are a separate decision.
-ignore = ["LOG015"]
 
 [tool.ty.environment]
-python-version = "3.11"
-extra-paths = ["scripts"]
+python-version = "3.15"
+extra-paths = ["test"]

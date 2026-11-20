@@ -1,162 +1,92 @@
 ---
-title: Data Model
+title: Data model
 date-modified: last-modified
 ---
 
 ## Overview
 
-The Stadt.Geschichte.Basel (SGB) project uses a revised data model definition aligned with DaSCH Service Platform and FAIR principles for open research data. The complete data model is defined in `project.json` at the repository root.
+`data/data_model_dasch.json` defines the DSP project `sgb` (shortcode `4001`) and the `SGB` ontology.
+The file uses the [dsp-tools](https://docs.dasch.swiss/latest/DSP-TOOLS/) project format.
+The file must agree with the ontology on the DSP server.
 
-## Project Definition
+```{mermaid}
+graph TD
+  parent[Parent] --- image[Image]
+  parent --- document[Document]
+  parent --- text[Text]
+  parent --- without[ResourceWithoutMedia]
+```
 
-The project definition has been modernized with:
+Each media record links to its `Parent` with `linkToParentObject`.
 
-- **Shortcode**: `4001`
-- **Shortname**: `sgb`
-- **Longname**: Stadt.Geschichte.Basel
-- **Modernized descriptions** in German and English emphasizing interdisciplinary research, open access, and FAIR principles
-- **Expanded keywords** including: Maps, Archaeology, Iconclass, Open Access, Digital Humanities, FAIR, Metadata, and more
+## Resource classes
+
+| Class                  | DSP superclass             | Content                                                  |
+| ---------------------- | -------------------------- | -------------------------------------------------------- |
+| `Parent`               | `Resource`                 | An Omeka item. It holds the media records.               |
+| `Image`                | `StillImageRepresentation` | An image file: TIFF, JPEG, PNG, or GIF.                  |
+| `Document`             | `DocumentRepresentation`   | A PDF file.                                              |
+| `Text`                 | `TextRepresentation`       | A text or data file: CSV, TXT, Markdown, JSON, or GeoJSON. |
+| `ResourceWithoutMedia` | `Resource`                 | Metadata only: a private file, a placeholder, or an unknown format. |
+
+DSP v40 does not accept CSV as a document file. Thus text and data files go to `Text`, which keeps the file unchanged.
 
 ## Lists
 
-The data model includes several controlled vocabulary lists:
+| List       | DSP label                    | Values                                              |
+| ---------- | ---------------------------- | --------------------------------------------------- |
+| `language` | ISO 639-1                    | Two-letter language codes, for example `de`.       |
+| `type`     | DCMI Type                    | DCMI types, for example `Image` and `Dataset`.     |
+| `license`  | Licenses                     | License URLs, for example CC BY 4.0.                |
+| `temporal` | Stadt.Geschichte.Basel Epoche | Periods, for example `Frühe Neuzeit`.              |
+| `format`   | Internet Media Type          | Media types, for example `image/tiff`.             |
 
-### Language (`language`)
-ISO 639-1 two-letter language codes:
-- `de` (German)
-- `fr` (French)
-- `la` (Latin)
-- `it` (Italian)
-- `nl` (Dutch)
-- `en` (English)
+The list lookup ignores case. If a label has no list node, sync keeps the DSP value.
 
-### Type (`type`)
-DCMI Type Vocabulary for resource types:
-- `dataset`
-- `image`
+The project does not classify subjects with Iconclass, because of time and personnel limits (issues #7 and #19).
+Thus the data model has no subject list and no `hasSubjectList` property.
 
-### Subject (`subject`)
-Iconclass classification system for describing and indexing visual content. Iconclass organizes motifs, themes, and concepts through standardized codes for semantic interoperability.
+## Mapping table
 
-**Not used.** Classifying all records with Iconclass was dropped due to time and personnel restrictions (see issue #7). The list and the `hasSubjectList` property remain in the deployed ontology but are not populated; the migration does not write subject values and removes any left over from earlier runs.
+`FIELDS` in `src/omeka2dsp/fields.py` holds one row for each DSP property. The payloads and the sync both read it.
+A test makes sure that this table and `FIELDS` agree.
 
-### License (`license`)
-Standard licenses and rights statements:
-- Creative Commons Public Domain Mark 1.0
-- CC0 1.0 Universal
-- CC BY 4.0
-- CC BY-SA 4.0
-- CC BY-NC-SA 4.0
-- RightsStatements.org InC 1.0
-- RightsStatements.org InC-RUU 1.0
+| DSP property         | Omeka term            | Kind              | Classes |
+| -------------------- | --------------------- | ----------------- | ------- |
+| `hasIdentifier` | `dcterms:identifier` | text, create only | all |
+| `hasTitle` | `dcterms:title` | text | all |
+| `hasDescription` | `dcterms:description` | text | all |
+| `hasTemporalList` | `dcterms:temporal` | list | all |
+| `hasLanguageList` | `dcterms:language` | list | all |
+| `isPartOf` | `dcterms:isPartOf` | rich text | Parent |
+| `hasCreator` | `dcterms:creator` | rich text | media |
+| `hasPublisher` | `dcterms:publisher` | rich text | media |
+| `hasSource` | `dcterms:source` | rich text | media |
+| `hasRelation` | `dcterms:relation` | rich text | media |
+| `hasDate` | `dcterms:date` | text | media |
+| `hasExtent` | `dcterms:extent` | text | media |
+| `hasRights` | `dcterms:rights` | text | media |
+| `hasAbstract` | `dcterms:abstract` | text | media |
+| `hasTypeList` | `dcterms:type` | list, many | media |
+| `hasFormatList` | `dcterms:format` | list | media |
+| `hasLicenseList` | `dcterms:license` | list | media |
+| `linkToParentObject` | (parent IRI) | link, create only | media |
 
-### Temporal (`temporal`)
-Project-specific periodization (Stadt.Geschichte.Basel Era):
-- Frühgeschichte (Prehistory)
-- Antike (Antiquity)
-- Mittelalter (Middle Ages)
-- Frühe Neuzeit (Early Modern Period)
-- 19. Jahrhundert (19th Century)
-- 20. Jahrhundert (20th Century)
-- 21. Jahrhundert (21st Century)
+- "media" means `Image`, `Document`, `Text`, and `ResourceWithoutMedia`.
+- A "text" field takes the first literal value of the term.
+- A "rich text" field gets one `TextValue` for each Omeka value. A URI value becomes a standoff link with its label.
+- A "list" field takes the first literal value and finds its list node. A "many" field takes all labels.
+- "create only" means that sync writes the value when it creates the record and does not change it later.
+- `hasAbstract` writes ";" as "&#59". This keeps the abstracts that are already on DSP unchanged.
 
-### Format (`format`)
-Internet Media Types (MIME types):
-- `application/geo+json`
-- `application/pdf`
-- `image/jpeg`
-- `image/png`
-- `image/tiff`
-- `text/csv`
+## File permissions
 
-## Ontology
-
-The `SGB` ontology extends Dublin Core Terms (dcterms) and includes the following properties:
-
-### Properties
-
-- **hasAbstract**: Abstract of the resource
-- **hasCreator**: Creator(s) of the resource
-- **hasDate**: Date in Extended Date Time Format (EDTF), e.g., 1920, 1920-05, 1920-05-10, 1900/1950, 1960?, 1900~/1950?
-- **hasDescription**: Description of the resource
-- **hasExtent**: Measurement (pixels for raster images, millimetres for vector graphics)
-- **hasFormatList**: Format (linked to format list)
-- **hasIdentifier**: Unique identifier
-- **hasLanguageList**: Language (linked to language list)
-- **hasLicenseList**: License (linked to license list)
-- **hasPublisher**: Publisher(s) of the resource
-- **hasRelation**: Related resources (e.g., HLS, Wikipedia, Wikidata)
-- **hasRights**: Rights information
-- **hasSource**: Provenance and processing (memory institution, call number, digitisation/provenance, editing notes)
-- **hasSubjectList**: Subject classification (linked to subject list; not populated — see Subject above)
-- **hasTemporalList**: Temporal period (linked to temporal list)
-- **hasTitle**: Title of the resource
-- **hasTypeList**: Resource type (linked to type list)
-- **isPartOf**: Reference to the corresponding printed volume and open-access edition
-- **linkToParentObject**: Link to parent object
-
-### Resource Classes
-
-#### Document
-Documents like text documents, PDFs, etc.
-- Extends: `DocumentRepresentation`
-- Required properties: `hasTitle`, `hasDescription`
-- Optional properties: All other properties listed above
-
-#### Image
-Visual representations including images and photographs.
-- Extends: `StillImageRepresentation`, `dcterms:Image`
-- Required properties: `hasTitle`, `hasDescription`
-- Optional properties: All other properties listed above
-- Supports images and photographs of physical objects, paintings, prints, drawings, diagrams, maps
-
-#### Parent
-Übergeordnetes Objekt (Parent object) for hierarchical organization.
-- Extends: `Resource`
-- Required properties: `hasTitle`, `hasTemporalList`
-- Optional properties: `hasIdentifier`, `hasSubjectList`, `hasDescription`, `hasLanguageList`, `isPartOf`
-
-#### ResourceWithoutMedia
-Resource without media file, typically due to copyright restrictions.
-- Extends: `Resource`
-- Required properties: `hasTitle`, `hasDescription`
-- Optional properties: All other properties listed above
-- Used for resources where media files cannot be provided due to copyright
-
-## Implementation Notes
-
-### Property Cardinalities
-
-Properties are defined with specific cardinalities:
-- `0-1`: Optional, single value
-- `1`: Required, single value
-- `0-n`: Optional, multiple values
-
-### GUI Elements
-
-Properties use different GUI elements for data entry:
-- `SimpleText`: Simple text input
-- `Textarea`: Multi-line text
-- `Richtext`: Formatted text with HTML support
-- `List`: Selection from controlled vocabulary
-- `Searchbox`: Link to other resources
-
-## Usage
-
-The `project.json` file can be used with DSP-Tools to create or update the project on the DaSCH Service Platform:
-
-```bash
-# Create project
-dsp-tools create -s your-dsp-host -u admin@example.com -p password project.json
-
-# Validate project definition
-dsp-tools validate project.json
-```
+A private media keeps public metadata.
+Only project members can see its file: `CR knora-admin:ProjectAdmin|D knora-admin:ProjectMember`.
 
 ## References
 
-- [DaSCH Documentation](https://docs.dasch.swiss/)
+- [DaSCH documentation](https://docs.dasch.swiss/)
 - [Dublin Core Terms](http://purl.org/dc/terms/)
-- [Iconclass](https://iconclass.org/)
-- [Extended Date Time Format (EDTF)](https://www.loc.gov/standards/datetime/)
 - [DCMI Type Vocabulary](https://www.dublincore.org/specifications/dublin-core/dcmi-type-vocabulary/)
+- [Extended Date Time Format (EDTF)](https://www.loc.gov/standards/datetime/)
