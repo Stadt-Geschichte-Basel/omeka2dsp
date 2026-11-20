@@ -160,6 +160,41 @@ def test_private_media_restricts_existing_file(preflight_ok):
     assert "download" not in dsp.calls and "ingest" not in dsp.calls
 
 
+def test_private_file_is_restricted_before_metadata_changes(preflight_ok):
+    """A timeout in a metadata change must not leave the file public."""
+
+    @dataclass(frozen=True)
+    class TimeoutDsp(FakeDsp):
+        def change(self, action, body):
+            self.calls.append(action)
+            raise requests.Timeout("metadata change timed out")
+
+    image = {
+        "@id": "img",
+        "@type": "SGB:Image",
+        "SGB:hasTitle": {
+            "@id": "t",
+            "@type": "knora-api:TextValue",
+            "knora-api:valueAsString": "old",
+        },
+        "knora-api:hasStillImageFileValue": {
+            "@id": "v",
+            "@type": "knora-api:StillImageFileValue",
+            "knora-api:hasPermissions": "V knora-admin:UnknownUser",
+        },
+    }
+    dsp = TimeoutDsp(
+        SETTINGS,
+        requests.Session(),
+        found={("SGB:Image", "m1"): "img"},
+        resources={"img": image},
+    )
+    private = CSV.model_copy(update={"private": True})
+    with pytest.raises(requests.Timeout):
+        sync.sync_media(context(dsp), private, "parent")
+    assert dsp.calls[0] == "restrict"
+
+
 def test_private_media_is_created_without_file(preflight_ok):
     """Safety rule 7."""
     dsp = FakeDsp(SETTINGS, requests.Session())

@@ -245,8 +245,9 @@ def sync_media(context: Context, media: OmekaRecord, parent_iri: str | None) -> 
         replace = False
     if iri and not replace:
         resource = context.dsp.resource(iri)
-        _apply_plan(context, label, "media", resource, media)
+        # Hide the file first. A failed metadata change must not leave it public.
         _restrict_files(context, label, resource, hide)
+        _apply_plan(context, label, "media", resource, media)
         return
 
     # A new record or a replacement. Check the payload and ingest the file
