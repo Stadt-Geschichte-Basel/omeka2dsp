@@ -70,6 +70,20 @@ python scripts/data_2_dasch.py -m all_data
 python scripts/data_2_dasch.py -m test_data
 ```
 
+### Upload from a validator snapshot
+
+Clean the data with [sgb-data-validator](https://github.com/Stadt-Geschichte-Basel/sgb-data-validator) first (`sgb download`, `sgb transform`).
+
+```bash
+# Check the payloads against the DSP ontology and log the planned changes. No writes.
+uv run --env-file .env python scripts/data_2_dasch.py --snapshot EDITED_DIR --ids $(paste -sd, test_ids.txt) --dry-run
+
+# Apply the changes
+uv run --env-file .env python scripts/data_2_dasch.py --snapshot EDITED_DIR --ids $(paste -sd, test_ids.txt)
+```
+
+A second dry run must log no changes.
+
 ### Processing Modes
 
 | Mode          | Description               | Use Case               |

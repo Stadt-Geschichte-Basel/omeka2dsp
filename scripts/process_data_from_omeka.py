@@ -4,11 +4,13 @@ from urllib.parse import urljoin
 
 import requests
 
+log = logging.getLogger(__name__)
+
 # Configuration
-OMEKA_API_URL = os.getenv("OMEKA_API_URL", 'https://omeka.unibe.ch/api/')
+OMEKA_API_URL = os.getenv("OMEKA_API_URL", "https://omeka.unibe.ch/api/")
 KEY_IDENTITY = os.getenv("KEY_IDENTITY")
 KEY_CREDENTIAL = os.getenv("KEY_CREDENTIAL")
-ITEM_SET_ID = os.getenv("ITEM_SET_ID", '10780')
+ITEM_SET_ID = os.getenv("ITEM_SET_ID", "10780")
 
 
 def get_paginated_items(url, params):
@@ -19,7 +21,7 @@ def get_paginated_items(url, params):
             response = requests.get(url, params=params)
             response.raise_for_status()
         except requests.exceptions.RequestException as err:
-            logging.error(f"Error fetching items: {err}")
+            log.error(f"Error fetching items: {err}")
             break
         items.extend(response.json())
         url = response.links.get("next", {}).get("url")
