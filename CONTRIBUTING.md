@@ -14,6 +14,7 @@ CI runs the same commands.
 uv run --locked --extra dev pytest test/ -v
 uv run --locked --extra dev ruff check scripts test
 uv run --locked --extra dev ruff format --check scripts test
+uv run --locked --extra dev ty check scripts test
 ```
 
 ## Pull Request Process
