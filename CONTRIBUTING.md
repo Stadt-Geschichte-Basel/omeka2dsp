@@ -12,9 +12,9 @@ CI runs the same commands.
 
 ```bash
 uv run --locked --extra dev pytest test/ -v
-uv run --locked --extra dev ruff check scripts test
-uv run --locked --extra dev ruff format --check scripts test
-uv run --locked --extra dev ty check scripts test
+uv run --locked --extra dev ruff check src test
+uv run --locked --extra dev ruff format --check src test
+uv run --locked --extra dev ty check src test
 ```
 
 ## Pull Request Process

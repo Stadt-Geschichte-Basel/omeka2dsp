@@ -26,30 +26,10 @@ website:
     left:
       - text: Home
         href: index.qmd
-      - text: Documentation
-        menu:
-          - text: Overview
-            href: docs/index.qmd
-          - text: '---'
-          - text: Architecture
-            href: docs/architecture/index.qmd
-          - text: Workflows
-            href: docs/workflows/index.qmd
-          - text: API Reference
-            href: docs/api/index.qmd
-          - text: Data Model
-            href: docs/datamodel/index.qmd
-          - text: '---'
-          - text: Installation
-            href: docs/guides/installation.qmd
-          - text: Configuration
-            href: docs/guides/configuration.qmd
-          - text: Usage
-            href: docs/guides/usage.qmd
-          - text: Development
-            href: docs/guides/development.qmd
-          - text: Troubleshooting
-            href: docs/guides/troubleshooting.qmd
+      - text: Architecture
+        href: docs/architecture/index.qmd
+      - text: Data model
+        href: docs/datamodel/index.qmd
       - text: About
         href: project-management/about.qmd
 
@@ -72,26 +52,10 @@ website:
             href: SECURITY.md
       - section: Documentation
         contents:
-          - text: Overview
-            href: docs/index.qmd
-          - text: System Architecture
+          - text: Architecture
             href: docs/architecture/index.qmd
-          - text: Data Workflows
-            href: docs/workflows/index.qmd
-          - text: API Reference
-            href: docs/api/index.qmd
-      - section: Guides
-        contents:
-          - text: Installation & Setup
-            href: docs/guides/installation.qmd
-          - text: Configuration
-            href: docs/guides/configuration.qmd
-          - text: Usage Guide
-            href: docs/guides/usage.qmd
-          - text: Development Guide
-            href: docs/guides/development.qmd
-          - text: Troubleshooting
-            href: docs/guides/troubleshooting.qmd
+          - text: Data model
+            href: docs/datamodel/index.qmd
       - section: About
         href: project-management/about.qmd
         contents:

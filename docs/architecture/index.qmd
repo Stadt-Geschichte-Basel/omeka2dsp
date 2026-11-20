@@ -1,429 +1,109 @@
 ---
-title: System Architecture
+title: Architecture
 date-modified: last-modified
 ---
 
-## Overview
+## Modules
 
-The omeka2dsp system is designed as a data migration and synchronization pipeline that transfers cultural heritage data from Omeka (a digital collections platform) to the DaSCH Service Platform (DSP) for long-term preservation.
+The package `src/omeka2dsp/` has twelve modules.
+The pure modules do all data work. They do not read files or use the network.
+The IO modules read settings, call the Omeka and DSP APIs, and write the log.
 
-## High-Level Architecture
-
-```{mermaid}
-graph TB
-    subgraph "Source System"
-        A[Omeka Instance]
-        A1[Items API]
-        A2[Media API]
-        A3[Collections API]
-    end
-    
-    subgraph "Migration Pipeline"
-        B[Data Extraction]
-        C[Data Transformation]
-        D[Data Validation]
-        E[Upload & Sync]
-    end
-    
-    subgraph "Target System"
-        F[DSP Instance]
-        F1[Resources API]
-        F2[Files API]
-        F3[Lists API]
-        F4[Projects API]
-    end
-    
-    subgraph "Storage"
-        G[Local File Cache]
-        H[Configuration Files]
-        I[Log Files]
-    end
-    
-    A1 --> B
-    A2 --> B
-    A3 --> B
-    
-    B --> C
-    C --> D
-    D --> E
-    
-    E --> F1
-    E --> F2
-    E --> F3
-    
-    H --> B
-    H --> C
-    H --> E
-    
-    E --> I
-    
-    style A fill:#86bbd8
-    style F fill:#dbfe87
-    style B fill:#ffe880
-    style C fill:#ffe880
-    style D fill:#ffe880
-    style E fill:#ffe880
-```
-
-## Core Components
-
-### 1. Data Extraction Layer
-
-**Module**: `process_data_from_omeka.py`
-
-**Purpose**: Interfaces with Omeka API to retrieve items, media, and metadata.
-
-**Key Functions**:
-
--   `get_items_from_collection()` -- Retrieves paginated items from collections
--   `get_media()` -- Fetches media files associated with items
--   `extract_property()` -- Extracts specific metadata properties
--   `extract_combined_values()` -- Combines multiple property values
-
-Refer to the [API Documentation](/docs/api/index.qmd#process_data_from_omeka.py) for more details on these functions.
-
-**Architecture Pattern**: Repository pattern with API abstraction
-
-```{mermaid}
-classDiagram
-    class OmekaExtractor {
-        +get_items_from_collection(collection_id)
-        +get_media(item_id)
-        +extract_property(props, prop_id)
-        +extract_combined_values(props)
-        +get_paginated_items(url, params)
-    }
-    
-    class APIClient {
-        +make_request(endpoint, params)
-        +handle_pagination()
-        +validate_response()
-    }
-    
-    OmekaExtractor --> APIClient
-```
-
-### 2. Data Transformation Layer
-
-**Module**: `data_2_dasch.py` Transformation Functions
-
-**Purpose**: Converts Omeka data structures to DSP-compatible formats.
-
-**Key Functions**:
-
--   `construct_payload()` -- Builds DSP resource payloads
--   `extract_listvalueiri_from_value()` -- Maps values to DSP list nodes
--   `specify_mediaclass()` -- Determines appropriate DSP media classes
-
-Refer to the [API Documentation](/docs/api/index.qmd#data_2_dasch.py) for more details on these functions.
-
-**Architecture Pattern**: Builder pattern with strategy pattern for different resource types
-
-```{mermaid}
-classDiagram
-    class PayloadBuilder {
-        +construct_payload(item, type, project_iri, lists)
-        +build_metadata_section(item)
-        +build_media_section(item, filename)
-        +map_to_dsp_properties(omeka_properties)
-    }
-    
-    class PropertyMapper {
-        +map_dublin_core(property)
-        +map_custom_properties(property)
-        +extract_list_values(property, lists)
-    }
-    
-    class ResourceTypeStrategy {
-        <<interface>>
-        +build_specific_fields(item)
-    }
-    
-    class ObjectStrategy {
-        +build_specific_fields(item)
-    }
-    
-    class MediaStrategy {
-        +build_specific_fields(item)
-    }
-    
-    PayloadBuilder --> PropertyMapper
-    PayloadBuilder --> ResourceTypeStrategy
-    ResourceTypeStrategy <|-- ObjectStrategy
-    ResourceTypeStrategy <|-- MediaStrategy
-```
-
-### 3. Synchronization Layer (`data_2_dasch.py`)
-
-**Module**: `data_2_dasch.py` Sync Functions
-
-**Purpose**: Handles incremental updates and conflict resolution between systems.
-
-**Key Functions**:
-
--   `check_values()` -- Compares Omeka and DSP data for differences
--   `sync_value()` -- Synchronizes single-value properties
--   `sync_array_value()` -- Synchronizes multi-value properties
--   `update_value()` -- Performs actual API updates
-
-Refer to the [API Documentation](/docs/api/index.qmd#data_2_dasch.py) for more details on these functions.
-
-**Architecture Pattern**: Strategy pattern with command pattern for updates
-
-```{mermaid}
-classDiagram
-    class SyncManager {
-        +check_values(dasch_item, omeka_item, lists)
-        +sync_resource(resource_iri, omeka_data)
-        +generate_sync_plan(differences)
-    }
-    
-    class ValueComparator {
-        +compare_text_values(dasch_val, omeka_val)
-        +compare_list_values(dasch_val, omeka_val)
-        +compare_array_values(dasch_arr, omeka_arr)
-    }
-    
-    class UpdateCommand {
-        <<interface>>
-        +execute()
-        +rollback()
-    }
-    
-    class CreateValueCommand {
-        +execute()
-        +rollback()
-    }
-    
-    class DeleteValueCommand {
-        +execute()
-        +rollback()
-    }
-    
-    class UpdateValueCommand {
-        +execute()
-        +rollback()
-    }
-    
-    SyncManager --> ValueComparator
-    SyncManager --> UpdateCommand
-    UpdateCommand <|-- CreateValueCommand
-    UpdateCommand <|-- DeleteValueCommand
-    UpdateCommand <|-- UpdateValueCommand
-```
-
-### 4. Upload & File Management Layer
-
-**Module**: `data_2_dasch.py` File Functions
-
-**Purpose**: Manages file uploads and media processing for DSP.
-
-**Key Functions**:
-
--   `upload_file_from_url()` -- Downloads and uploads files to DSP
--   `create_resource()` -- Creates new DSP resources
--   `get_full_resource()` -- Retrieves complete resource data
-
-Refer to the [API Documentation](/docs/api/index.qmd#data_2_dasch.py.py) for more details on these functions.
-
-## Data Flow Architecture
-
-### Processing Pipeline
-
-```{mermaid}
-flowchart TD
-    Start([Start Migration]) --> Config[Load Configuration]
-    Config --> Auth[Authenticate with DSP]
-    Auth --> FetchOmeka[Fetch Omeka Data]
-    
-    FetchOmeka --> FilterMode{Processing Mode?}
-    FilterMode -->|All Data| AllItems[Process All Items]
-    FilterMode -->|Sample| SampleItems[Process Sample Items]
-    FilterMode -->|Test| TestItems[Process Test Items]
-    
-    AllItems --> ProcessItem[Process Individual Item]
-    SampleItems --> ProcessItem
-    TestItems --> ProcessItem
-    
-    ProcessItem --> CheckExists{Resource Exists in DSP?}
-    
-    CheckExists -->|No| CreateNew[Create New Resource]
-    CheckExists -->|Yes| CompareData[Compare Data]
-    
-    CreateNew --> ProcessMedia[Process Media Files]
-    CompareData --> HasChanges{Has Changes?}
-    
-    HasChanges -->|Yes| UpdateExisting[Update Resource]
-    HasChanges -->|No| ProcessMedia
-    UpdateExisting --> ProcessMedia
-    
-    ProcessMedia --> MoreItems{More Items?}
-    MoreItems -->|Yes| ProcessItem
-    MoreItems -->|No| Complete[Migration Complete]
-    
-    style Start fill:#dbfe87
-    style Complete fill:#dbfe87
-    style ProcessItem fill:#ffe880
-    style CreateNew fill:#86bbd8
-    style UpdateExisting fill:#ffe880
-```
-
-### Data Transformation Flow
-
-```{mermaid}
-sequenceDiagram
-    participant O as Omeka API
-    participant E as Extractor
-    participant T as Transformer
-    participant V as Validator
-    participant D as DSP API
-    
-    E->>O: Get Items from Collection
-    O->>E: Return Item Data
-    
-    loop For each item
-        E->>O: Get Media for Item
-        O->>E: Return Media Data
-        
-        E->>T: Extract & Transform Data
-        T->>T: Map Dublin Core Properties
-        T->>T: Build DSP Payload
-        T->>V: Validate Payload Structure
-        
-        V->>D: Check if Resource Exists
-        D->>V: Return Existing Data
-        
-        alt Resource doesn't exist
-            V->>D: Create New Resource
-            D->>V: Return Created Resource
-        else Resource exists with changes
-            V->>D: Update Resource
-            D->>V: Return Updated Resource
-        end
-        
-        T->>D: Upload Media Files
-        D->>T: Confirm Upload
-    end
-```
-
-## Configuration Architecture
-
-### Environment-Based Configuration
-
-The system uses environment variables for configuration, following the 12-factor app methodology:
+| Module         | Kind | Content                                                               |
+| -------------- | ---- | --------------------------------------------------------------------- |
+| `settings.py`  | IO   | `Settings`. Reads `.env` and the environment.                         |
+| `omeka.py`     | IO   | Read items and media from the Omeka API or from a snapshot directory. |
+| `dsp.py`       | IO   | `Dsp` client: login, search, read, create, change, erase, ingest.     |
+| `fields.py`    | pure | `FIELDS` table, the `Field` model, and the `Project` model.           |
+| `values.py`    | pure | Omeka records and values to DSP values. DSP values to comparison keys. |
+| `lists.py`     | pure | List label to list node IRI.                                          |
+| `media.py`     | pure | Media class, privacy, placeholder, ingest file name.                  |
+| `plan.py`      | pure | `Change` model. Compare current and wanted values. Return changes.    |
+| `payload.py`   | pure | JSON-LD bodies for create, change, erase, and file permissions.       |
+| `preflight.py` | pure | Check a payload against the ontology.                                 |
+| `sync.py`      | IO   | Connect the parts: one item, then its media.                          |
+| `cli.py`       | IO   | Typer app with the `sync` and `add-text-class` commands.              |
 
 ```{mermaid}
 graph LR
-    subgraph "Configuration Sources"
-        A[Environment Variables]
-        B[.env File]
-        C[example.env Template]
-    end
-    
-    subgraph "Configuration Categories"
-        D[Omeka API Config]
-        E[DSP API Config]
-        F[Processing Config]
-        G[Authentication Config]
-    end
-    
-    A --> D
-    A --> E
-    A --> F
-    A --> G
-    
-    B --> A
-    C --> B
-    
-    style A fill:#86bbd8
-    style D fill:#f6ae2d
-    style E fill:#dbfe87
-    style F fill:#ffe880
-    style G fill:#3a1e3e,color:#fff
+  cli --> sync
+  cli --> settings
+  sync --> omeka
+  sync --> dsp
+  sync --> plan
+  sync --> payload
+  sync --> preflight
+  sync --> media
+  plan --> values
+  payload --> values
+  payload --> plan
+  values --> lists
+  values --> fields
+  plan --> fields
+  payload --> fields
+  preflight --> fields
+  media --> values
+  classDef io fill:#ffe880
+  class cli,sync,omeka,dsp,settings io
 ```
 
-### Configuration Categories
+The yellow modules do IO. All other modules are pure.
 
-| Category | Variables | Purpose |
-|------------------------|--------------------------|----------------------|
-| **Omeka API** | `OMEKA_API_URL`, `KEY_IDENTITY`, `KEY_CREDENTIAL`, `ITEM_SET_ID` | Connect to source Omeka instance |
-| **DSP API** | `PROJECT_SHORT_CODE`, `API_HOST`, `INGEST_HOST` | Connect to target DSP instance |
-| **Authentication** | `DSP_USER`, `DSP_PWD` | Authenticate with DSP |
-| **Processing** | `ONTOLOGY_NAME`, `NUMBER_RANDOM_OBJECTS`, `TEST_DATA` | Control processing behavior |
+These rules apply to all modules:
 
-## Error Handling Architecture
+- Data that crosses a boundary has a type. Pydantic models parse Omeka records and settings.
+- All models are frozen. A function returns a new value and does not change its input.
+- No module reads the environment at import time. `Settings` loads once and goes down as an argument.
+- All requests use one `requests.Session` and the timeout `HTTP_TIMEOUT`.
 
-### Logging Strategy
+## Sync flow
+
+`sync` does these steps for each selected item:
 
 ```{mermaid}
-graph TD
-    A[Application Events] --> B[Logger]
-    B --> C[Console Handler]
-    B --> D[File Handler]
-    
-    C --> E[Real-time Monitoring]
-    D --> F[data_2_dasch.log]
-    
-    G[Error Events] --> H[Error Handler]
-    H --> I[Log Error Details]
-    H --> J[Continue Processing]
-    H --> K[Fail Fast for Critical Errors]
-    
-    style G fill:#f6ae2d
-    style H fill:#f6ae2d
-    style I fill:#f6ae2d
+flowchart TD
+  item[Omeka item] --> find{Parent on DSP?}
+  find -- yes --> diff[Plan changes and apply them]
+  find -- no --> pre1{Preflight OK?}
+  pre1 -- no --> skip[Skip item and its media]
+  pre1 -- yes --> create[Create Parent]
+  diff --> media
+  create --> media[For each media]
+  media --> found{Media on DSP?}
+  found -- "same class" --> mdiff[Plan changes, apply them, restrict private files]
+  found -- "other class, no --recreate" --> mdiff
+  found -- "no, or other class with --recreate" --> pre2{Preflight OK?}
+  pre2 -- no --> keep[Keep DSP as is]
+  pre2 -- yes --> ingest{File needed?}
+  ingest -- yes --> up{Ingest OK?}
+  up -- no --> keep
+  up -- yes --> erase
+  ingest -- no --> erase[Erase old record, if any]
+  erase --> mcreate[Create media]
 ```
 
-### Fault Tolerance
+A dry run follows the same path. It logs each write and does not send it.
+DSP cannot change the class of a resource. Thus a media in the wrong class gets new values only, until you give `--recreate`.
 
-1.  **API Resilience**: Handles rate limiting, timeouts, and temporary failures
-2.  **Data Validation**: Validates data at multiple points in the pipeline
-3.  **Partial Recovery**: Can resume processing from where it left off
-4.  **Graceful Degradation**: Continues processing other items if one fails
+## Safety rules
 
-## Performance Architecture
+Each failure stops the run or skips one record. A failure never deletes data.
+Each rule has a test in `test/`.
 
-### Optimization Strategies
+1. An unresolved list label keeps the DSP value.
+2. An unresolved type label blocks all type deletions.
+3. A recreate erases the old record only after preflight and ingest succeed.
+4. An item without a Parent on DSP has its media skipped.
+5. A failed list request stops the run.
+6. Missing credentials stop the run before network access.
+7. Private and placeholder media get metadata only. Their files are restricted.
+8. A file that is the placeholder image is not ingested.
 
-1.  **Pagination**: Efficiently handles large datasets through API pagination
-2.  **Caching**: Caches frequently accessed data (projects, lists)
-3.  **Batch Processing**: Groups operations where possible
-4.  **Streaming**: Streams large files during upload to minimize memory usage
+A failed Omeka page, a failed DSP read, and a failed DSP search also stop the run.
+A failed write logs an error and the run continues with the next value or record.
 
-### Scalability Considerations
+## Tests
 
--   **Horizontal Scaling**: Can be containerized and scaled across multiple instances
--   **Rate Limiting**: Respects API rate limits to avoid service degradation
--   **Memory Management**: Processes items individually to maintain low memory footprint
--   **Monitoring**: Comprehensive logging for performance monitoring
-
-## Security Architecture
-
-### Authentication Flow
-
-```{mermaid}
-sequenceDiagram
-    participant S as Script
-    participant D as DSP API
-    participant O as Omeka API
-    
-    S->>D: Login Request (username/password)
-    D->>S: JWT Token
-    
-    Note over S: Store token for session
-    
-    S->>O: API Request (API keys)
-    O->>S: Data Response
-    
-    S->>D: API Request (Bearer token)
-    D->>S: API Response
-    
-    Note over S: Token expires - re-authenticate
-```
-
-### Security Features
-
-1.  **Credential Management**: Environment-based credential storage
-2.  **Token Handling**: Secure JWT token management for DSP API
-3.  **HTTPS**: All API communications use HTTPS
-4.  **Access Control**: Respects API permissions and rate limits
+The golden tests in `test/test_golden.py` hold the request bodies for the records in `data/example_omeka_*`.
+A change to a golden file in `test/golden/` is a change to the behaviour.
+To write the golden files again, run `GOLDEN_UPDATE=1 uv run --extra dev pytest test/test_golden.py`.
