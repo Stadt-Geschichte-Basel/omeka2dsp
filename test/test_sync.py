@@ -175,6 +175,17 @@ def test_dry_run_writes_nothing(preflight_ok):
     assert dsp.calls == []
 
 
+def test_empty_selection_selects_no_item(tmp_path):
+    (tmp_path / "items.json").write_text(
+        json.dumps([{"o:id": 1, "dcterms:identifier": [{"@value": "abb1"}]}])
+    )
+    (tmp_path / "media.json").write_text("[]")
+    found, _ = sync.load(SETTINGS, requests.Session(), Selection(tmp_path, frozenset()))
+    assert found == []
+    every, _ = sync.load(SETTINGS, requests.Session(), Selection(tmp_path))
+    assert len(every) == 1
+
+
 def test_load_selects_from_a_snapshot(tmp_path):
     items = [
         {"o:id": n, "dcterms:identifier": [{"@value": f"abb{n}"}]} for n in (1, 2, 3)

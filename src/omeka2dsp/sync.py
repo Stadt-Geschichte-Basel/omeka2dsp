@@ -36,7 +36,8 @@ MediaOf = Callable[[OmekaRecord], list[OmekaRecord]]
 @dataclass(frozen=True)
 class Selection:
     snapshot: Path | None = None
-    ids: frozenset[str] = frozenset()
+    # None selects all items. An empty set selects no item.
+    ids: frozenset[str] | None = None
     sample: int | None = None
 
 
@@ -75,7 +76,7 @@ def load(
         def media_of(item: OmekaRecord) -> list[OmekaRecord]:
             return api_media(settings, session, item)
 
-    if selection.ids:
+    if selection.ids is not None:
         items = select(items, set(selection.ids))
         log.info(f"Selected {len(items)} of {len(selection.ids)} requested ids")
     if selection.sample:

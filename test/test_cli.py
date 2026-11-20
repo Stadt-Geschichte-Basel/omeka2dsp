@@ -26,4 +26,14 @@ def test_ids_come_from_options_and_file(tmp_path):
     ids_file = tmp_path / "ids.txt"
     ids_file.write_text("abb1\n\n abb2 \n")
     assert read_ids(["abb3"], ids_file) == {"abb1", "abb2", "abb3"}
-    assert read_ids([], None) == frozenset()
+    assert read_ids(None, None) is None
+
+
+def test_empty_ids_file_stops_before_network(monkeypatch, tmp_path):
+    """An empty selection must not select the full item set."""
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(requests.Session, "request", no_network)
+    (tmp_path / "empty.txt").write_text("\n  \n")
+    result = CliRunner().invoke(app, ["sync", "--ids-file", "empty.txt"])
+    assert result.exit_code == 1
+    assert read_ids(None, tmp_path / "empty.txt") == frozenset()

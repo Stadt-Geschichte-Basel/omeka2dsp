@@ -31,9 +31,12 @@ def _settings() -> Settings:
         raise typer.Exit(1) from None
 
 
-def read_ids(ids: list[str], ids_file: Path | None) -> frozenset[str]:
+def read_ids(ids: list[str] | None, ids_file: Path | None) -> frozenset[str] | None:
+    """The selected identifiers, or None when the command selects no identifiers."""
+    if ids is None and ids_file is None:
+        return None
     lines = ids_file.read_text(encoding="utf-8").splitlines() if ids_file else []
-    return frozenset(i.strip() for i in [*ids, *lines] if i.strip())
+    return frozenset(i.strip() for i in [*(ids or []), *lines] if i.strip())
 
 
 @app.command()
@@ -67,8 +70,13 @@ def sync(
         handlers=[logging.StreamHandler(), logging.FileHandler(LOG_FILE, mode="w")],
         force=True,
     )
+    selected = read_ids(ids, ids_file)
+    if selected is not None and not selected:
+        # An empty selection must not become a sync of the full item set.
+        log.error("The selection has no identifiers; nothing to sync")
+        raise typer.Exit(1)
     settings = _settings()
-    selection = Selection(snapshot, read_ids(ids or [], ids_file), sample)
+    selection = Selection(snapshot, selected, sample)
     run(settings, selection, Options(dry_run, frozenset(recreate or [])))
 
 
