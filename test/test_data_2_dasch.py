@@ -7,9 +7,7 @@ Import path and environment come from conftest.py.
 
 from data_2_dasch import (
     PREFIX,
-    build_text_values,
     extract_listvalueiri_from_value,
-    sync_mixed_value_array,
 )
 
 # The DaSCH license list uses the license URL as the node label (see
@@ -56,37 +54,3 @@ def test_prefix_definition():
     """Test that PREFIX is correctly defined (issue #6)"""
     assert PREFIX == "SGB:", f"PREFIX should be 'SGB:' but got '{PREFIX}'"
     print("✓ PREFIX definition test passed")
-
-
-def test_build_text_values_sends_urls_as_text():
-    """The SGB ontology has no UriValue properties: URLs become TextValue."""
-    values = ["John Doe", "https://example.com/person1", ""]
-    result = build_text_values(values)
-
-    assert [r["@type"] for r in result] == ["knora-api:TextValue"] * 2
-    assert [r["knora-api:valueAsString"] for r in result] == [
-        "John Doe",
-        "https://example.com/person1",
-    ]
-
-
-def test_build_text_values_empty():
-    assert build_text_values([]) == []
-
-
-def test_sync_mixed_value_array_no_changes():
-    values = ["John Doe", "https://example.com/person1"]
-    assert sync_mixed_value_array("hasCreator", values, list(values)) == []
-
-
-def test_sync_mixed_value_array_changes_are_text_values():
-    dasch_array = ["Old Person", "https://old.example.com/person"]
-    omeka_array = ["Old Person", "https://new.example.com/person"]
-
-    changes = sync_mixed_value_array("hasCreator", dasch_array, omeka_array)
-
-    assert {(c["type"], c["value"]) for c in changes} == {
-        ("create", "https://new.example.com/person"),
-        ("delete", "https://old.example.com/person"),
-    }
-    assert all(c["prop_type"] == "TextValue" for c in changes)

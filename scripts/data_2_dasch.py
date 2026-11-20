@@ -10,6 +10,15 @@ from pathlib import Path
 from typing import cast
 
 import requests
+from dsp_values import (
+    PRIVATE_FILE_PERMISSIONS,
+    TEXT_ENTRY_KEYS,
+    build_text_entries,
+    dasch_entries,
+    describe,
+    file_permission_changes,
+    sync_text_entries,
+)
 from preflight import preflight
 from process_data_from_omeka import (
     extract_combined_values,
@@ -278,7 +287,18 @@ def update_value(token, item, value, field, field_type, type_of_change):
         f"{PREFIX}{field}": {"@type": complete_field_type},
     }
 
-    if type_of_change in ["delete", "update"]:
+    if isinstance(value, dict):
+        # A text entry from sync_text_entries: wanted (create) or from DSP (delete).
+        payload[f"{PREFIX}{field}"] = (
+            {"@id": value["@id"], "@type": value["@type"]}
+            if type_of_change == "delete"
+            else {
+                k: v
+                for k, v in value.items()
+                if k in TEXT_ENTRY_KEYS or (k == "@id" and type_of_change == "update")
+            }
+        )
+    elif type_of_change in ["delete", "update"]:
         existing_value = item.get(f"{PREFIX}{field}")
         if isinstance(existing_value, dict):
             value_id = existing_value.get("@id")
@@ -296,7 +316,7 @@ def update_value(token, item, value, field, field_type, type_of_change):
         if value_id:
             payload[f"{PREFIX}{field}"]["@id"] = value_id
 
-    if type_of_change in ["create", "update"]:
+    if not isinstance(value, dict) and type_of_change in ["create", "update"]:
         if field_type == "TextValue":
             payload[f"{PREFIX}{field}"]["knora-api:valueAsString"] = value
         if field_type == "ListValue":
@@ -331,7 +351,9 @@ def update_value(token, item, value, field, field_type, type_of_change):
         extract_dasch_propvalue(item, "hasIdentifier") or "unknown identifier"
     )
     if response.status_code == 200:
-        logging.info(f"{identifier_value}: {type_of_change}d {field} '{value}'")
+        logging.info(
+            f"{identifier_value}: {type_of_change}d {field} '{describe(value)}'"
+        )
     else:
         logging.error(
             f"{identifier_value}: update of {field} failed: {response.status_code}: {response.text}"
@@ -382,15 +404,6 @@ def sync_array_value(prop, prop_type, dasch_array, omeka_array):
     ]
 
     return changes
-
-
-def sync_mixed_value_array(prop, dasch_array, omeka_array):
-    """Sync a multi-value text property.
-
-    The SGB ontology accepts only TextValue for creator, publisher, source,
-    relation and isPartOf, so URLs are sent as text too.
-    """
-    return sync_array_value(prop, "TextValue", dasch_array, omeka_array)
 
 
 def check_values(dasch_item, omeka_item, lists):
@@ -453,10 +466,10 @@ def check_values(dasch_item, omeka_item, lists):
     # Check object specific fields
     if dasch_item["@type"] == METADATA_RESOURCE_TYPE:
         # isPartOf is TextValue only in the SGB ontology
-        is_part_of = sync_mixed_value_array(
+        is_part_of = sync_text_entries(
             "isPartOf",
-            extract_dasch_propvalue_multiple(dasch_item, "isPartOf"),
-            extract_combined_values(omeka_item.get("dcterms:isPartOf", [])),
+            dasch_entries(dasch_item, f"{PREFIX}isPartOf"),
+            build_text_entries(omeka_item.get("dcterms:isPartOf", [])),
         )
         if is_part_of:
             modified_values.extend(is_part_of)
@@ -464,18 +477,18 @@ def check_values(dasch_item, omeka_item, lists):
     # Check media specific fields
     if dasch_item["@type"] in MEDIA_RESOURCE_TYPES:
         # creator, publisher, source, relation are TextValue only in the SGB ontology
-        creator = sync_mixed_value_array(
+        creator = sync_text_entries(
             "hasCreator",
-            extract_dasch_propvalue_multiple(dasch_item, "hasCreator"),
-            extract_combined_values(omeka_item.get("dcterms:creator", [])),
+            dasch_entries(dasch_item, f"{PREFIX}hasCreator"),
+            build_text_entries(omeka_item.get("dcterms:creator", [])),
         )
         if creator:
             modified_values.extend(creator)
 
-        publisher = sync_mixed_value_array(
+        publisher = sync_text_entries(
             "hasPublisher",
-            extract_dasch_propvalue_multiple(dasch_item, "hasPublisher"),
-            extract_combined_values(omeka_item.get("dcterms:publisher", [])),
+            dasch_entries(dasch_item, f"{PREFIX}hasPublisher"),
+            build_text_entries(omeka_item.get("dcterms:publisher", [])),
         )
         if publisher:
             modified_values.extend(publisher)
@@ -526,18 +539,18 @@ def check_values(dasch_item, omeka_item, lists):
         if format_value:
             modified_values.append(format_value)
 
-        source = sync_mixed_value_array(
+        source = sync_text_entries(
             "hasSource",
-            extract_dasch_propvalue_multiple(dasch_item, "hasSource"),
-            extract_combined_values(omeka_item.get("dcterms:source", [])),
+            dasch_entries(dasch_item, f"{PREFIX}hasSource"),
+            build_text_entries(omeka_item.get("dcterms:source", [])),
         )
         if source:
             modified_values.extend(source)
 
-        relation = sync_mixed_value_array(
+        relation = sync_text_entries(
             "hasRelation",
-            extract_dasch_propvalue_multiple(dasch_item, "hasRelation"),
-            extract_combined_values(omeka_item.get("dcterms:relation", [])),
+            dasch_entries(dasch_item, f"{PREFIX}hasRelation"),
+            build_text_entries(omeka_item.get("dcterms:relation", [])),
         )
         if relation:
             modified_values.extend(relation)
@@ -659,15 +672,6 @@ def extract_listvalueiri_from_value(value, list_key, lists):
     return None
 
 
-def build_text_values(values):
-    """Build TextValue objects. The SGB ontology has no UriValue properties."""
-    return [
-        {"@type": "knora-api:TextValue", "knora-api:valueAsString": val}
-        for val in values
-        if isinstance(val, str) and val
-    ]
-
-
 def construct_payload(
     item, type, project_iri, lists, parent_iri, internalMediaFilename
 ):
@@ -717,8 +721,8 @@ def construct_payload(
 
     # Support URIs in isPartOf (issue #7)
     if "dcterms:isPartOf" in item:
-        is_part_of_values = extract_combined_values(item.get("dcterms:isPartOf", []))
-        is_part_of_entries = build_text_values(is_part_of_values)
+        is_part_of_values = item.get("dcterms:isPartOf", [])
+        is_part_of_entries = build_text_entries(is_part_of_values)
         if is_part_of_entries:
             payload[f"{PREFIX}isPartOf"] = is_part_of_entries
 
@@ -804,28 +808,26 @@ def construct_payload(
 
         # Support URIs for creator, publisher, source, relation (issue #7)
         if "dcterms:creator" in item:
-            creator_values = extract_combined_values(item.get("dcterms:creator", []))
-            creators = build_text_values(creator_values)
+            creator_values = item.get("dcterms:creator", [])
+            creators = build_text_entries(creator_values)
             if creators:
                 payload[f"{PREFIX}hasCreator"] = creators
 
         if "dcterms:publisher" in item:
-            publisher_values = extract_combined_values(
-                item.get("dcterms:publisher", [])
-            )
-            publishers = build_text_values(publisher_values)
+            publisher_values = item.get("dcterms:publisher", [])
+            publishers = build_text_entries(publisher_values)
             if publishers:
                 payload[f"{PREFIX}hasPublisher"] = publishers
 
         if "dcterms:source" in item:
-            source_values = extract_combined_values(item.get("dcterms:source", []))
-            sources = build_text_values(source_values)
+            source_values = item.get("dcterms:source", [])
+            sources = build_text_entries(source_values)
             if sources:
                 payload[f"{PREFIX}hasSource"] = sources
 
         if "dcterms:relation" in item:
-            relation_values = extract_combined_values(item.get("dcterms:relation", []))
-            relations = build_text_values(relation_values)
+            relation_values = item.get("dcterms:relation", [])
+            relations = build_text_entries(relation_values)
             if relations:
                 payload[f"{PREFIX}hasRelation"] = relations
 
@@ -945,6 +947,9 @@ def specify_mediaclass(media_type: str) -> str:
     Video files: MP4
     Archive files: ZIP, TAR, GZIP
     (https://docs.dasch.swiss/latest/DSP-API/03-endpoints/api-v2/editing-values/)
+
+    The SGB ontology has only Image and Document file classes. DSP v40 rejects
+    text/csv for DocumentFileValue, so text formats keep metadata only.
     """
 
     valid_images_types = {
@@ -954,11 +959,10 @@ def specify_mediaclass(media_type: str) -> str:
         "image/png",
         "image/gif",
     }
-    valid_text_types = {"text/csv", "text/markdown", "text/plain", "application/json"}
     valid_doc_types = {"application/pdf"}
     if media_type in valid_images_types:
         return f"{PREFIX}Image"
-    if media_type in valid_text_types or media_type in valid_doc_types:
+    if media_type in valid_doc_types:
         return f"{PREFIX}Document"
     logging.warning(
         "Unsupported or missing media type '%s'; falling back to ResourceWithoutMedia",
@@ -977,11 +981,11 @@ def sync_existing(token, resource_iri, source, lists, label, kind, dry_run=False
     changes = check_values(resource, source, lists)
     if not changes:
         logging.info(f"{label}: {kind} exists already, no changes")
-        return
     for value in changes:
         if dry_run:
             logging.info(
-                f"{label}: would {value['type']} {value['field']} '{value['value']}'"
+                f"{label}: would {value['type']} {value['field']} "
+                f"'{describe(value['value'])}'"
             )
         else:
             update_value(
@@ -991,6 +995,38 @@ def sync_existing(token, resource_iri, source, lists, label, kind, dry_run=False
                 value["field"],
                 value["prop_type"],
                 value["type"],
+            )
+    return resource
+
+
+def sync_file_permissions(token, resource, private, label, dry_run=False):
+    """Hide the file of a private media resource; keep its metadata public."""
+    for prop, value in file_permission_changes(resource, private):
+        if dry_run:
+            logging.info(f"{label}: would restrict file permissions ({prop})")
+            continue
+        payload = {
+            "@context": build_context(),
+            "@id": resource["@id"],
+            "@type": resource["@type"],
+            prop: {
+                "@id": value["@id"],
+                "@type": value["@type"],
+                "knora-api:hasPermissions": PRIVATE_FILE_PERMISSIONS,
+            },
+        }
+        response = requests.put(
+            f"{API_HOST}/v2/values",
+            json=payload,
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=DEFAULT_TIMEOUT,
+        )
+        if response.status_code == 200:
+            logging.info(f"{label}: restricted file permissions ({prop})")
+        else:
+            logging.error(
+                f"{label}: file permission update failed: "
+                f"{response.status_code}: {response.text}"
             )
 
 
@@ -1076,7 +1112,12 @@ def sync_media(token, media, metadata_iri, project_iri, lists, ontology, dry_run
 
     mediadata_iri = find_media(token, media_id, media_class)
     if mediadata_iri:
-        sync_existing(token, mediadata_iri, media, lists, media_id, "media", dry_run)
+        resource = sync_existing(
+            token, mediadata_iri, media, lists, media_id, "media", dry_run
+        )
+        sync_file_permissions(
+            token, resource, is_media_private(media), media_id, dry_run
+        )
         return
 
     # Check the metadata before the file upload, so a bad record uploads nothing.
