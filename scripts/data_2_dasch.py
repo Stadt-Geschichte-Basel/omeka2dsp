@@ -1,4 +1,5 @@
 import argparse
+import hashlib
 import logging
 import os
 import random
@@ -82,6 +83,7 @@ def build_context() -> dict:
         "knora-api": "http://api.knora.org/ontology/knora-api/v2#",
         ONTOLOGY_NAME: ONTOLOGY_CONTEXT,
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
     }
 
 
@@ -129,6 +131,11 @@ def parse_arguments() -> Namespace:
         "--dry-run",
         action="store_true",
         help="check payloads and log planned changes; write nothing to DSP",
+    )
+    parser.add_argument(
+        "--recreate",
+        help="comma-separated media ids: if DSP has them in another class, "
+        "erase them and create them again",
     )
     args = parser.parse_args()
 
@@ -873,6 +880,11 @@ def upload_file_from_url(file_url: str, token: str, zip: bool = False) -> str:
     if not original_filename:
         raise ValueError("The file URL does not contain a valid filename.")
 
+    response.raise_for_status()
+    if hashlib.sha256(response.content).hexdigest() in PLACEHOLDER_SHA256:
+        logging.error(f"{file_url}: file is the placeholder image; not uploaded")
+        return None
+
     # Save the file to a temporary location
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
         temp_file.write(response.content)
@@ -944,6 +956,27 @@ def create_resource(payload: dict, token: str) -> None:
             f"{identifier_value}: resource creation failed: {response.status_code}: {response.text}"
         )
         logging.error(payload)
+
+
+# Omeka uses one placeholder image for sources that we may not publish.
+PLACEHOLDER_SHA256 = {
+    "2c07e74c08e23923b89470509d095b329e7d77d6bd2e9212b2a773c97ab4c16e",
+}
+
+
+def is_placeholder(media: dict) -> bool:
+    """Return True if the Omeka file is the placeholder, not the real source."""
+    return (
+        media.get("o:sha256") in PLACEHOLDER_SHA256
+        or "platzhalter" in (media.get("o:source") or "").lower()
+    )
+
+
+def media_class_for(media: dict) -> str:
+    """DSP class for a media record. Private and placeholder media: metadata only."""
+    if is_placeholder(media) or is_media_private(media):
+        return f"{PREFIX}ResourceWithoutMedia"
+    return specify_mediaclass(extract_property(media.get("dcterms:format", []), 9))
 
 
 def is_media_private(media: dict) -> bool:
@@ -1062,19 +1095,15 @@ def find_media(token, media_id, media_class):
     """Find a media resource by identifier in any media class.
 
     A media record can change class (made private, format corrected). DSP cannot
-    change the class of a resource, so we sync the existing one, not a duplicate.
+    change the class of a resource, so the caller syncs the existing one or
+    recreates it; it never makes a duplicate. Returns (iri, class) or (None, None).
     """
     classes = [media_class] + sorted(MEDIA_RESOURCE_TYPES - {media_class})
     for candidate in classes:
         iri = get_resource_by_id(token, candidate, media_id).get("@id")
         if iri:
-            if candidate != media_class:
-                logging.warning(
-                    f"{media_id}: exists as {candidate}, source now maps to "
-                    f"{media_class}; syncing values only"
-                )
-            return iri
-    return None
+            return iri, candidate
+    return None, None
 
 
 def get_ontology(token):
@@ -1125,20 +1154,67 @@ def load_items(args):
     return items, get_item_media
 
 
-def sync_media(token, media, metadata_iri, project_iri, lists, ontology, dry_run):
-    media_id = extract_property(media.get("dcterms:identifier", []), 10)
-    media_class = specify_mediaclass(
-        extract_property(media.get("dcterms:format", []), 9)
+def erase_resource(token, resource) -> bool:
+    """Erase a resource and its file permanently (needs project-admin rights)."""
+    payload = {
+        "@context": build_context(),
+        "@id": resource["@id"],
+        "@type": resource["@type"],
+    }
+    if "knora-api:lastModificationDate" in resource:
+        payload["knora-api:lastModificationDate"] = resource[
+            "knora-api:lastModificationDate"
+        ]
+    response = requests.post(
+        f"{API_HOST}/v2/resources/erase",
+        json=payload,
+        headers={"Authorization": f"Bearer {token}"},
+        timeout=DEFAULT_TIMEOUT,
     )
-    # Private media (issues #12, #13, #14): keep a metadata record but never
-    # upload the file.
-    if is_media_private(media):
-        logging.info(
-            f"{media_id}: private media -> ResourceWithoutMedia (file not uploaded)"
+    if response.status_code != 200:
+        logging.error(
+            f"{resource['@id']}: erase failed: {response.status_code}: {response.text}"
         )
-        media_class = f"{PREFIX}ResourceWithoutMedia"
+    return response.status_code == 200
 
-    mediadata_iri = find_media(token, media_id, media_class)
+
+def sync_media(
+    token,
+    media,
+    metadata_iri,
+    project_iri,
+    lists,
+    ontology,
+    dry_run,
+    recreate=frozenset(),
+):
+    media_id = extract_property(media.get("dcterms:identifier", []), 10)
+    # Private (issues #12, #13, #14) and placeholder media: keep a metadata
+    # record but never upload the file.
+    media_class = media_class_for(media)
+    if is_placeholder(media):
+        logging.info(f"{media_id}: placeholder -> metadata only")
+    elif is_media_private(media):
+        logging.info(f"{media_id}: private media -> metadata only")
+
+    mediadata_iri, found_class = find_media(token, media_id, media_class)
+    if mediadata_iri and found_class != media_class:
+        if media_id not in recreate:
+            logging.warning(
+                f"{media_id}: exists as {found_class}, source now maps to "
+                f"{media_class}; syncing values only (use --recreate to fix)"
+            )
+        elif dry_run:
+            logging.info(
+                f"{media_id}: would erase {found_class} and recreate as {media_class}"
+            )
+            return
+        else:
+            old = get_full_resource(token, urllib.parse.quote(mediadata_iri, safe=""))
+            if not erase_resource(token, old):
+                return
+            logging.info(f"{media_id}: erased {found_class} {mediadata_iri}")
+            mediadata_iri = None
     if mediadata_iri:
         resource = sync_existing(
             token, mediadata_iri, media, lists, media_id, "media", dry_run
@@ -1183,6 +1259,7 @@ def main() -> None:
     ontology = get_ontology(token)
     if args.dry_run:
         logging.info("Dry run: no writes to DSP")
+    recreate = {i.strip() for i in (args.recreate or "").split(",") if i.strip()}
 
     for item in items_data:
         item_id = extract_property(item.get("dcterms:identifier", []), 10)
@@ -1221,6 +1298,7 @@ def main() -> None:
                 project_lists,
                 ontology,
                 args.dry_run,
+                recreate,
             )
 
 
