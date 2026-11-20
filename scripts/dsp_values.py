@@ -16,6 +16,7 @@ TEXT_ENTRY_KEYS = {
 FILE_VALUE_PROPERTIES = (
     "knora-api:hasStillImageFileValue",
     "knora-api:hasDocumentFileValue",
+    "knora-api:hasTextFileValue",
 )
 PRIVATE_FILE_PERMISSIONS = "CR knora-admin:ProjectAdmin|D knora-admin:ProjectMember"
 

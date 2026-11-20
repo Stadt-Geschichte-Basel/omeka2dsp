@@ -58,6 +58,7 @@ ONTOLOGY_CONTEXT = (
 METADATA_RESOURCE_TYPE = f"{PREFIX}Parent"
 MEDIA_RESOURCE_TYPES = {
     f"{PREFIX}Document",
+    f"{PREFIX}Text",
     f"{PREFIX}Image",
     f"{PREFIX}ResourceWithoutMedia",
 }
@@ -742,6 +743,11 @@ def construct_payload(
             "@type": "knora-api:DocumentFileValue",
             "knora-api:fileValueHasFilename": internalMediaFilename,
         }
+    elif type == f"{PREFIX}Text" and internalMediaFilename:
+        payload["knora-api:hasTextFileValue"] = {
+            "@type": "knora-api:TextFileValue",
+            "knora-api:fileValueHasFilename": internalMediaFilename,
+        }
 
     if type in MEDIA_RESOURCE_TYPES:
         date_value = extract_property(item.get("dcterms:date", []), 7)
@@ -948,8 +954,8 @@ def specify_mediaclass(media_type: str) -> str:
     Archive files: ZIP, TAR, GZIP
     (https://docs.dasch.swiss/latest/DSP-API/03-endpoints/api-v2/editing-values/)
 
-    The SGB ontology has only Image and Document file classes. DSP v40 rejects
-    text/csv for DocumentFileValue, so text formats keep metadata only.
+    DSP v40 rejects text/csv for DocumentFileValue, so text and data files go
+    to SGB:Text (TextRepresentation), which stores them unchanged.
     """
 
     valid_images_types = {
@@ -960,10 +966,19 @@ def specify_mediaclass(media_type: str) -> str:
         "image/gif",
     }
     valid_doc_types = {"application/pdf"}
+    valid_text_types = {
+        "text/csv",
+        "text/plain",
+        "text/markdown",
+        "application/json",
+        "application/geo+json",
+    }
     if media_type in valid_images_types:
         return f"{PREFIX}Image"
     if media_type in valid_doc_types:
         return f"{PREFIX}Document"
+    if media_type in valid_text_types:
+        return f"{PREFIX}Text"
     logging.warning(
         "Unsupported or missing media type '%s'; falling back to ResourceWithoutMedia",
         media_type,

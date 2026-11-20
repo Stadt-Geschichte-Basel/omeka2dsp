@@ -681,6 +681,109 @@
 						]
 					},
 					{
+						"name": "Text",
+						"super": "TextRepresentation",
+						"labels": {
+							"en": "text",
+							"de": "Text"
+						},
+						"comments": {
+							"en": "Text and data files like CSV, JSON, GeoJSON, TXT."
+						},
+						"cardinalities": [
+							{
+								"propname": ":hasIdentifier",
+								"cardinality": "0-1",
+								"gui_order": 1
+							},
+							{
+								"propname": ":hasTitle",
+								"cardinality": "1",
+								"gui_order": 2
+							},
+							{
+								"propname": ":hasSubjectList",
+								"cardinality": "0-1",
+								"gui_order": 3
+							},
+							{
+								"propname": ":hasDescription",
+								"cardinality": "1",
+								"gui_order": 4
+							},
+							{
+								"propname": ":hasCreator",
+								"cardinality": "0-n",
+								"gui_order": 5
+							},
+							{
+								"propname": ":hasPublisher",
+								"cardinality": "0-n",
+								"gui_order": 6
+							},
+							{
+								"propname": ":hasDate",
+								"cardinality": "0-1",
+								"gui_order": 7
+							},
+							{
+								"propname": ":hasTemporalList",
+								"cardinality": "0-1",
+								"gui_order": 8
+							},
+							{
+								"propname": ":hasTypeList",
+								"cardinality": "0-1",
+								"gui_order": 9
+							},
+							{
+								"propname": ":hasFormatList",
+								"cardinality": "0-1",
+								"gui_order": 10
+							},
+							{
+								"propname": ":hasExtent",
+								"cardinality": "0-1",
+								"gui_order": 11
+							},
+							{
+								"propname": ":hasSource",
+								"cardinality": "0-n",
+								"gui_order": 12
+							},
+							{
+								"propname": ":hasLanguageList",
+								"cardinality": "0-1",
+								"gui_order": 13
+							},
+							{
+								"propname": ":hasRelation",
+								"cardinality": "0-n",
+								"gui_order": 14
+							},
+							{
+								"propname": ":hasRights",
+								"cardinality": "0-1",
+								"gui_order": 15
+							},
+							{
+								"propname": ":hasLicenseList",
+								"cardinality": "0-1",
+								"gui_order": 16
+							},
+							{
+								"propname": ":hasAbstract",
+								"cardinality": "0-1",
+								"gui_order": 17
+							},
+							{
+								"propname": ":linkToParentObject",
+								"cardinality": "0-1",
+								"gui_order": 18
+							}
+						]
+					},
+					{
 						"name": "Image",
 						"super": ["StillImageRepresentation", "dcterms:Image"],
 						"labels": {
