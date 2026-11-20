@@ -10,9 +10,10 @@ from pathlib import Path
 
 import pytest
 
-import data_2_dasch as d
+import fakes
 from omeka2dsp import payload
 from omeka2dsp.fields import Project
+from omeka2dsp.plan import plan
 from omeka2dsp.values import OmekaRecord
 
 ROOT = Path(__file__).parent.parent
@@ -86,32 +87,17 @@ def payloads():
     }
 
 
-def change_requests(monkeypatch):
+def change_requests():
     """The value requests that sync sends for the example DSP resources."""
-    sent = []
-
-    class Response:
-        status_code, text = 200, ""
-
-    def capture(method):
-        def send(url, json, **kwargs):
-            sent.append({"method": method, "url": url, "body": json})
-            return Response()
-
-        return send
-
-    monkeypatch.setattr(d.requests, "post", capture("POST"))
-    monkeypatch.setattr(d.requests, "put", capture("PUT"))
+    client, session = fakes.dsp()
     for resource, source in [(dsp("OBJEKT"), ITEM), (dsp("MEDIA"), MEDIA)]:
-        for change in d.check_values(resource, source, LISTS):
-            d.update_value(
-                "token",
-                resource,
-                change["value"],
-                change["field"],
-                change["prop_type"],
-                change["type"],
-            )
+        record = OmekaRecord.parse(source)
+        for change in plan(PROJECT, record, resource, LISTS).changes:
+            client.change(change.action, payload.change(PROJECT, resource, change))
+    sent = [
+        {"method": r["method"], "url": r["url"], "body": r["json"]}
+        for r in session.sent
+    ]
     return sorted(sent, key=lambda r: json.dumps(r, sort_keys=True))
 
 
@@ -132,5 +118,5 @@ def test_create_payload(name):
     check(f"create_{name}", payloads()[name])
 
 
-def test_change_requests(monkeypatch):
-    check("changes", change_requests(monkeypatch))
+def test_change_requests():
+    check("changes", change_requests())
