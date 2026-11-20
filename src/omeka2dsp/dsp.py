@@ -65,10 +65,7 @@ class Dsp:
 
     def project(self) -> Project:
         code = self.settings.project_short_code
-        response = self.session.get(
-            f"{self.settings.api_host}/admin/projects/shortcode/{code}",
-            timeout=self.settings.http_timeout,
-        )
+        response = self._send("GET", f"/admin/projects/shortcode/{code}", auth=False)
         data = response.json()["project"]
         iri = data["id"]
         log.info(f"project Iri: {iri}")
@@ -129,25 +126,17 @@ class Dsp:
                 FILTER(?identifier = "{literal}")
             }}
             """
-        try:
-            response = self._send(
-                "POST",
-                "/v2/searchextended",
-                data=query.encode("utf-8"),
-                headers={"Content-Type": "application/sparql-query; charset=utf-8"},
-            )
-        except DspError as error:
-            log.error(f"Error: {error}")
-            return None
+        # A failed search stops the run. "Not found" would create a duplicate.
+        response = self._send(
+            "POST",
+            "/v2/searchextended",
+            data=query.encode("utf-8"),
+            headers={"Content-Type": "application/sparql-query; charset=utf-8"},
+        )
         return response.json().get("@id")
 
     def resource(self, iri: str) -> JsonLd:
-        response = self.session.get(
-            f"{self.settings.api_host}/v2/resources/{quote(iri)}",
-            headers={"Authorization": f"Bearer {self.token}"},
-            timeout=self.settings.http_timeout,
-        )
-        return response.json()
+        return self._send("GET", f"/v2/resources/{quote(iri)}").json()
 
     def create(self, body: JsonLd) -> str | None:
         """Create a resource. Return its IRI."""

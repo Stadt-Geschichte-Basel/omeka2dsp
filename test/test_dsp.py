@@ -42,3 +42,18 @@ def test_search_escapes_the_identifier():
     )
     assert Dsp(SETTINGS, http, "t").find(PROJECT, "SGB:Parent", 'a"b') == "iri"
     assert 'FILTER(?identifier = "a\\"b")' in transport.sent[0]["body"].decode()
+
+
+@pytest.mark.parametrize(
+    ("method", "part", "call"),
+    [
+        ("GET", "/admin/projects/", lambda dsp: dsp.project()),
+        ("GET", "/v2/resources/", lambda dsp: dsp.resource("iri")),
+        ("POST", "/searchextended", lambda dsp: dsp.find(PROJECT, "SGB:Parent", "x")),
+    ],
+)
+def test_reads_check_the_status_first(method, part, call):
+    """An error body is not read as data, and a failed search is not "not found"."""
+    http, _ = session({(method, part): response(500, {"project": {"id": "p"}})})
+    with pytest.raises(DspError):
+        call(Dsp(SETTINGS, http, "t"))
