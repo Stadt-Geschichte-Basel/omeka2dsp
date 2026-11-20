@@ -23,10 +23,10 @@ jobs:
         run: uv run --locked --extra dev pytest test/ -v
 
       - name: Lint (ruff)
-        run: uv run --locked --extra dev ruff check scripts test
+        run: uv run --locked --extra dev ruff check src scripts test
 
       - name: Format check (ruff)
-        run: uv run --locked --extra dev ruff format --check scripts test
+        run: uv run --locked --extra dev ruff format --check src scripts test
 
       - name: Type check (ty)
-        run: uv run --locked --extra dev ty check scripts test
+        run: uv run --locked --extra dev ty check src scripts test
