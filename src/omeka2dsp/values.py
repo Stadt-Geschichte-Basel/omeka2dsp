@@ -50,7 +50,7 @@ class OmekaRecord(BaseModel):
     values: Mapping[str, tuple[OmekaValue, ...]] = {}
 
     @classmethod
-    def parse(cls, raw: Mapping[str, Any]) -> "OmekaRecord":
+    def parse(cls, raw: Mapping[str, Any]) -> OmekaRecord:
         values = {
             term: tuple(OmekaValue.model_validate(value) for value in entries)
             for term, entries in raw.items()

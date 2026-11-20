@@ -20,7 +20,7 @@ graph LR
 
 ## Setup
 
-You need [uv](https://docs.astral.sh/uv/).
+You need [uv](https://docs.astral.sh/uv/). uv installs Python 3.15 when it is not on your computer.
 
 ```bash
 git clone https://github.com/Stadt-Geschichte-Basel/omeka2dsp.git

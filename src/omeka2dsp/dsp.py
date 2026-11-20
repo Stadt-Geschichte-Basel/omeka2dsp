@@ -53,7 +53,7 @@ class Dsp:
         return response
 
     @classmethod
-    def login(cls, settings: Settings, session: requests.Session) -> "Dsp":
+    def login(cls, settings: Settings, session: requests.Session) -> Dsp:
         credentials = {
             "email": settings.dsp_user,
             "password": settings.dsp_pwd.get_secret_value(),
