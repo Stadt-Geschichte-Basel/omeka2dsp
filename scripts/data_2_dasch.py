@@ -9,7 +9,7 @@ import urllib.parse
 import zipfile
 from argparse import Namespace
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 import requests
 
@@ -292,7 +292,7 @@ def update_value(token, item, value, field, field_type, type_of_change):
 
     context_data = build_context()
     complete_field_type = f"knora-api:{field_type}"
-    payload = {
+    payload: dict[str, Any] = {
         "@context": context_data,
         "@id": item["@id"],
         "@type": item["@type"],
