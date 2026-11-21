@@ -12,7 +12,7 @@ The IO modules read settings, call the Omeka and DSP APIs, and write the log.
 | Module         | Kind | Content                                                               |
 | -------------- | ---- | --------------------------------------------------------------------- |
 | `settings.py`  | IO   | `Settings`. Reads `.env` and the environment.                         |
-| `omeka.py`     | IO   | Read items and media from the Omeka API or from a snapshot directory. |
+| `omeka.py`     | IO   | Read items and media with omeka-s-client, from the API or a snapshot. |
 | `dsp.py`       | IO   | `Dsp` client: login, search, read, create, change, erase, ingest.     |
 | `fields.py`    | pure | `FIELDS` table, the `Field` model, and the `Project` model.           |
 | `values.py`    | pure | Omeka records and values to DSP values. DSP values to comparison keys. |
@@ -54,7 +54,9 @@ These rules apply to all modules:
 - Data that crosses a boundary has a type. Pydantic models parse Omeka records and settings.
 - All models are frozen. A function returns a new value and does not change its input.
 - No module reads the environment at import time. `Settings` loads once and goes down as an argument.
-- All requests use one `requests.Session` and the timeout `HTTP_TIMEOUT`.
+- Omeka requests and file downloads use one [omeka-s-client](https://github.com/maehr/omeka-s-client) `OmekaClient`.
+- DSP requests use one `requests.Session`.
+- All requests use the timeout `HTTP_TIMEOUT`.
 
 ## Sync flow
 
@@ -106,6 +108,8 @@ Each rule has a test in `test/`.
 8. A file that is the placeholder image is not ingested.
 
 A failed Omeka page, a failed DSP read, and a failed DSP search also stop the run.
+The Omeka client retries transient reads before it fails.
+A snapshot with a manifest whose record counts do not agree also stops the run.
 A failed write logs an error and the run continues with the next value or record.
 
 ## Tests

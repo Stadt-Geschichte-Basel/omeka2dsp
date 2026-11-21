@@ -7,6 +7,8 @@ from typing import Any
 
 import pytest
 import requests
+from omeka_s_client import OmekaClient
+from omeka_s_client.testing import FakeOmeka
 
 from fakes import SETTINGS
 from omeka2dsp import media as media_rules
@@ -22,7 +24,7 @@ CSV = OmekaRecord.parse(
         "o:id": 5,
         "dcterms:identifier": [{"@value": "m1"}],
         "dcterms:format": [{"@value": "text/csv"}],
-        "o:original_url": "https://omeka/files/m1.csv",
+        "o:original_url": "https://omeka.test.com/files/m1.csv",
     }
 )
 ITEM = OmekaRecord.parse({"o:id": 1, "dcterms:identifier": [{"@value": "abb1"}]})
@@ -64,17 +66,22 @@ class FakeDsp(Dsp):
     def erase(self, body):
         self._call("erase")
 
-    def download(self, url):
-        self._call("download")
-        return self.file
-
     def ingest(self, filename, content):
         self._call("ingest")
         return "internal.csv"
 
 
 def context(dsp: FakeDsp, **options) -> Context:
-    return Context(dsp, PROJECT, [], {}, Options(**options))
+    """A context whose Omeka client serves dsp.file and logs a "download" call."""
+
+    class Files(FakeOmeka):
+        def __call__(self, request):
+            dsp.calls.append("download")
+            return super().__call__(request)
+
+    files = Files(files={"/files/m1.csv": dsp.file})
+    omeka = OmekaClient(SETTINGS.omeka_api_url, transport=files, sleep=lambda _: None)
+    return Context(dsp, PROJECT, [], {}, omeka, Options(**options))
 
 
 @pytest.fixture
@@ -105,6 +112,17 @@ def test_recreate_keeps_old_record_when_ingest_fails(preflight_ok):
     dsp = in_wrong_class(fail=frozenset({"ingest"}))
     sync.sync_media(context(dsp, recreate=frozenset({"m1"})), CSV, "parent")
     assert dsp.calls == ["download", "ingest"]
+
+
+def test_recreate_keeps_old_record_when_download_fails(preflight_ok):
+    """A missing Omeka file stops the media before the ingest and the erase."""
+    dsp = in_wrong_class()
+    ctx = context(dsp, recreate=frozenset({"m1"}))
+    missing = CSV.model_copy(
+        update={"original_url": "https://omeka.test.com/files/gone.csv"}
+    )
+    sync.sync_media(ctx, missing, "parent")
+    assert dsp.calls == ["download"]
 
 
 def test_recreate_erases_only_after_ingest(preflight_ok):
@@ -215,9 +233,10 @@ def test_empty_selection_selects_no_item(tmp_path):
         json.dumps([{"o:id": 1, "dcterms:identifier": [{"@value": "abb1"}]}])
     )
     (tmp_path / "media.json").write_text("[]")
-    found, _ = sync.load(SETTINGS, requests.Session(), Selection(tmp_path, frozenset()))
+    omeka = OmekaClient(SETTINGS.omeka_api_url, transport=FakeOmeka())
+    found, _ = sync.load(SETTINGS, omeka, Selection(tmp_path, frozenset()))
     assert found == []
-    every, _ = sync.load(SETTINGS, requests.Session(), Selection(tmp_path))
+    every, _ = sync.load(SETTINGS, omeka, Selection(tmp_path))
     assert len(every) == 1
 
 
@@ -229,6 +248,7 @@ def test_load_selects_from_a_snapshot(tmp_path):
     (tmp_path / "items.json").write_text(json.dumps(items))
     (tmp_path / "media.json").write_text(json.dumps(media))
     selection = Selection(tmp_path, frozenset({"abb2", "abb3"}), sample=1)
-    found, media_of = sync.load(SETTINGS, requests.Session(), selection)
+    omeka = OmekaClient(SETTINGS.omeka_api_url, transport=FakeOmeka())
+    found, media_of = sync.load(SETTINGS, omeka, selection)
     assert len(found) == 1 and found[0].identifier in {"abb2", "abb3"}
     assert [m.id for m in media_of(OmekaRecord.parse(items[1]))] == [9]
