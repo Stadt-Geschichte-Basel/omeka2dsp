@@ -18,6 +18,7 @@ def client(settings: Settings, **overrides: Any) -> OmekaClient:
         key_identity=settings.key_identity,
         key_credential=settings.key_credential,
         timeout=settings.http_timeout,
+        cache_busting=True,
         **overrides,
     )
 
