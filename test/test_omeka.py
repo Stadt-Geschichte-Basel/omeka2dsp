@@ -1,15 +1,25 @@
 import json
 
 import pytest
-import requests
+from omeka_s_client import OmekaHTTPError, SnapshotError, TransportResponse
+from omeka_s_client.testing import FakeOmeka
 
-from fakes import SETTINGS, response, session
-from omeka2dsp.omeka import api_items, media_by_item, select, snapshot
+from fakes import SETTINGS
+from omeka2dsp import omeka
+from omeka2dsp.omeka import api_items, api_media, media_by_item, select, snapshot
 from omeka2dsp.values import OmekaRecord
 
 
-def item(identifier, o_id=1):
-    return {"o:id": o_id, "dcterms:identifier": [{"@value": identifier}]}
+def item(identifier, o_id=1, item_set=10780):
+    return {
+        "o:id": o_id,
+        "o:item_set": [{"o:id": item_set}],
+        "dcterms:identifier": [{"@value": identifier}],
+    }
+
+
+def client(fake, settings=SETTINGS):
+    return omeka.client(settings, transport=fake, sleep=lambda _: None)
 
 
 def test_snapshot_prefers_transformed(tmp_path):
@@ -18,6 +28,14 @@ def test_snapshot_prefers_transformed(tmp_path):
     (tmp_path / "media_raw.json").write_text(json.dumps([]))
     items, media = snapshot(tmp_path)
     assert [i.identifier for i in items] == ["clean"] and media == []
+
+
+def test_snapshot_checks_the_manifest_counts(tmp_path):
+    (tmp_path / "items.json").write_text(json.dumps([item("a")]))
+    (tmp_path / "media.json").write_text(json.dumps([]))
+    (tmp_path / "snapshot.json").write_text(json.dumps({"items_count": 2}))
+    with pytest.raises(SnapshotError):
+        snapshot(tmp_path)
 
 
 def test_media_by_item_and_select():
@@ -30,42 +48,46 @@ def test_media_by_item_and_select():
     assert select(items, {"abb2"}) == [items[1]]
 
 
-def test_items_follow_the_next_link():
-    http, transport = session(
-        {
-            ("GET", "page=2"): response(200, [item("b")]),
-            ("GET", "/items"): response(
-                200, [item("a")], "https://omeka/api/items?page=2"
-            ),
-        }
-    )
-    assert [i.identifier for i in api_items(SETTINGS, http)] == ["a", "b"]
-    assert "item_set_id=10780" in transport.sent[0]["url"]
+def test_items_of_the_item_set_on_all_pages():
+    records = [item(f"abb{n}", n) for n in range(1, 151)] + [item("other", 999, 1)]
+    fake = FakeOmeka({"items": records})
+    with client(fake) as omeka_client:
+        found = api_items(SETTINGS, omeka_client)
+    assert len(found) == 150 and "other" not in {i.identifier for i in found}
+    assert all("item_set_id=10780" in r.url for r in fake.requests)
+
+
+def test_media_of_an_item():
+    media = [
+        {"o:id": 10, "o:item": {"o:id": 1}},
+        {"o:id": 11, "o:item": {"o:id": 2}},
+    ]
+    with client(FakeOmeka({"media": media})) as omeka_client:
+        found = api_media(omeka_client, OmekaRecord.parse(item("abb1", 1)))
+    assert [m.id for m in found] == [10]
 
 
 def test_failed_page_stops_the_run():
-    http, _ = session(
-        {
-            ("GET", "page=2"): response(500),
-            ("GET", "/items"): response(
-                200, [item("a")], "https://omeka/api/items?page=2"
-            ),
-        }
-    )
-    with pytest.raises(requests.HTTPError):
-        api_items(SETTINGS, http)
+    def broken(request):
+        return TransportResponse(500)
+
+    with client(broken) as omeka_client, pytest.raises(OmekaHTTPError):
+        api_items(SETTINGS, omeka_client)
 
 
-def test_omeka_requests_use_the_timeout():
-    http, transport = session({("GET", "/items"): response(200, [])})
-    api_items(SETTINGS, http)
-    assert transport.sent[0]["timeout"] == SETTINGS.http_timeout
+def test_keys_go_with_each_request():
+    fake = FakeOmeka({"items": [item("a")]})
+    settings = SETTINGS.model_copy(update={"key_identity": "id", "key_credential": "c"})
+    with client(fake, settings) as omeka_client:
+        api_items(settings, omeka_client)
+    assert all("key_identity=id" in r.url for r in fake.requests)
 
 
 def test_api_url_without_trailing_slash_keeps_its_path():
-    http, transport = session({("GET", "/items"): response(200, [])})
+    fake = FakeOmeka({"items": []})
     settings = SETTINGS.model_copy(
-        update={"omeka_api_url": "https://omeka.test.com/api"}
+        update={"omeka_api_url": "https://omeka.test.com/sub/api"}
     )
-    api_items(settings, http)
-    assert transport.sent[0]["url"].startswith("https://omeka.test.com/api/items")
+    with client(fake, settings) as omeka_client:
+        api_items(settings, omeka_client)
+    assert fake.requests[0].url.startswith("https://omeka.test.com/sub/api/items")

@@ -2,14 +2,16 @@
 
 import logging
 import random
+import tempfile
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import requests
+from omeka_s_client import OmekaClient, OmekaError
 
-from omeka2dsp import payload
+from omeka2dsp import omeka, payload
 from omeka2dsp.dsp import Dsp, DspError, JsonLd
 from omeka2dsp.fields import MEDIA, PARENT, Project
 from omeka2dsp.media import (
@@ -22,7 +24,6 @@ from omeka2dsp.media import (
     media_class,
     media_format,
 )
-from omeka2dsp.omeka import api_items, api_media, media_by_item, select, snapshot
 from omeka2dsp.plan import file_permission_changes, plan
 from omeka2dsp.preflight import preflight
 from omeka2dsp.settings import Settings
@@ -53,16 +54,17 @@ class Context:
     project: Project
     lists: list[JsonLd]
     ontology: JsonLd
+    omeka: OmekaClient
     options: Options = Options()
 
 
 def load(
-    settings: Settings, session: requests.Session, selection: Selection
+    settings: Settings, omeka_client: OmekaClient, selection: Selection
 ) -> tuple[list[OmekaRecord], MediaOf]:
     """The selected items, and a function that returns the media of an item."""
     if selection.snapshot:
-        items, media = snapshot(selection.snapshot)
-        grouped = media_by_item(media)
+        items, media = omeka.snapshot(selection.snapshot)
+        grouped = omeka.media_by_item(media)
         log.info(
             f"Snapshot {selection.snapshot}: {len(items)} items, {len(media)} media"
         )
@@ -71,13 +73,13 @@ def load(
             return grouped.get(item.id, []) if item.id is not None else []
 
     else:
-        items = api_items(settings, session)
+        items = omeka.api_items(settings, omeka_client)
 
         def media_of(item: OmekaRecord) -> list[OmekaRecord]:
-            return api_media(settings, session, item)
+            return omeka.api_media(omeka_client, item)
 
     if selection.ids is not None:
-        items = select(items, set(selection.ids))
+        items = omeka.select(items, set(selection.ids))
         log.info(f"Selected {len(items)} of {len(selection.ids)} requested ids")
     if selection.sample:
         items = random.sample(items, min(selection.sample, len(items)))
@@ -89,16 +91,19 @@ def run(
     selection: Selection,
     options: Options,
     session: requests.Session | None = None,
+    omeka_client: OmekaClient | None = None,
 ) -> None:
     session = session if session is not None else requests.Session()
-    items, media_of = load(settings, session, selection)
-    dsp = Dsp.login(settings, session)
-    project = dsp.project()
-    context = Context(dsp, project, dsp.lists(project), dsp.ontology(project), options)
-    if options.dry_run:
-        log.info("Dry run: no writes to DSP")
-    for item in items:
-        sync_item(context, item, media_of)
+    with omeka_client if omeka_client is not None else omeka.client(settings) as client:
+        items, media_of = load(settings, client, selection)
+        dsp = Dsp.login(settings, session)
+        project = dsp.project()
+        lists, ontology = dsp.lists(project), dsp.ontology(project)
+        context = Context(dsp, project, lists, ontology, client, options)
+        if options.dry_run:
+            log.info("Dry run: no writes to DSP")
+        for item in items:
+            sync_item(context, item, media_of)
 
 
 def _checked(context: Context, label: str, body: JsonLd, record: OmekaRecord) -> bool:
@@ -211,12 +216,15 @@ def _ingest(context: Context, label: str, media: OmekaRecord) -> str | None:
         log.error(f"{label}: the file URL '{url}' has no file name")
         return None
     try:
-        content = context.dsp.download(url)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "file"
+            context.omeka.download(url, path)
+            content = path.read_bytes()
         if is_placeholder_file(content):
             log.error(f"{url}: file is the placeholder image; not uploaded")
             return None
         return context.dsp.ingest(name, content)
-    except (requests.RequestException, DspError) as error:
+    except (OmekaError, OSError, requests.RequestException, DspError) as error:
         log.error(f"{label}: file transfer failed: {error}")
         return None
 

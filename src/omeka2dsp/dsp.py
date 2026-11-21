@@ -165,11 +165,6 @@ class Dsp:
         """Erase a resource and its file. This needs project-admin rights."""
         self._send("POST", "/v2/resources/erase", json=body)
 
-    def download(self, url: str) -> bytes:
-        response = self.session.get(url, timeout=self.settings.http_timeout)
-        response.raise_for_status()
-        return response.content
-
     def ingest(self, filename: str, content: bytes) -> str:
         """Upload a file to the ingest service. Return the internal file name."""
         code = self.settings.project_short_code
