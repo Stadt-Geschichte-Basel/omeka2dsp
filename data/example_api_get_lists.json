@@ -23,28 +23,6 @@
 			"isRootNode": true
 		},
 		{
-			"id": "http://rdfh.ch/lists/0856/a7lTecT9RtOk27XiJAbyrA",
-			"projectIri": "http://rdfh.ch/projects/Q33XVp9dSEyc8iz-L7i-Jw",
-			"name": "fecjPbTITdqyj9YMn473Iw",
-			"labels": [
-				{
-					"value": "Thema",
-					"language": "de"
-				}
-			],
-			"comments": [
-				{
-					"value": "Thema",
-					"language": "de"
-				},
-				{
-					"value": "Subject",
-					"language": "en"
-				}
-			],
-			"isRootNode": true
-		},
-		{
 			"id": "http://rdfh.ch/lists/0856/-lNLtCsZQHaTvM0pOJAHIQ",
 			"projectIri": "http://rdfh.ch/projects/Q33XVp9dSEyc8iz-L7i-Jw",
 			"name": "EUn9MrlKRYSFWF7calHR8w",

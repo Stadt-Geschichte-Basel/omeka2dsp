@@ -43,7 +43,12 @@ DSP v40 does not accept CSV as a document file. Thus text and data files go to `
 
 The list lookup ignores case. If a label has no list node, sync keeps the DSP value.
 
-The project does not classify subjects with Iconclass, because of time and personnel limits (issues #7 and #19).
+SGB stopped assigning subjects. Subjects are discontinued, not deferred.
+SGB first used the OpenGender Schlagwortindex manually.
+The Digitalausschuss found its coverage too limited.
+It found its focus too narrow for the heterogeneous material.
+No workable alternative exists.
+The [Iconclass VLM experiment](https://github.com/Stadt-Geschichte-Basel/iconclass-classification) was not successful.
 Thus the data model has no subject list and no `hasSubjectList` property.
 
 ## Mapping table

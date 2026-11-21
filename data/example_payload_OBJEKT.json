@@ -19,14 +19,6 @@
 		"knora-api:valueAsString": "Testbeschreibung für den übergeordneten Datensatz.",
 		"@type": "knora-api:TextValue"
 	},
-	"SGB:hasSubjectList": [
-		{
-			"@type": "knora-api:ListValue",
-			"knora-api:listValueAsListNode": {
-				"@id": "http://rdfh.ch/lists/4001/iconclass_11A"
-			}
-		}
-	],
 	"SGB:hasTemporalList": {
 		"@type": "knora-api:ListValue",
 		"knora-api:listValueAsListNode": {
