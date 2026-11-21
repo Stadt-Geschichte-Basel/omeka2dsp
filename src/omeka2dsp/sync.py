@@ -338,7 +338,13 @@ def sync_media(context: Context, media: OmekaRecord, parent_iri: str | None) -> 
     body = payload.create(
         project, wanted_class, media, context.lists, parent_iri, filename
     )
-    if not _create(context, label, body) and replace:
-        log.error(
-            f"{label}: old record erased, but the new one failed; run again to create it"
-        )
+    if not _create(context, label, body):
+        if filename:
+            log.error(
+                f"{label}: file {filename} is ingested but has no resource on DSP; "
+                "ask DaSCH to remove it"
+            )
+        if replace:
+            log.error(
+                f"{label}: old record erased, but the new one failed; run again to create it"
+            )

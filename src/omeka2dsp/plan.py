@@ -132,6 +132,9 @@ def plan(
         key = field.list_key
         for label in want.unresolved:
             # An unresolved label is not an absent value: keep the DSP value.
+            if field.kind is Kind.RICH_TEXT:
+                warnings.append(f"{field.prop}: invalid URI '{label}'; value not sent")
+                continue
             kept = "no type deleted" if field.many else "DSP value kept"
             warnings.append(f"{field.prop}: '{label}' is not in list '{key}'; {kept}")
         if field.kind is Kind.RICH_TEXT:

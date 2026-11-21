@@ -20,7 +20,7 @@ The IO modules read settings, call the Omeka and DSP APIs, and write the log.
 | `media.py`     | pure | Media class, privacy, placeholder, ingest file name.                  |
 | `plan.py`      | pure | `Change` model. Compare current and wanted values. Return changes.    |
 | `payload.py`   | pure | JSON-LD bodies for create, change, erase, and file permissions.       |
-| `preflight.py` | pure | Check a payload against the ontology.                                 |
+| `preflight.py` | pure | Check classes, properties, types, cardinality, empty values, URIs, files. |
 | `sync.py`      | IO   | Connect the parts: one item, then its media.                          |
 | `cli.py`       | IO   | Typer app with the `sync` and `add-text-class` commands.              |
 
