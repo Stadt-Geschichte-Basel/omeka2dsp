@@ -56,7 +56,8 @@ These rules apply to all modules:
 - No module reads the environment at import time. `Settings` loads once and goes down as an argument.
 - Omeka requests and file downloads use one [omeka-s-client](https://github.com/maehr/omeka-s-client) `OmekaClient`.
 - DSP requests use one `requests.Session`.
-- All requests use the timeout `HTTP_TIMEOUT`.
+- All requests use the timeout `HTTP_TIMEOUT`. File uploads to the ingest service use `INGEST_TIMEOUT`.
+- DSP requests retry when DSP answers 429. `DSP_RETRIES` sets the number of retries.
 
 ## Sync flow
 

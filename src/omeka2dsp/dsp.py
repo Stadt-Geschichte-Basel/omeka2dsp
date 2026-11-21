@@ -6,6 +6,8 @@ from dataclasses import dataclass, replace
 from typing import Any, Literal
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from omeka2dsp.fields import Project
 from omeka2dsp.settings import Settings
@@ -17,6 +19,28 @@ JsonLd = dict[str, Any]
 
 class DspError(RuntimeError):
     """A DSP request that did not return status 200."""
+
+
+def retry_session(settings: Settings) -> requests.Session:
+    """A session that retries a request when DSP answers 429."""
+    # A 429 means DSP did not process the request, so a retry of a POST is safe.
+    retry = Retry(
+        total=settings.dsp_retries,
+        connect=0,
+        read=0,
+        other=0,
+        status=settings.dsp_retries,
+        status_forcelist=[429],
+        allowed_methods=None,
+        backoff_factor=0.5,
+        respect_retry_after_header=True,
+        raise_on_status=False,
+    )
+    session = requests.Session()
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
 
 
 def quote(iri: str) -> str:
@@ -36,6 +60,7 @@ class Dsp:
         *,
         auth: bool = True,
         host: str | None = None,
+        timeout: float | None = None,
         **kw,
     ) -> requests.Response:
         headers = {**kw.pop("headers", {})}
@@ -45,7 +70,7 @@ class Dsp:
             method,
             f"{host or self.settings.api_host}{path}",
             headers=headers,
-            timeout=self.settings.http_timeout,
+            timeout=timeout or self.settings.http_timeout,
             **kw,
         )
         if response.status_code != 200:
@@ -172,6 +197,7 @@ class Dsp:
             "POST",
             f"/projects/{code}/assets/ingest/{urllib.parse.quote(filename)}",
             host=self.settings.ingest_host,
+            timeout=self.settings.ingest_timeout,
             data=content,
             headers={"Content-Type": "application/octet-stream"},
         )

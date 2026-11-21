@@ -5,12 +5,11 @@ import logging
 from pathlib import Path
 from typing import Annotated
 
-import requests
 import typer
 from pydantic import ValidationError
 
 from omeka2dsp import payload
-from omeka2dsp.dsp import Dsp
+from omeka2dsp.dsp import Dsp, retry_session
 from omeka2dsp.settings import Settings
 from omeka2dsp.sync import Options, Selection, run
 
@@ -93,7 +92,7 @@ def add_text_class(
     """
     logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, force=True)
     settings = _settings()
-    dsp = Dsp.login(settings, requests.Session())
+    dsp = Dsp.login(settings, retry_session(settings))
     project = dsp.project()
     last_modified = dsp.ontology_metadata(project)["knora-api:lastModificationDate"]
     body = payload.text_class(
