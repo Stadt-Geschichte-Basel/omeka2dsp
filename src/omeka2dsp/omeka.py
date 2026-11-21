@@ -66,6 +66,19 @@ def media_by_item(media: Iterable[OmekaRecord]) -> dict[int, list[OmekaRecord]]:
     return dict(grouped)
 
 
+def duplicates(records: Iterable[OmekaRecord]) -> dict[str, list[int | None]]:
+    """The identifiers that more than one record uses, with the Omeka ids.
+
+    Empty identifiers do not count.
+    """
+    users: dict[str, list[int | None]] = defaultdict(list)
+    for record in records:
+        for identifier in record.identifiers():
+            if identifier:
+                users[identifier].append(record.id)
+    return {key: ids for key, ids in users.items() if len(ids) > 1}
+
+
 def select(items: Iterable[OmekaRecord], ids: set[str]) -> list[OmekaRecord]:
     """The items with a dcterms:identifier in ids."""
     return [item for item in items if item.identifiers() & ids]

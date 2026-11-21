@@ -4,7 +4,7 @@ import logging
 import random
 import tempfile
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -56,6 +56,27 @@ class Context:
     ontology: JsonLd
     omeka: OmekaClient
     options: Options = Options()
+    # Identifiers of the media that this run synced. A repeat is a duplicate.
+    synced_media: set[str] = field(default_factory=set)
+
+
+class ErrorCount(logging.Handler):
+    """Count the log records at level ERROR or higher."""
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.ERROR)
+        self.count = 0
+
+    def emit(self, record: logging.LogRecord) -> None:
+        self.count += 1
+
+
+def _without_duplicates(records: list[OmekaRecord], kind: str) -> list[OmekaRecord]:
+    """Log each duplicate identifier. Return the records that do not use one."""
+    found = omeka.duplicates(records)
+    for identifier, ids in found.items():
+        log.error(f"{identifier}: duplicate identifier in Omeka {kind} {ids}; skipped")
+    return [r for r in records if not r.identifiers() & found.keys()]
 
 
 def load(
@@ -64,16 +85,17 @@ def load(
     """The selected items, and a function that returns the media of an item."""
     if selection.snapshot:
         items, media = omeka.snapshot(selection.snapshot)
-        grouped = omeka.media_by_item(media)
         log.info(
             f"Snapshot {selection.snapshot}: {len(items)} items, {len(media)} media"
         )
+        items = _without_duplicates(items, "items")
+        grouped = omeka.media_by_item(_without_duplicates(media, "media"))
 
         def media_of(item: OmekaRecord) -> list[OmekaRecord]:
             return grouped.get(item.id, []) if item.id is not None else []
 
     else:
-        items = omeka.api_items(settings, omeka_client)
+        items = _without_duplicates(omeka.api_items(settings, omeka_client), "items")
 
         def media_of(item: OmekaRecord) -> list[OmekaRecord]:
             return omeka.api_media(omeka_client, item)
@@ -92,6 +114,23 @@ def run(
     options: Options,
     session: requests.Session | None = None,
     omeka_client: OmekaClient | None = None,
+) -> int:
+    """Sync the selected items. Return the number of errors logged."""
+    errors = ErrorCount()
+    logging.getLogger("omeka2dsp").addHandler(errors)
+    try:
+        _run(settings, selection, options, session, omeka_client)
+    finally:
+        logging.getLogger("omeka2dsp").removeHandler(errors)
+    return errors.count
+
+
+def _run(
+    settings: Settings,
+    selection: Selection,
+    options: Options,
+    session: requests.Session | None,
+    omeka_client: OmekaClient | None,
 ) -> None:
     session = session if session is not None else retry_session(settings)
     with omeka_client if omeka_client is not None else omeka.client(settings) as client:
@@ -231,6 +270,11 @@ def _ingest(context: Context, label: str, media: OmekaRecord) -> str | None:
 
 def sync_media(context: Context, media: OmekaRecord, parent_iri: str | None) -> None:
     label, project, dry_run = media.identifier, context.project, context.options.dry_run
+    if label in context.synced_media:
+        log.error(f"{label}: duplicate media identifier in this run; skipped")
+        return
+    if label:
+        context.synced_media.add(label)
     wanted_class = media_class(media)
     hide = hides_file(media)
     if is_placeholder(media):

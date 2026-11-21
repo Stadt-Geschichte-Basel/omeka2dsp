@@ -252,3 +252,54 @@ def test_load_selects_from_a_snapshot(tmp_path):
     found, media_of = sync.load(SETTINGS, omeka, selection)
     assert len(found) == 1 and found[0].identifier in {"abb2", "abb3"}
     assert [m.id for m in media_of(OmekaRecord.parse(items[1]))] == [9]
+
+
+class RunDsp(FakeDsp):
+    def project(self):
+        return PROJECT
+
+    def lists(self, project):
+        return []
+
+    def ontology(self, project):
+        return {}
+
+
+def run_snapshot(monkeypatch, tmp_path, identifiers):
+    """Run a snapshot of items with these identifiers. Return (DSP, error count)."""
+    items = [
+        {"o:id": n, "dcterms:identifier": [{"@value": i}]}
+        for n, i in enumerate(identifiers, start=1)
+    ]
+    (tmp_path / "items.json").write_text(json.dumps(items))
+    (tmp_path / "media.json").write_text("[]")
+    dsp = RunDsp(SETTINGS, requests.Session())
+    monkeypatch.setattr(sync, "Dsp", type("Login", (), {"login": lambda *a: dsp}))
+    omeka = OmekaClient(SETTINGS.omeka_api_url, transport=FakeOmeka())
+    errors = sync.run(
+        SETTINGS, Selection(tmp_path), Options(), requests.Session(), omeka
+    )
+    return dsp, errors
+
+
+def test_duplicate_identifiers_write_nothing(monkeypatch, tmp_path, preflight_ok):
+    dsp, errors = run_snapshot(monkeypatch, tmp_path, ["abb1", "abb1"])
+    assert dsp.calls == [] and errors > 0
+
+
+def test_duplicates_do_not_stop_other_items(monkeypatch, tmp_path, preflight_ok):
+    dsp, errors = run_snapshot(monkeypatch, tmp_path, ["abb1", "abb1", "abb2"])
+    assert dsp.calls == ["create"] and errors == 1
+
+
+def test_clean_run_returns_no_errors(monkeypatch, tmp_path, preflight_ok):
+    dsp, errors = run_snapshot(monkeypatch, tmp_path, ["abb1", "abb2"])
+    assert dsp.calls == ["create", "create"] and errors == 0
+
+
+def test_media_identifier_is_synced_once(preflight_ok):
+    dsp = FakeDsp(SETTINGS, requests.Session())
+    ctx = context(dsp)
+    sync.sync_media(ctx, CSV, "parent")
+    sync.sync_media(ctx, CSV, "parent")
+    assert dsp.calls.count("create") == 1
