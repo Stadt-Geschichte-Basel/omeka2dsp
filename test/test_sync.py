@@ -155,6 +155,21 @@ def test_placeholder_file_is_not_ingested(monkeypatch, preflight_ok):
     assert dsp.calls == ["download"]
 
 
+def test_file_above_max_ingest_bytes_is_not_ingested(preflight_ok, caplog):
+    settings = SETTINGS.model_copy(update={"max_ingest_bytes": 1_000_000})
+    dsp = FakeDsp(settings, requests.Session())
+    big = CSV.model_copy(update={"size": 5_000_000})
+    sync.sync_media(context(dsp), big, "parent")
+    assert "download" not in dsp.calls and "ingest" not in dsp.calls
+    assert "m1: file is 5.0 MB, above MAX_INGEST_BYTES; not ingested" in caplog.text
+
+
+def test_failed_ingest_logs_the_file_size(preflight_ok, caplog):
+    dsp = FakeDsp(SETTINGS, requests.Session(), fail=frozenset({"ingest"}))
+    sync.sync_media(context(dsp), CSV.model_copy(update={"size": 5_000_000}), "parent")
+    assert "m1: file transfer failed (5.0 MB): ingest failed" in caplog.text
+
+
 def test_private_media_restricts_existing_file(preflight_ok):
     """Safety rule 7: a private media that DSP holds as Image gets its file hidden."""
     image = {

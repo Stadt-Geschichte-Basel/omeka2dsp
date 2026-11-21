@@ -48,6 +48,7 @@ class OmekaRecord(BaseModel):
     sha256: str | None = None
     source: str | None = None
     original_url: str | None = None
+    size: int | None = None
     values: Mapping[str, tuple[OmekaValue, ...]] = {}
 
     @classmethod
@@ -67,6 +68,7 @@ class OmekaRecord(BaseModel):
             sha256=raw.get("o:sha256"),
             source=raw.get("o:source"),
             original_url=raw.get("o:original_url"),
+            size=raw.get("o:size"),
             values=values,
         )
 

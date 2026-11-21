@@ -66,6 +66,11 @@ def test_record_flags_and_identifier():
     assert record.private
 
 
+def test_size_is_parsed():
+    assert OmekaRecord.parse({"o:size": 62_000_000}).size == 62_000_000
+    assert OmekaRecord.parse({}).size is None
+
+
 def test_privacy_flags():
     def private(raw):
         return OmekaRecord.parse(raw).private

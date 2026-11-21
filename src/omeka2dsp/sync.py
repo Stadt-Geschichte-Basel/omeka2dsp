@@ -247,6 +247,11 @@ def _find_media(
     return None, ""
 
 
+def _megabytes(size: int) -> str:
+    """The size in MB, with one decimal."""
+    return f"{size / 1_000_000:.1f}"
+
+
 def _ingest(context: Context, label: str, media: OmekaRecord) -> str | None:
     """Download the Omeka file and ingest it. Return the internal file name."""
     url = media.original_url or ""
@@ -254,17 +259,27 @@ def _ingest(context: Context, label: str, media: OmekaRecord) -> str | None:
     if not name:
         log.error(f"{label}: the file URL '{url}' has no file name")
         return None
+    limit = context.dsp.settings.max_ingest_bytes
+    if limit is not None and media.size is not None and media.size > limit:
+        log.error(
+            f"{label}: file is {_megabytes(media.size)} MB, above MAX_INGEST_BYTES; "
+            "not ingested"
+        )
+        return None
+    size = media.size
     try:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "file"
             context.omeka.download(url, path)
             content = path.read_bytes()
+            size = size if size is not None else len(content)
         if is_placeholder_file(content):
             log.error(f"{url}: file is the placeholder image; not uploaded")
             return None
         return context.dsp.ingest(name, content)
     except (OmekaError, OSError, requests.RequestException, DspError) as error:
-        log.error(f"{label}: file transfer failed: {error}")
+        shown = f"{_megabytes(size)} MB" if size is not None else "size unknown"
+        log.error(f"{label}: file transfer failed ({shown}): {error}")
         return None
 
 
