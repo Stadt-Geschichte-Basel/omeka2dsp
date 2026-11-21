@@ -48,3 +48,42 @@ def test_lookup_ignores_case_and_reads_admin_labels():
         }
     ]
     assert resolve(admin, "language", " de ") == "iri-de"
+
+
+LANGUAGES = [
+    {
+        "rdfs:label": "ISO 639-1",
+        "knora-api:hasSubListNode": [
+            {"@id": f"iri-{code}", "name": f"language_{code}", "rdfs:label": code}
+            for code in ("de", "fr", "la", "en", "ar", "he", "gsw", "gmh")
+        ],
+    }
+]
+
+
+def test_language_aliases_resolve_to_iso_639_1_nodes():
+    assert resolve(LANGUAGES, "language", "Latein") == "iri-la"
+    assert resolve(LANGUAGES, "language", "lat") == "iri-la"
+    assert resolve(LANGUAGES, "language", "Englisch") == "iri-en"
+    assert resolve(LANGUAGES, "language", "Französisch") == "iri-fr"
+
+
+def test_new_iso_codes_resolve_directly():
+    for code in ("ar", "he", "gsw", "gmh"):
+        assert resolve(LANGUAGES, "language", code) == f"iri-{code}"
+
+
+def test_german_labels_resolve_as_fallback():
+    assert resolve(LANGUAGES, "language", "Arabisch") == "iri-ar"
+    assert resolve(LANGUAGES, "language", "Hebräisch") == "iri-he"
+    assert resolve(LANGUAGES, "language", "heb") == "iri-he"
+    assert resolve(LANGUAGES, "language", "Schweizerdeutsch") == "iri-gsw"
+    assert resolve(LANGUAGES, "language", "Mittelhochdeutsch") == "iri-gmh"
+
+
+def test_unknown_language_returns_none():
+    assert resolve(LANGUAGES, "language", "Klingonisch") is None
+
+
+def test_alias_for_missing_node_returns_none():
+    assert resolve(LANGUAGES, "language", "Italienisch") is None

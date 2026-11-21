@@ -15,6 +15,35 @@ LIST_LABELS = {
     "license": {"Licenses", "License", "Rights statement"},
 }
 
+# Omeka labels that differ from the DSP node label, by list key.
+# Keys are casefolded. Values are DSP node labels.
+LABEL_ALIASES: dict[str, dict[str, str]] = {
+    "language": {
+        "deutsch": "de",
+        "ger": "de",
+        "deu": "de",
+        "französisch": "fr",
+        "fre": "fr",
+        "fra": "fr",
+        "latein": "la",
+        "lat": "la",
+        "italienisch": "it",
+        "ita": "it",
+        "niederländisch": "nl",
+        "holländisch": "nl",
+        "dut": "nl",
+        "nld": "nl",
+        "englisch": "en",
+        "eng": "en",
+        "arabisch": "ar",
+        "ara": "ar",
+        "hebräisch": "he",
+        "heb": "he",
+        "schweizerdeutsch": "gsw",
+        "mittelhochdeutsch": "gmh",
+    },
+}
+
 DspList = Mapping[str, Any]
 
 
@@ -40,7 +69,10 @@ def find_list(lists: Iterable[DspList], key: str) -> DspList | None:
 
 
 def resolve(lists: Iterable[DspList], key: str, label: str) -> str | None:
-    """The IRI of the list node with this label. The match ignores case."""
+    """The IRI of the list node with this label. The match ignores case.
+
+    An alias, such as "Latein" for "la", maps to the DSP label first.
+    """
     label = label.strip()
     dsp_list = find_list(lists, key) if label else None
     if dsp_list is None:
@@ -50,6 +82,7 @@ def resolve(lists: Iterable[DspList], key: str, label: str) -> str | None:
         nodes = [nodes]
     # DSP labels can differ in case from Omeka ("image" and "Image").
     wanted = label.casefold()
+    wanted = LABEL_ALIASES.get(key, {}).get(wanted, wanted)
     return next(
         (
             node.get("@id")
