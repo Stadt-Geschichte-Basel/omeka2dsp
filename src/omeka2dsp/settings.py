@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     key_identity: str | None = None
     key_credential: str | None = None
     http_timeout: float = 30
+    ingest_timeout: float = 600
+    dsp_retries: int = 20
 
     @field_validator("key_identity", "key_credential", mode="before")
     @classmethod

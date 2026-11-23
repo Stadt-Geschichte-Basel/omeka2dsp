@@ -1,7 +1,8 @@
 import pytest
+from requests.adapters import HTTPAdapter
 
 from fakes import SETTINGS, response, session
-from omeka2dsp.dsp import Dsp, DspError
+from omeka2dsp.dsp import Dsp, DspError, retry_session
 from omeka2dsp.fields import Project
 
 PROJECT = Project(iri="p", shortcode="TEST", ontology_name="SGB", ontology_iri="o")
@@ -34,6 +35,26 @@ def test_all_requests_use_the_timeout():
     client.ontology(PROJECT)
     assert {r["timeout"] for r in transport.sent} == {SETTINGS.http_timeout}
     assert transport.sent[0]["url"].endswith("/v2/values/delete")
+
+
+def test_ingest_uses_the_ingest_timeout():
+    http, transport = session(
+        {("POST", "/assets/ingest/"): response(data={"internalFilename": "f"})}
+    )
+    Dsp(SETTINGS, http, "t").ingest("a.txt", b"x")
+    assert transport.sent[0]["timeout"] == SETTINGS.ingest_timeout
+
+
+def test_retry_session_retries_on_429():
+    http = retry_session(SETTINGS)
+    for scheme in ("https://", "http://"):
+        adapter = http.get_adapter(scheme + "x")
+        assert isinstance(adapter, HTTPAdapter)
+        retry = adapter.max_retries
+        assert retry.status_forcelist == [429]
+        assert retry.allowed_methods is None
+        assert retry.total == retry.status == SETTINGS.dsp_retries
+        assert retry.raise_on_status is False
 
 
 def test_search_escapes_the_identifier():

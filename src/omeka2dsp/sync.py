@@ -12,7 +12,7 @@ import requests
 from omeka_s_client import OmekaClient, OmekaError
 
 from omeka2dsp import omeka, payload
-from omeka2dsp.dsp import Dsp, DspError, JsonLd
+from omeka2dsp.dsp import Dsp, DspError, JsonLd, retry_session
 from omeka2dsp.fields import MEDIA, PARENT, Project
 from omeka2dsp.media import (
     FILE_VALUES,
@@ -93,7 +93,7 @@ def run(
     session: requests.Session | None = None,
     omeka_client: OmekaClient | None = None,
 ) -> None:
-    session = session if session is not None else requests.Session()
+    session = session if session is not None else retry_session(settings)
     with omeka_client if omeka_client is not None else omeka.client(settings) as client:
         items, media_of = load(settings, client, selection)
         dsp = Dsp.login(settings, session)
