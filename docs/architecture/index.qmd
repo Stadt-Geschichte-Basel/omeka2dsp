@@ -57,6 +57,7 @@ These rules apply to all modules:
 - Omeka requests and file downloads use one [omeka-s-client](https://github.com/maehr/omeka-s-client) `OmekaClient`.
 - DSP requests use one `requests.Session`.
 - All requests use the timeout `HTTP_TIMEOUT`. File uploads to the ingest service use `INGEST_TIMEOUT`.
+- `MAX_INGEST_BYTES` is optional. The sync does not ingest a file above this size, because Sipi runs out of memory on very large files.
 - DSP requests retry when DSP answers 429. `DSP_RETRIES` sets the number of retries.
 
 ## Sync flow

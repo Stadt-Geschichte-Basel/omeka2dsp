@@ -24,8 +24,11 @@ class Settings(BaseSettings):
     http_timeout: float = 30
     ingest_timeout: float = 600
     dsp_retries: int = 20
+    max_ingest_bytes: int | None = None
 
-    @field_validator("key_identity", "key_credential", mode="before")
+    @field_validator(
+        "key_identity", "key_credential", "max_ingest_bytes", mode="before"
+    )
     @classmethod
     def _empty_is_none(cls, value: str | None) -> str | None:
         # requests sends an empty string, but leaves out None.
