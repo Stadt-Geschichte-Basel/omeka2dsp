@@ -35,15 +35,6 @@
 		"@type": "knora-api:TextValue",
 		"knora-api:valueAsString": "Bei der Errichtung des Friedhofs Hörnli in Riehen wurden im Jahr 1930 die Reste eines grossen römischen Gutshofs (villa rustica) ausgegraben."
 	},
-	"SGB:hasSubjectList": [
-		{
-			"@id": "http://rdfh.ch/4001/values/0xSubject",
-			"@type": "knora-api:ListValue",
-			"knora-api:listValueAsListNode": {
-				"@id": "http://rdfh.ch/lists/4001/iconclass_11A"
-			}
-		}
-	],
 	"SGB:hasTemporalList": {
 		"@id": "http://rdfh.ch/4001/values/0xTemporal",
 		"@type": "knora-api:ListValue",

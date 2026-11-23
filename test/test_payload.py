@@ -58,3 +58,32 @@ def test_text_class_copies_document_properties():
     restrictions = {r["owl:onProperty"]["@id"]: r for r in cls["rdfs:subClassOf"][1:]}
     assert "SGB:linkToParentObject" in restrictions
     assert restrictions["SGB:hasTitle"]["owl:cardinality"] == 1
+
+
+def _keys(node):
+    """Yield every dict key in a JSON tree."""
+    if isinstance(node, dict):
+        for key, value in node.items():
+            yield key
+            yield from _keys(value)
+    elif isinstance(node, list):
+        for item in node:
+            yield from _keys(item)
+
+
+def test_data_model_has_no_subject_list():
+    """Subjects are discontinued."""
+    assert "hasSubjectList" not in json.dumps(MODEL)
+    assert "subject" not in {str(k).lower() for k in _keys(MODEL)}
+
+
+def test_create_payload_ignores_dcterms_subject():
+    record = OmekaRecord.parse({"dcterms:subject": [{"@value": "Stadt"}]})
+    body = payload.create(PROJECT, "Parent", record, [])
+    assert not [key for key in body if "Subject" in key]
+
+
+def test_target_fixtures_have_no_subject_list():
+    data = Path(__file__).parent.parent / "data"
+    for path in [*data.glob("example_payload_*"), *data.glob("example_api_get_*")]:
+        assert "hasSubjectList" not in path.read_text(), path.name
