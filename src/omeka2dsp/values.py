@@ -1,5 +1,6 @@
 """Omeka values to DSP values. DSP values to comparison keys."""
 
+import urllib.parse
 import xml.etree.ElementTree as ET
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any, NamedTuple
@@ -101,6 +102,17 @@ def semicolon_text(values: Sequence[OmekaValue]) -> str:
     return next(iter(texts + links), "")
 
 
+def valid_uri(text: str) -> bool:
+    """True for an http(s) URI with a host and no whitespace."""
+    if not text or any(c.isspace() for c in text):
+        return False
+    try:
+        parts = urllib.parse.urlsplit(text)
+    except ValueError:
+        return False
+    return parts.scheme in {"http", "https"} and bool(parts.netloc)
+
+
 def text_entries(values: Iterable[OmekaValue]) -> list[Entry]:
     """One TextValue for each Omeka value. A URI value becomes a standoff link.
 
@@ -147,7 +159,9 @@ def wanted(field: Field, record: OmekaRecord, lists: Sequence[DspList]) -> Wante
         )
         return Wanted((text,) if text else ())
     if field.kind is Kind.RICH_TEXT:
-        return Wanted(tuple(text_entries(source)))
+        good = [v for v in source if not v.id or valid_uri(v.id)]
+        bad = tuple(v.id for v in source if v.id and not valid_uri(v.id))
+        return Wanted(tuple(text_entries(good)), bad)
     if field.kind is Kind.LIST and field.list_key:
         if not field.many and source and first_literal(source) == "":
             # A URI value without a literal is outside the mapping: keep DSP as is.

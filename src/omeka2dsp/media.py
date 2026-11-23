@@ -34,6 +34,13 @@ FILE_VALUES = {
     "Text": ("knora-api:hasTextFileValue", "knora-api:TextFileValue"),
 }
 
+# File extensions that DSP accepts for each class with a file.
+FILE_EXTENSIONS = {
+    "Image": frozenset({"tif", "tiff", "jpg", "jpeg", "jp2", "png", "gif"}),
+    "Document": frozenset({"pdf"}),
+    "Text": frozenset({"csv", "txt", "md", "json"}),
+}
+
 # Private media keep public metadata. Only project members can see the file.
 PRIVATE_FILE_PERMISSIONS = "CR knora-admin:ProjectAdmin|D knora-admin:ProjectMember"
 

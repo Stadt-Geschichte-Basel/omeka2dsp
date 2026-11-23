@@ -6,6 +6,7 @@ from omeka2dsp.values import (
     first_literal,
     labels,
     text_entries,
+    valid_uri,
     wanted,
 )
 
@@ -79,3 +80,30 @@ def test_privacy_flags():
 def test_unresolved_list_labels_are_reported():
     record = OmekaRecord.parse({"dcterms:type": [{"@id": "u", "o:label": "Image"}]})
     assert wanted(FIELD["hasTypeList"], record, []) == ((), ("Image",))
+
+
+def test_valid_uri():
+    assert valid_uri("https://doi.org/10.1/x")
+    assert valid_uri("http://example.org")
+    for bad in [
+        "Hans Holbein d. j.",
+        "http:// www.e-codices.ch",
+        "ftp://x.org",
+        "https://",
+        "",
+    ]:
+        assert not valid_uri(bad)
+
+
+def test_bad_uri_in_rich_text_is_unresolved_not_sent():
+    record = OmekaRecord.parse(
+        {
+            "dcterms:creator": [
+                {"@id": "Hans Holbein d. j.", "o:label": "Holbein"},
+                {"@id": "https://example.org/a", "o:label": "A"},
+            ]
+        }
+    )
+    want = wanted(FIELD["hasCreator"], record, [])
+    assert want.unresolved == ("Hans Holbein d. j.",)
+    assert len(want.values) == 1
