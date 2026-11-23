@@ -17,7 +17,7 @@ classifiers = [
 ]
 requires-python = ">=3.15"
 dependencies = [
-    "omeka-s-client @ git+https://github.com/maehr/omeka-s-client@f1b5d66e5d48f2a98eb854fffad52defc778ee5f",
+    "omeka-s-client>=0.1.0,<0.2",
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
     "requests>=2.25.0",
