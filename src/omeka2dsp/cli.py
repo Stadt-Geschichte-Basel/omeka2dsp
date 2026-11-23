@@ -76,7 +76,10 @@ def sync(
         raise typer.Exit(1)
     settings = _settings()
     selection = Selection(snapshot, selected, sample)
-    run(settings, selection, Options(dry_run, frozenset(recreate or [])))
+    errors = run(settings, selection, Options(dry_run, frozenset(recreate or [])))
+    if errors:
+        log.error(f"Run finished with {errors} errors")
+        raise typer.Exit(1)
 
 
 @app.command("add-text-class")

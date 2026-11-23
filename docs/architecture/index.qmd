@@ -61,6 +61,10 @@ These rules apply to all modules:
 
 ## Sync flow
 
+Two Omeka records can share one `dcterms:identifier`. The second would overwrite the DSP record of the first.
+`sync` skips all records with a duplicate identifier and logs an error for each.
+Any error in a run gives exit code 1 at the end of the run.
+
 `sync` does these steps for each selected item:
 
 ```{mermaid}

@@ -48,6 +48,17 @@ def test_media_by_item_and_select():
     assert select(items, {"abb2"}) == [items[1]]
 
 
+def test_duplicates_map_identifiers_to_omeka_ids():
+    records = [
+        OmekaRecord.parse(item("abb1", 1)),
+        OmekaRecord.parse(item("abb1", 2)),
+        OmekaRecord.parse(item("abb2", 3)),
+        OmekaRecord.parse(item("", 4)),
+        OmekaRecord.parse(item("", 5)),
+    ]
+    assert omeka.duplicates(records) == {"abb1": [1, 2]}
+
+
 def test_items_of_the_item_set_on_all_pages():
     records = [item(f"abb{n}", n) for n in range(1, 151)] + [item("other", 999, 1)]
     fake = FakeOmeka({"items": records})

@@ -2,6 +2,7 @@ import pytest
 import requests
 from typer.testing import CliRunner
 
+from omeka2dsp import cli
 from omeka2dsp.cli import app, read_ids
 
 REQUIRED = ("API_HOST", "INGEST_HOST", "PROJECT_SHORT_CODE", "DSP_USER", "DSP_PWD")
@@ -20,6 +21,18 @@ def test_missing_credentials_stop_before_network(monkeypatch, tmp_path, command)
     monkeypatch.setattr(requests.Session, "request", no_network)
     result = CliRunner().invoke(app, command)
     assert result.exit_code == 1
+
+
+def test_errors_give_exit_code_1(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    for name in REQUIRED:
+        monkeypatch.setenv(name, "set")
+    monkeypatch.setattr(cli, "run", lambda *args: 2)
+    result = CliRunner().invoke(app, ["sync"])
+    assert result.exit_code == 1
+    assert "Run finished with 2 errors" in result.output
+    monkeypatch.setattr(cli, "run", lambda *args: 0)
+    assert CliRunner().invoke(app, ["sync"]).exit_code == 0
 
 
 def test_ids_come_from_options_and_file(tmp_path):
