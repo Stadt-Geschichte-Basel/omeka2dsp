@@ -1,91 +1,61 @@
-"""Read Omeka items and media from the Omeka API or from a snapshot directory."""
+"""Read Omeka items and media with omeka-s-client, from the API or a snapshot."""
 
-import json
-import logging
 from collections import defaultdict
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
-from urllib.parse import urljoin
 
-import requests
+from omeka_s_client import OmekaClient, read_snapshot
 
 from omeka2dsp.settings import Settings
 from omeka2dsp.values import OmekaRecord
 
-log = logging.getLogger(__name__)
 
-# The order of sgb_validator.snapshots.read_snapshot: a "_transformed" file
-# comes before a plain file, and a plain file before a "_raw" file.
-SNAPSHOT_SUFFIXES = ("_transformed", "", "_raw")
-
-
-def _pages(
-    session: requests.Session,
-    url: str,
-    params: dict[str, Any] | None,
-    timeout: float,
-) -> list[Any]:
-    records: list[Any] = []
-    next_url: str | None = url
-    while next_url:
-        # A failed page stops the run. A partial list would skip records.
-        response = session.get(next_url, params=params, timeout=timeout)
-        response.raise_for_status()
-        records.extend(response.json())
-        next_url = response.links.get("next", {}).get("url")
-        params = None
-    return records
+def client(settings: Settings, **overrides: Any) -> OmekaClient:
+    """An Omeka client for the settings. Tests can set transport, sleep and retries."""
+    return OmekaClient(
+        settings.omeka_api_url,
+        key_identity=settings.key_identity,
+        key_credential=settings.key_credential,
+        timeout=settings.http_timeout,
+        cache_busting=True,
+        **overrides,
+    )
 
 
-def _endpoint(settings: Settings, name: str) -> str:
-    # urljoin drops the last path part when the base URL has no "/" at the end.
-    return urljoin(settings.omeka_api_url.rstrip("/") + "/", name)
+def api_items(settings: Settings, omeka: OmekaClient) -> list[OmekaRecord]:
+    """All items of the item set.
+
+    The verified listing repeats the read when the pages do not agree.
+    A failed page raises an OmekaError. A partial list would skip records.
+    """
+    records = omeka.list(
+        "items",
+        filters={"item_set_id": settings.item_set_id},
+        per_page=100,
+        verify=True,
+    )
+    return [OmekaRecord.parse(raw) for raw in records]
 
 
-def _keys(settings: Settings) -> dict[str, Any]:
-    return {
-        "key_identity": settings.key_identity,
-        "key_credential": settings.key_credential,
-    }
-
-
-def api_items(settings: Settings, session: requests.Session) -> list[OmekaRecord]:
-    """All items of the item set."""
-    params = {"item_set_id": settings.item_set_id, "per_page": 100, **_keys(settings)}
-    url = _endpoint(settings, "items")
-    return [
-        OmekaRecord.parse(raw)
-        for raw in _pages(session, url, params, settings.http_timeout)
-    ]
-
-
-def api_media(
-    settings: Settings, session: requests.Session, item: OmekaRecord
-) -> list[OmekaRecord]:
-    params = {"item_id": item.id, **_keys(settings)}
-    url = _endpoint(settings, "media")
-    return [
-        OmekaRecord.parse(raw)
-        for raw in _pages(session, url, params, settings.http_timeout)
-    ]
-
-
-def _read(directory: Path, name: str) -> list[OmekaRecord]:
-    for suffix in SNAPSHOT_SUFFIXES:
-        path = directory / f"{name}{suffix}.json"
-        if path.is_file():
-            data = json.loads(path.read_text(encoding="utf-8"))
-            return [
-                OmekaRecord.parse(raw)
-                for raw in (data if isinstance(data, list) else [data])
-            ]
-    raise FileNotFoundError(f"No {name}*.json in snapshot {directory}")
+def api_media(omeka: OmekaClient, item: OmekaRecord) -> list[OmekaRecord]:
+    if item.id is None:
+        return []
+    records = omeka.list("media", filters={"item_id": item.id}, per_page=100)
+    return [OmekaRecord.parse(raw) for raw in records]
 
 
 def snapshot(directory: Path) -> tuple[list[OmekaRecord], list[OmekaRecord]]:
-    """The items and media of an sgb-data-validator snapshot directory."""
-    return _read(directory, "items"), _read(directory, "media")
+    """The items and media of a snapshot directory.
+
+    The reader prefers a "_transformed" file to a plain file, and a plain file
+    to a "_raw" file. It checks the record counts in each manifest.
+    """
+    data = read_snapshot(directory)
+    return (
+        [OmekaRecord.parse(raw) for raw in data.items],
+        [OmekaRecord.parse(raw) for raw in data.media],
+    )
 
 
 def media_by_item(media: Iterable[OmekaRecord]) -> dict[int, list[OmekaRecord]]:
