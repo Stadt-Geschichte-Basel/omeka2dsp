@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from omeka2dsp.lists import LIST_LABELS, resolve
+from omeka2dsp.lists import LIST_LABELS, find_list, resolve
 from omeka2dsp.values import OmekaValue, labels
 
 MODEL = json.loads(
@@ -15,6 +15,9 @@ MODEL = json.loads(
     )
 )
 MODEL_LISTS = {item["name"]: item for item in MODEL["project"]["lists"]}
+DOC = (Path(__file__).parent.parent / "docs" / "datamodel" / "index.qmd").read_text(
+    encoding="utf-8"
+)
 
 NEW_NODES = {
     "language": {
@@ -72,16 +75,38 @@ def test_node_names_and_labels_are_unique(key):
     assert max(Counter(label_of(n).casefold() for n in nodes).values()) == 1
 
 
-def test_list_labels_stay_findable():
+@pytest.mark.parametrize("key", LIST_LABELS)
+def test_list_labels_stay_findable(key):
     # find_list() finds each list by its DSP label. A rename breaks every lookup.
-    for key, item in MODEL_LISTS.items():
-        if key in LIST_LABELS:
-            assert label_of(item) in LIST_LABELS[key]
+    assert key in MODEL_LISTS
+    assert label_of(MODEL_LISTS[key]) in LIST_LABELS[key]
+    found = find_list(dsp_lists(), key)
+    assert found is not None
+    assert found["rdfs:label"] == label_of(MODEL_LISTS[key])
 
 
 def test_language_comment_names_iso_639_2():
-    comment = MODEL_LISTS["language"]["comments"]["en"]
-    assert "ISO 639-2" in comment
+    comments = MODEL_LISTS["language"]["comments"]
+    assert "ISO 639-2" in comments["en"]
+    assert "ISO-639-2" in comments["de"]
+
+
+def doc_row(key: str) -> str:
+    """The row of a list in the Lists table of the data model docs."""
+    return next(line for line in DOC.splitlines() if line.startswith(f"| `{key}`"))
+
+
+def test_docs_name_the_type_labels():
+    row = doc_row("type")
+    for node in MODEL_LISTS["type"]["nodes"]:
+        assert f"`{label_of(node)}`" in row
+
+
+def test_docs_name_the_language_codes_without_iso_639_1():
+    row = doc_row("language")
+    codes = [label_of(n) for n in MODEL_LISTS["language"]["nodes"]]
+    for code in (code for code in codes if len(code) == 3):
+        assert f"`{code}`" in row
 
 
 def test_omeka_type_label_matches_the_node():

@@ -35,13 +35,14 @@ DSP v40 does not accept CSV as a document file. Thus text and data files go to `
 
 | List       | DSP label                    | Values                                              |
 | ---------- | ---------------------------- | --------------------------------------------------- |
-| `language` | ISO 639-1                    | ISO 639-1 codes, for example `de`. ISO 639-2 codes where no ISO 639-1 code exists: `gsw` and `gmh`. |
+| `language` | ISO 639-1                    | ISO 639-1 codes, for example `de`. Where no ISO 639-1 code exists, the list uses ISO 639-2 codes: `gsw` and `gmh`. |
 | `type`     | DCMI Type                    | DCMI types: `dataset`, `image`, and `interactive resource`. |
 | `license`  | Licenses                     | License URLs, for example CC BY 4.0.                |
 | `temporal` | Stadt.Geschichte.Basel Epoche | Periods, for example `Frühe Neuzeit`.              |
 | `format`   | Internet Media Type          | Media types, for example `image/tiff`.             |
 
 The list lookup ignores case. If a label has no list node, sync keeps the DSP value.
+A node in the model file does not exist on DSP until you create it there. Create new nodes on DSP before the next sync.
 
 The project does not classify subjects with Iconclass, because of time and personnel limits (issues #7 and #19).
 Thus the data model has no subject list and no `hasSubjectList` property.
