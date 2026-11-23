@@ -485,3 +485,6 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/r,git,node,linux,macos,dotenv,python,windows,visualstudiocode
 
 /.quarto/
+
+# Claude Code agent worktrees
+.claude/worktrees/
