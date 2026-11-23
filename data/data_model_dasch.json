@@ -76,8 +76,8 @@
 					"en": "ISO 639-1"
 				},
 				"comments": {
-					"en": "ISO 639-1, two-letter codes for languages",
-					"de": "ISO 639-1, zwei-Buchstaben-Codes für Sprachen"
+					"en": "ISO 639-1, plus ISO 639-2 codes where no ISO 639-1 code exists",
+					"de": "ISO 639-1, dazu ISO-639-2-Codes, wo es keinen ISO-639-1-Code gibt"
 				},
 				"nodes": [
 					{
@@ -115,6 +115,30 @@
 						"labels": {
 							"en": "en"
 						}
+					},
+					{
+						"name": "language_ar",
+						"labels": {
+							"en": "ar"
+						}
+					},
+					{
+						"name": "language_he",
+						"labels": {
+							"en": "he"
+						}
+					},
+					{
+						"name": "language_gsw",
+						"labels": {
+							"en": "gsw"
+						}
+					},
+					{
+						"name": "language_gmh",
+						"labels": {
+							"en": "gmh"
+						}
 					}
 				]
 			},
@@ -138,6 +162,12 @@
 						"name": "type_image",
 						"labels": {
 							"en": "image"
+						}
+					},
+					{
+						"name": "type_interactive_resource",
+						"labels": {
+							"en": "interactive resource"
 						}
 					}
 				]
@@ -191,6 +221,12 @@
 						"name": "license_in_c_ruu",
 						"labels": {
 							"en": "http://rightsstatements.org/vocab/InC-RUU/1.0/"
+						}
+					},
+					{
+						"name": "license_cc_by_nc_nd_4",
+						"labels": {
+							"en": "https://creativecommons.org/licenses/by-nc-nd/4.0/"
 						}
 					}
 				]
@@ -293,6 +329,12 @@
 						"name": "format_text_csv",
 						"labels": {
 							"en": "text/csv"
+						}
+					},
+					{
+						"name": "format_image_gif",
+						"labels": {
+							"en": "image/gif"
 						}
 					}
 				]

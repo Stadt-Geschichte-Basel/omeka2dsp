@@ -35,13 +35,14 @@ DSP v40 does not accept CSV as a document file. Thus text and data files go to `
 
 | List       | DSP label                    | Values                                              |
 | ---------- | ---------------------------- | --------------------------------------------------- |
-| `language` | ISO 639-1                    | Two-letter language codes, for example `de`.       |
-| `type`     | DCMI Type                    | DCMI types, for example `Image` and `Dataset`.     |
+| `language` | ISO 639-1                    | ISO 639-1 codes, for example `de`. Where no ISO 639-1 code exists, the list uses ISO 639-2 codes: `gsw` and `gmh`. |
+| `type`     | DCMI Type                    | DCMI types: `dataset`, `image`, and `interactive resource`. |
 | `license`  | Licenses                     | License URLs, for example CC BY 4.0.                |
 | `temporal` | Stadt.Geschichte.Basel Epoche | Periods, for example `Frühe Neuzeit`.              |
 | `format`   | Internet Media Type          | Media types, for example `image/tiff`.             |
 
 The list lookup ignores case. If a label has no list node, sync keeps the DSP value.
+A node in the model file does not exist on DSP until you create it there. Create new nodes on DSP before the next sync.
 
 SGB stopped assigning subjects. Subjects are discontinued, not deferred.
 SGB first used the OpenGender Schlagwortindex manually.
