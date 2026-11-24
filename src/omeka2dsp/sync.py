@@ -17,7 +17,6 @@ from omeka2dsp.fields import MEDIA, PARENT, Project
 from omeka2dsp.media import (
     FILE_VALUES,
     format_class,
-    hides_file,
     ingest_filename,
     is_placeholder,
     is_placeholder_file,
@@ -191,22 +190,24 @@ def _apply_plan(
         log.info(f"{label}: {change.action}d {what}")
 
 
-def _restrict_files(
-    context: Context, label: str, resource: Mapping[str, Any], hide: bool
+def _set_file_permissions(
+    context: Context, label: str, resource: Mapping[str, Any], restricted: bool
 ) -> None:
-    """Hide the file of a private media. Its metadata stays public."""
-    for prop, value in file_permission_changes(resource, hide):
+    """Make the file permissions follow the Omeka visibility. Metadata stays public."""
+    state = "restricted" if restricted else "public"
+    for prop, value, permissions in file_permission_changes(resource, restricted):
         if context.options.dry_run:
-            log.info(f"{label}: would restrict file permissions ({prop})")
+            log.info(f"{label}: would make the file {state} ({prop})")
             continue
+        body = payload.file_permissions(
+            context.project, resource, prop, value, permissions
+        )
         try:
-            context.dsp.restrict(
-                payload.restrict_file(context.project, resource, prop, value)
-            )
+            context.dsp.restrict(body)
         except DspError as error:
             log.error(f"{label}: file permission update failed: {error}")
             continue
-        log.info(f"{label}: restricted file permissions ({prop})")
+        log.warning(f"{label}: file permissions changed, file is now {state} ({prop})")
 
 
 def sync_item(context: Context, item: OmekaRecord, media_of: MediaOf) -> None:
@@ -270,11 +271,15 @@ def _ingest(context: Context, label: str, media: OmekaRecord) -> str | None:
     try:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "file"
-            context.omeka.download(url, path)
+            downloaded = context.omeka.download(url, path)
             content = path.read_bytes()
             size = size if size is not None else len(content)
         if is_placeholder_file(content):
             log.error(f"{url}: file is the placeholder image; not uploaded")
+            return None
+        if media.sha256 and downloaded.sha256 != media.sha256.lower():
+            # An error or login page must never become a private original.
+            log.error(f"{label}: downloaded file does not match o:sha256; not uploaded")
             return None
         return context.dsp.ingest(name, content)
     except (OmekaError, OSError, requests.RequestException, DspError) as error:
@@ -291,11 +296,10 @@ def sync_media(context: Context, media: OmekaRecord, parent_iri: str | None) -> 
     if label:
         context.synced_media.add(label)
     wanted_class = media_class(media)
-    hide = hides_file(media)
     if is_placeholder(media):
         log.info(f"{label}: placeholder -> metadata only")
     elif media.private:
-        log.info(f"{label}: private media -> metadata only")
+        log.info(f"{label}: private media -> file with restricted permissions")
     elif format_class(media_format(media)) is None:
         log.warning(
             f"{label}: unsupported or missing media type '{media_format(media)}'; "
@@ -312,8 +316,11 @@ def sync_media(context: Context, media: OmekaRecord, parent_iri: str | None) -> 
         replace = False
     if iri and not replace:
         resource = context.dsp.resource(iri)
-        # Hide the file first. A failed metadata change must not leave it public.
-        _restrict_files(context, label, resource, hide)
+        # Set the permissions first. A failed metadata change must not leave a private file public.
+        # A private source keeps its file restricted. A public placeholder leaves
+        # a retained file alone: it can be a restricted original.
+        if media.private or not is_placeholder(media):
+            _set_file_permissions(context, label, resource, media.private)
         _apply_plan(context, label, "media", resource, media)
         return
 
@@ -351,7 +358,7 @@ def sync_media(context: Context, media: OmekaRecord, parent_iri: str | None) -> 
 
     log.info(f"{label}: adding media to {project.name(wanted_class)} ...")
     body = payload.create(
-        project, wanted_class, media, context.lists, parent_iri, filename
+        project, wanted_class, media, context.lists, parent_iri, filename, media.private
     )
     if not _create(context, label, body):
         if filename:

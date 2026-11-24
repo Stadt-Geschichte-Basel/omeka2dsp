@@ -3,6 +3,7 @@ from pathlib import Path
 
 from omeka2dsp import payload
 from omeka2dsp.fields import Project
+from omeka2dsp.media import PRIVATE_FILE_PERMISSIONS
 from omeka2dsp.plan import Change
 from omeka2dsp.values import OmekaRecord
 
@@ -20,6 +21,15 @@ def test_text_payload_has_text_file_value():
         "knora-api:fileValueHasFilename": "x.csv",
     }
     assert body["SGB:linkToParentObjectValue"]["@type"] == "knora-api:LinkValue"
+
+
+def test_restricted_file_value_has_permissions():
+    record = OmekaRecord()
+    restricted = payload.create(PROJECT, "Image", record, [], "p", "x.jp2", True)
+    public = payload.create(PROJECT, "Image", record, [], "p", "x.jp2")
+    key = "knora-api:hasStillImageFileValue"
+    assert restricted[key]["knora-api:hasPermissions"] == PRIVATE_FILE_PERMISSIONS
+    assert "knora-api:hasPermissions" not in public[key]
 
 
 def test_media_payload_has_no_is_part_of():

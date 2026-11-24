@@ -15,6 +15,11 @@ from omeka2dsp import media as media_rules
 from omeka2dsp import sync
 from omeka2dsp.dsp import Dsp, DspError
 from omeka2dsp.fields import Project
+from omeka2dsp.media import (
+    PLACEHOLDER_SHA256,
+    PRIVATE_FILE_PERMISSIONS,
+    PUBLIC_FILE_PERMISSIONS,
+)
 from omeka2dsp.sync import Context, Options, Selection
 from omeka2dsp.values import OmekaRecord
 
@@ -39,6 +44,8 @@ class FakeDsp(Dsp):
     fail: frozenset[str] = frozenset()
     file: bytes = b"a,b"
     resources: dict[str, Any] = field(default_factory=dict)
+    bodies: list[dict] = field(default_factory=list)
+    permission_bodies: list[dict] = field(default_factory=list)
 
     def _call(self, name: str) -> None:
         self.calls.append(name)
@@ -55,6 +62,7 @@ class FakeDsp(Dsp):
 
     def create(self, body):
         self._call("create")
+        self.bodies.append(body)
         return "new-iri"
 
     def change(self, action, body):
@@ -62,6 +70,7 @@ class FakeDsp(Dsp):
 
     def restrict(self, body):
         self._call("restrict")
+        self.permission_bodies.append(body)
 
     def erase(self, body):
         self._call("erase")
@@ -155,6 +164,22 @@ def test_placeholder_file_is_not_ingested(monkeypatch, preflight_ok):
     assert dsp.calls == ["download"]
 
 
+def test_file_with_wrong_sha256_is_not_ingested(preflight_ok, caplog):
+    """An error page instead of a private original must not reach DSP."""
+    dsp = FakeDsp(SETTINGS, requests.Session())
+    wrong = CSV.model_copy(update={"sha256": "0" * 64, "private": True})
+    sync.sync_media(context(dsp), wrong, "parent")
+    assert dsp.calls == ["download"]
+    assert "does not match o:sha256" in caplog.text
+
+
+def test_file_with_matching_sha256_is_ingested(preflight_ok):
+    digest = hashlib.sha256(b"a,b").hexdigest().upper()
+    dsp = FakeDsp(SETTINGS, requests.Session())
+    sync.sync_media(context(dsp), CSV.model_copy(update={"sha256": digest}), "parent")
+    assert dsp.calls == ["download", "ingest", "create"]
+
+
 def test_file_above_max_ingest_bytes_is_not_ingested(preflight_ok, caplog):
     settings = SETTINGS.model_copy(update={"max_ingest_bytes": 1_000_000})
     dsp = FakeDsp(settings, requests.Session())
@@ -228,11 +253,128 @@ def test_private_file_is_restricted_before_metadata_changes(preflight_ok):
     assert dsp.calls[0] == "restrict"
 
 
-def test_private_media_is_created_without_file(preflight_ok):
-    """Safety rule 7."""
+def test_new_private_media_is_created_with_restricted_file(preflight_ok):
+    """A private real file keeps its class. The create body restricts the file."""
     dsp = FakeDsp(SETTINGS, requests.Session())
     sync.sync_media(context(dsp), CSV.model_copy(update={"private": True}), "parent")
+    assert dsp.calls == ["download", "ingest", "create"]
+    body = dsp.bodies[0]
+    assert body["@type"] == "SGB:Text"
+    file_value = body["knora-api:hasTextFileValue"]
+    assert file_value["knora-api:hasPermissions"] == PRIVATE_FILE_PERMISSIONS
+
+
+def test_new_public_media_is_created_without_permissions(preflight_ok):
+    dsp = FakeDsp(SETTINGS, requests.Session())
+    sync.sync_media(context(dsp), CSV, "parent")
+    file_value = dsp.bodies[0]["knora-api:hasTextFileValue"]
+    assert "knora-api:hasPermissions" not in file_value
+
+
+@pytest.mark.parametrize("private", [False, True])
+def test_placeholder_gets_metadata_only(preflight_ok, private):
+    placeholder = CSV.model_copy(
+        update={"sha256": next(iter(PLACEHOLDER_SHA256)), "private": private}
+    )
+    dsp = FakeDsp(SETTINGS, requests.Session())
+    sync.sync_media(context(dsp), placeholder, "parent")
     assert dsp.calls == ["create"]
+    assert dsp.bodies[0]["@type"] == "SGB:ResourceWithoutMedia"
+
+
+def test_existing_private_media_without_file_is_a_class_difference(
+    preflight_ok, caplog
+):
+    """Report it. Do not erase without --recreate."""
+    dsp = in_wrong_class()
+    private = CSV.model_copy(update={"private": True})
+    sync.sync_media(context(dsp), private, "parent")
+    assert "erase" not in dsp.calls and "create" not in dsp.calls
+    assert "use --recreate to fix" in caplog.text
+
+
+def with_file(permissions):
+    return {
+        "img": {
+            "@id": "img",
+            "@type": "SGB:Image",
+            "knora-api:hasStillImageFileValue": {
+                "@id": "v",
+                "@type": "knora-api:StillImageFileValue",
+                "knora-api:hasPermissions": permissions,
+            },
+        }
+    }
+
+
+def image_dsp(permissions):
+    return FakeDsp(
+        SETTINGS,
+        requests.Session(),
+        found={("SGB:Text", "m1"): "img"},
+        resources=with_file(permissions),
+    )
+
+
+def test_public_to_private_changes_permissions_without_recreate(preflight_ok):
+    dsp = image_dsp("V knora-admin:UnknownUser")
+    sync.sync_media(context(dsp), CSV.model_copy(update={"private": True}), "parent")
+    assert dsp.calls[0] == "restrict"
+    assert "erase" not in dsp.calls and "create" not in dsp.calls
+    assert (
+        dsp.permission_bodies[0]["knora-api:hasStillImageFileValue"][
+            "knora-api:hasPermissions"
+        ]
+        == PRIVATE_FILE_PERMISSIONS
+    )
+
+
+def test_private_to_public_changes_permissions_without_recreate(preflight_ok):
+    dsp = image_dsp(PRIVATE_FILE_PERMISSIONS)
+    sync.sync_media(context(dsp), CSV, "parent")
+    assert dsp.calls[0] == "restrict"
+    assert "erase" not in dsp.calls and "create" not in dsp.calls
+    assert (
+        dsp.permission_bodies[0]["knora-api:hasStillImageFileValue"][
+            "knora-api:hasPermissions"
+        ]
+        == PUBLIC_FILE_PERMISSIONS
+    )
+
+
+def placeholder(**update):
+    return CSV.model_copy(update={"sha256": next(iter(PLACEHOLDER_SHA256)), **update})
+
+
+@pytest.mark.parametrize(
+    ("permissions", "private", "calls"),
+    [
+        (PRIVATE_FILE_PERMISSIONS, True, []),
+        ("V knora-admin:UnknownUser", True, ["restrict"]),
+        (PRIVATE_FILE_PERMISSIONS, False, []),
+    ],
+)
+def test_placeholder_never_makes_a_retained_file_public(
+    preflight_ok, permissions, private, calls
+):
+    """A retained original stays restricted. A private placeholder restricts it."""
+    dsp = image_dsp(permissions)
+    dsp.found.clear()
+    dsp.found[("SGB:Image", "m1")] = "img"
+    sync.sync_media(context(dsp), placeholder(private=private), "parent")
+    assert [c for c in dsp.calls if c == "restrict"] == calls
+    for body in dsp.permission_bodies:
+        file_value = body["knora-api:hasStillImageFileValue"]
+        assert file_value["knora-api:hasPermissions"] == PRIVATE_FILE_PERMISSIONS
+
+
+def test_private_item_does_not_restrict_public_media(preflight_ok):
+    """The visibility of the parent item does not set the file permissions."""
+    dsp = FakeDsp(SETTINGS, requests.Session())
+    item = ITEM.model_copy(update={"private": True})
+    sync.sync_item(context(dsp), item, lambda _: [CSV])
+    file_value = dsp.bodies[-1]["knora-api:hasTextFileValue"]
+    assert "knora-api:hasPermissions" not in file_value
 
 
 def test_dry_run_writes_nothing(preflight_ok):

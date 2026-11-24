@@ -32,14 +32,20 @@ def test_data_files_go_to_text_class():
 def test_is_placeholder_by_hash_or_name():
     assert is_placeholder(PLACEHOLDER)
     assert is_placeholder(OmekaRecord.parse({"o:source": "SGB-FDP-Platzhalter.png"}))
+    assert is_placeholder(OmekaRecord.parse({"o:filename": "abc-platzhalter.png"}))
     assert not is_placeholder(OmekaRecord.parse(REAL))
 
 
-def test_private_and_placeholder_media_get_metadata_only():
-    """Safety rule 7."""
+def test_only_a_placeholder_gets_metadata_only():
+    """A private real file keeps its media class (issue #40)."""
     assert media_class(PLACEHOLDER) == "ResourceWithoutMedia"
     assert media_class(OmekaRecord.parse(REAL)) == "Image"
     private = OmekaRecord.parse({**REAL, "o:is_public": False})
+    assert media_class(private) == "Image"
+
+
+def test_private_placeholder_gets_metadata_only():
+    private = PLACEHOLDER.model_copy(update={"private": True})
     assert media_class(private) == "ResourceWithoutMedia"
 
 

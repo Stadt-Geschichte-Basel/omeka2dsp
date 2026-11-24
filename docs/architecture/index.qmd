@@ -78,7 +78,7 @@ flowchart TD
   diff --> media
   create --> media[For each media]
   media --> found{Media on DSP?}
-  found -- "same class" --> mdiff[Plan changes, apply them, restrict private files]
+  found -- "same class" --> mdiff[Plan changes, apply them, set file permissions]
   found -- "other class, no --recreate" --> mdiff
   found -- "no, or other class with --recreate" --> pre2{Preflight OK?}
   pre2 -- no --> keep[Keep DSP as is]
@@ -110,8 +110,9 @@ Each rule has a test in `test/`.
 4. An item without a Parent on DSP has its media skipped.
 5. A failed list request stops the run.
 6. Missing credentials stop the run before network access.
-7. Private and placeholder media get metadata only. Their files are restricted.
+7. A private real file is created with restricted file permissions. A placeholder gets metadata only.
 8. A file that is the placeholder image is not ingested.
+9. A downloaded file whose SHA-256 differs from `o:sha256` is not ingested.
 
 A failed Omeka page, a failed DSP read, and a failed DSP search also stop the run.
 The Omeka client retries transient reads before it fails.

@@ -45,8 +45,12 @@ def create(
     lists: Sequence[DspList],
     parent_iri: str | None = None,
     filename: str | None = None,
+    restricted: bool = False,
 ) -> JsonLd:
-    """The body of POST /v2/resources for an Omeka record."""
+    """The body of POST /v2/resources for an Omeka record.
+
+    A restricted file gets its permissions in the body, so it is never public.
+    """
     body: JsonLd = {
         "@context": context(project),
         "@type": project.name(resource_class),
@@ -71,6 +75,8 @@ def create(
     if filename and resource_class in FILE_VALUES:
         prop, value_type = FILE_VALUES[resource_class]
         body[prop] = {"@type": value_type, "knora-api:fileValueHasFilename": filename}
+        if restricted:
+            body[prop]["knora-api:hasPermissions"] = PRIVATE_FILE_PERMISSIONS
     return body
 
 
@@ -103,10 +109,14 @@ def erase(project: Project, resource: Mapping[str, Any]) -> JsonLd:
     return body
 
 
-def restrict_file(
-    project: Project, resource: Mapping[str, Any], prop: str, value: Entry
+def file_permissions(
+    project: Project,
+    resource: Mapping[str, Any],
+    prop: str,
+    value: Entry,
+    permissions: str,
 ) -> JsonLd:
-    """The body that makes a file visible to project members only."""
+    """The body that sets the permissions of a file value."""
     return {
         "@context": context(project),
         "@id": resource["@id"],
@@ -114,7 +124,7 @@ def restrict_file(
         prop: {
             "@id": value["@id"],
             "@type": value["@type"],
-            "knora-api:hasPermissions": PRIVATE_FILE_PERMISSIONS,
+            "knora-api:hasPermissions": permissions,
         },
     }
 
