@@ -27,7 +27,7 @@ Each media record links to its `Parent` with `linkToParentObject`.
 | `Image`                | `StillImageRepresentation` | An image file: TIFF, JPEG, PNG, or GIF.                  |
 | `Document`             | `DocumentRepresentation`   | A PDF file.                                              |
 | `Text`                 | `TextRepresentation`       | A text or data file: CSV, TXT, Markdown, JSON, or GeoJSON. |
-| `ResourceWithoutMedia` | `Resource`                 | Metadata only: a private file, a placeholder, or an unknown format. |
+| `ResourceWithoutMedia` | `Resource`                 | Metadata only: a placeholder or an unknown format. |
 
 DSP v40 does not accept CSV as a document file. Thus text and data files go to `Text`, which keeps the file unchanged.
 
@@ -87,8 +87,24 @@ A test makes sure that this table and `FIELDS` agree.
 
 ## File permissions
 
-A private media keeps public metadata.
-Only project members can see its file: `CR knora-admin:ProjectAdmin|D knora-admin:ProjectMember`.
+The metadata of all media is public. The Omeka visibility of the media sets the file permissions.
+The visibility of the parent item does not.
+
+| Omeka media        | DSP resource                | DSP file                                  |
+| ------------------ | --------------------------- | ----------------------------------------- |
+| Public, real file  | Media class from the format | Public                                    |
+| Placeholder        | `ResourceWithoutMedia`      | None                                      |
+| Private, real file | Media class from the format | Restricted, set in the create payload     |
+
+A restricted file has these permissions: `CR knora-admin:ProjectAdmin|D knora-admin:ProjectMember`.
+Only project members can see it.
+When the Omeka visibility changes, sync changes the file permissions and logs a warning. It does not recreate the resource.
+
+An existing private media can be a `ResourceWithoutMedia` without a file.
+Sync reports it as a class difference. DSP cannot change the class.
+Run `--dry-run` without `--recreate` to list these media.
+Check the list. Then run `--recreate` for the reviewed identifiers only.
+A recreation gives a new IRI and can break links.
 
 ## References
 

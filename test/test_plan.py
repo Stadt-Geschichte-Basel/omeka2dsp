@@ -1,5 +1,5 @@
 from omeka2dsp.fields import Project
-from omeka2dsp.media import PRIVATE_FILE_PERMISSIONS
+from omeka2dsp.media import PRIVATE_FILE_PERMISSIONS, PUBLIC_FILE_PERMISSIONS
 from omeka2dsp.plan import file_permission_changes, plan
 from omeka2dsp.values import OmekaRecord
 
@@ -140,15 +140,27 @@ def file_resource(permissions):
     }
 
 
-def test_private_file_with_public_permissions_needs_change():
-    public = (
-        "CR knora-admin:ProjectAdmin|D knora-admin:ProjectMember"
-        "|V knora-admin:KnownUser,knora-admin:UnknownUser"
-    )
-    assert len(file_permission_changes(file_resource(public), private=True)) == 1
+PUBLIC = (
+    "CR knora-admin:ProjectAdmin|D knora-admin:ProjectMember"
+    "|V knora-admin:KnownUser,knora-admin:UnknownUser"
+)
 
 
-def test_restricted_or_public_media_need_no_change():
+def test_restricted_file_with_public_permissions_needs_change():
+    found = file_permission_changes(file_resource(PUBLIC), restricted=True)
+    assert [permissions for _, _, permissions in found] == [PRIVATE_FILE_PERMISSIONS]
+
+
+def test_public_file_with_restricted_permissions_needs_change():
     restricted = file_resource(PRIVATE_FILE_PERMISSIONS)
-    assert file_permission_changes(restricted, private=True) == []
-    assert file_permission_changes(file_resource("V x"), private=False) == []
+    found = file_permission_changes(restricted, restricted=False)
+    assert [permissions for _, _, permissions in found] == [PUBLIC_FILE_PERMISSIONS]
+
+
+def test_correct_file_permissions_need_no_change():
+    restricted = file_resource(PRIVATE_FILE_PERMISSIONS)
+    assert file_permission_changes(restricted, restricted=True) == []
+    # A public file keeps its default permissions.
+    assert (
+        file_permission_changes(file_resource("V knora-admin:UnknownUser"), False) == []
+    )

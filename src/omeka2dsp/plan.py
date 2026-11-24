@@ -7,7 +7,11 @@ from pydantic import BaseModel, ConfigDict
 
 from omeka2dsp.fields import Field, Kind, Project, fields_for
 from omeka2dsp.lists import DspList
-from omeka2dsp.media import FILE_VALUES, PRIVATE_FILE_PERMISSIONS
+from omeka2dsp.media import (
+    FILE_VALUES,
+    PRIVATE_FILE_PERMISSIONS,
+    PUBLIC_FILE_PERMISSIONS,
+)
 from omeka2dsp.values import (
     Entry,
     OmekaRecord,
@@ -155,16 +159,30 @@ def _permission_pairs(permissions: str) -> set[tuple[str, str]]:
     return pairs
 
 
+def _is_public(permissions: str) -> bool:
+    """True when anybody can view the file."""
+    return any(
+        group == "knora-admin:UnknownUser"
+        for _, group in _permission_pairs(permissions)
+    )
+
+
 def file_permission_changes(
-    resource: Mapping[str, Any], private: bool
-) -> list[tuple[str, Entry]]:
-    """The file values of a private media that are not yet restricted."""
-    if not private:
-        return []
-    wanted_pairs = _permission_pairs(PRIVATE_FILE_PERMISSIONS)
-    return [
-        (prop, value)
-        for prop, _ in FILE_VALUES.values()
-        for value in dsp_entries(resource, prop)
-        if _permission_pairs(value.get("knora-api:hasPermissions", "")) != wanted_pairs
-    ]
+    resource: Mapping[str, Any], restricted: bool
+) -> list[tuple[str, Entry, str]]:
+    """The file values with wrong permissions, with the permissions to set.
+
+    A restricted file must match PRIVATE_FILE_PERMISSIONS. A public file must
+    be visible to everybody. The default permissions of a public file stay.
+    """
+    changes = []
+    for prop, _ in FILE_VALUES.values():
+        for value in dsp_entries(resource, prop):
+            have = value.get("knora-api:hasPermissions", "")
+            if restricted and _permission_pairs(have) != _permission_pairs(
+                PRIVATE_FILE_PERMISSIONS
+            ):
+                changes.append((prop, value, PRIVATE_FILE_PERMISSIONS))
+            elif not restricted and not _is_public(have):
+                changes.append((prop, value, PUBLIC_FILE_PERMISSIONS))
+    return changes

@@ -44,6 +44,11 @@ FILE_EXTENSIONS = {
 # Private media keep public metadata. Only project members can see the file.
 PRIVATE_FILE_PERMISSIONS = "CR knora-admin:ProjectAdmin|D knora-admin:ProjectMember"
 
+# The permissions that sync sets when a private media becomes public.
+PUBLIC_FILE_PERMISSIONS = (
+    f"{PRIVATE_FILE_PERMISSIONS}|V knora-admin:KnownUser,knora-admin:UnknownUser"
+)
+
 # Omeka uses one placeholder image for sources that we must not publish.
 PLACEHOLDER_SHA256 = frozenset(
     {"2c07e74c08e23923b89470509d095b329e7d77d6bd2e9212b2a773c97ab4c16e"}
@@ -70,13 +75,14 @@ def is_placeholder_file(content: bytes) -> bool:
     return hashlib.sha256(content).hexdigest() in PLACEHOLDER_SHA256
 
 
-def hides_file(record: OmekaRecord) -> bool:
-    """Private and placeholder media get metadata only (issues #12, #13, #14)."""
-    return is_placeholder(record) or record.private
+def restricts_file(record: OmekaRecord) -> bool:
+    """A private real file goes to DSP with restricted permissions (issue #40)."""
+    return record.private and not is_placeholder(record)
 
 
 def media_class(record: OmekaRecord) -> str:
-    if hides_file(record):
+    """A placeholder gets metadata only. A private real file keeps its class."""
+    if is_placeholder(record):
         return WITHOUT_MEDIA
     return format_class(media_format(record)) or WITHOUT_MEDIA
 

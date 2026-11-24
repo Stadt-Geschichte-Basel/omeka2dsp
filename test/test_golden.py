@@ -84,6 +84,9 @@ def payloads():
                 ("ResourceWithoutMedia", None),
             ]
         },
+        "Image_private": payload.create(
+            PROJECT, "Image", media, LISTS, PARENT_IRI, "x.jp2", restricted=True
+        ),
     }
 
 
@@ -109,7 +112,8 @@ def check(name, actual):
 
 
 @pytest.mark.parametrize(
-    "name", ["parent", "Image", "Text", "Document", "ResourceWithoutMedia"]
+    "name",
+    ["parent", "Image", "Image_private", "Text", "Document", "ResourceWithoutMedia"],
 )
 def test_create_payload(name):
     check(f"create_{name}", payloads()[name])
