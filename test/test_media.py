@@ -5,7 +5,6 @@ from omeka2dsp.media import (
     is_placeholder,
     is_placeholder_file,
     media_class,
-    restricts_file,
 )
 from omeka2dsp.values import OmekaRecord
 
@@ -33,6 +32,7 @@ def test_data_files_go_to_text_class():
 def test_is_placeholder_by_hash_or_name():
     assert is_placeholder(PLACEHOLDER)
     assert is_placeholder(OmekaRecord.parse({"o:source": "SGB-FDP-Platzhalter.png"}))
+    assert is_placeholder(OmekaRecord.parse({"o:filename": "abc-platzhalter.png"}))
     assert not is_placeholder(OmekaRecord.parse(REAL))
 
 
@@ -42,14 +42,11 @@ def test_only_a_placeholder_gets_metadata_only():
     assert media_class(OmekaRecord.parse(REAL)) == "Image"
     private = OmekaRecord.parse({**REAL, "o:is_public": False})
     assert media_class(private) == "Image"
-    assert restricts_file(private)
-    assert not restricts_file(OmekaRecord.parse(REAL))
 
 
-def test_private_placeholder_is_not_restricted():
+def test_private_placeholder_gets_metadata_only():
     private = PLACEHOLDER.model_copy(update={"private": True})
     assert media_class(private) == "ResourceWithoutMedia"
-    assert not restricts_file(private)
 
 
 def test_placeholder_bytes_are_detected():

@@ -157,6 +157,11 @@ def test_public_file_with_restricted_permissions_needs_change():
     assert [permissions for _, _, permissions in found] == [PUBLIC_FILE_PERMISSIONS]
 
 
+def test_restricted_view_is_not_public():
+    found = file_permission_changes(file_resource("RV knora-admin:UnknownUser"), False)
+    assert [permissions for _, _, permissions in found] == [PUBLIC_FILE_PERMISSIONS]
+
+
 def test_correct_file_permissions_need_no_change():
     restricted = file_resource(PRIVATE_FILE_PERMISSIONS)
     assert file_permission_changes(restricted, restricted=True) == []

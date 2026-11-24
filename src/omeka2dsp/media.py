@@ -64,20 +64,14 @@ def format_class(media_type: str) -> str | None:
 
 
 def is_placeholder(record: OmekaRecord) -> bool:
-    return (
-        record.sha256 in PLACEHOLDER_SHA256
-        or "platzhalter" in (record.source or "").lower()
-    )
+    """The checksum or the marker in o:source or o:filename (as on the website)."""
+    names = f"{record.source} {record.filename}".lower()
+    return record.sha256 in PLACEHOLDER_SHA256 or "platzhalter" in names
 
 
 def is_placeholder_file(content: bytes) -> bool:
     """True when the bytes are the placeholder, also when o:sha256 is wrong."""
     return hashlib.sha256(content).hexdigest() in PLACEHOLDER_SHA256
-
-
-def restricts_file(record: OmekaRecord) -> bool:
-    """A private real file goes to DSP with restricted permissions (issue #40)."""
-    return record.private and not is_placeholder(record)
 
 
 def media_class(record: OmekaRecord) -> str:

@@ -22,7 +22,6 @@ from omeka2dsp.media import (
     is_placeholder_file,
     media_class,
     media_format,
-    restricts_file,
 )
 from omeka2dsp.plan import file_permission_changes, plan
 from omeka2dsp.preflight import preflight
@@ -293,10 +292,9 @@ def sync_media(context: Context, media: OmekaRecord, parent_iri: str | None) -> 
     if label:
         context.synced_media.add(label)
     wanted_class = media_class(media)
-    restricted = restricts_file(media)
     if is_placeholder(media):
         log.info(f"{label}: placeholder -> metadata only")
-    elif restricted:
+    elif media.private:
         log.info(f"{label}: private media -> file with restricted permissions")
     elif format_class(media_format(media)) is None:
         log.warning(
@@ -315,7 +313,10 @@ def sync_media(context: Context, media: OmekaRecord, parent_iri: str | None) -> 
     if iri and not replace:
         resource = context.dsp.resource(iri)
         # Set the permissions first. A failed metadata change must not leave a private file public.
-        _set_file_permissions(context, label, resource, restricted)
+        # A private source keeps its file restricted. A public placeholder leaves
+        # a retained file alone: it can be a restricted original.
+        if media.private or not is_placeholder(media):
+            _set_file_permissions(context, label, resource, media.private)
         _apply_plan(context, label, "media", resource, media)
         return
 
@@ -353,7 +354,7 @@ def sync_media(context: Context, media: OmekaRecord, parent_iri: str | None) -> 
 
     log.info(f"{label}: adding media to {project.name(wanted_class)} ...")
     body = payload.create(
-        project, wanted_class, media, context.lists, parent_iri, filename, restricted
+        project, wanted_class, media, context.lists, parent_iri, filename, media.private
     )
     if not _create(context, label, body):
         if filename:

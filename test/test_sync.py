@@ -326,6 +326,32 @@ def test_private_to_public_changes_permissions_without_recreate(preflight_ok):
     )
 
 
+def placeholder(**update):
+    return CSV.model_copy(update={"sha256": next(iter(PLACEHOLDER_SHA256)), **update})
+
+
+@pytest.mark.parametrize(
+    ("permissions", "private", "calls"),
+    [
+        (PRIVATE_FILE_PERMISSIONS, True, []),
+        ("V knora-admin:UnknownUser", True, ["restrict"]),
+        (PRIVATE_FILE_PERMISSIONS, False, []),
+    ],
+)
+def test_placeholder_never_makes_a_retained_file_public(
+    preflight_ok, permissions, private, calls
+):
+    """A retained original stays restricted. A private placeholder restricts it."""
+    dsp = image_dsp(permissions)
+    dsp.found.clear()
+    dsp.found[("SGB:Image", "m1")] = "img"
+    sync.sync_media(context(dsp), placeholder(private=private), "parent")
+    assert [c for c in dsp.calls if c == "restrict"] == calls
+    for body in dsp.permission_bodies:
+        file_value = body["knora-api:hasStillImageFileValue"]
+        assert file_value["knora-api:hasPermissions"] == PRIVATE_FILE_PERMISSIONS
+
+
 def test_private_item_does_not_restrict_public_media(preflight_ok):
     """The visibility of the parent item does not set the file permissions."""
     dsp = FakeDsp(SETTINGS, requests.Session())

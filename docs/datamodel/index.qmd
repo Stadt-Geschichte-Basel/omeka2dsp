@@ -99,6 +99,8 @@ The visibility of the parent item does not.
 A restricted file has these permissions: `CR knora-admin:ProjectAdmin|D knora-admin:ProjectMember`.
 Only project members can see it.
 When the Omeka visibility changes, sync changes the file permissions and logs a warning. It does not recreate the resource.
+A placeholder never makes a retained file public. A private placeholder restricts it. A public placeholder leaves it unchanged.
+Sync detects a placeholder by its checksum, or by the marker "platzhalter" in `o:source` or `o:filename`.
 
 An existing private media can be a `ResourceWithoutMedia` without a file.
 Sync reports it as a class difference. DSP cannot change the class.

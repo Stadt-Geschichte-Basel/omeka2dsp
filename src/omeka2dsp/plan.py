@@ -160,10 +160,10 @@ def _permission_pairs(permissions: str) -> set[tuple[str, str]]:
 
 
 def _is_public(permissions: str) -> bool:
-    """True when anybody can view the file."""
+    """True when anybody can view the file. RV (restricted view) is not enough."""
     return any(
-        group == "knora-admin:UnknownUser"
-        for _, group in _permission_pairs(permissions)
+        code in {"V", "M", "D", "CR"} and group == "knora-admin:UnknownUser"
+        for code, group in _permission_pairs(permissions)
     )
 
 
