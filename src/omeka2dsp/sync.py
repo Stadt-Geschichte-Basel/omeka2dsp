@@ -271,11 +271,15 @@ def _ingest(context: Context, label: str, media: OmekaRecord) -> str | None:
     try:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "file"
-            context.omeka.download(url, path)
+            downloaded = context.omeka.download(url, path)
             content = path.read_bytes()
             size = size if size is not None else len(content)
         if is_placeholder_file(content):
             log.error(f"{url}: file is the placeholder image; not uploaded")
+            return None
+        if media.sha256 and downloaded.sha256 != media.sha256.lower():
+            # An error or login page must never become a private original.
+            log.error(f"{label}: downloaded file does not match o:sha256; not uploaded")
             return None
         return context.dsp.ingest(name, content)
     except (OmekaError, OSError, requests.RequestException, DspError) as error:

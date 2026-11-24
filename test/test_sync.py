@@ -164,6 +164,22 @@ def test_placeholder_file_is_not_ingested(monkeypatch, preflight_ok):
     assert dsp.calls == ["download"]
 
 
+def test_file_with_wrong_sha256_is_not_ingested(preflight_ok, caplog):
+    """An error page instead of a private original must not reach DSP."""
+    dsp = FakeDsp(SETTINGS, requests.Session())
+    wrong = CSV.model_copy(update={"sha256": "0" * 64, "private": True})
+    sync.sync_media(context(dsp), wrong, "parent")
+    assert dsp.calls == ["download"]
+    assert "does not match o:sha256" in caplog.text
+
+
+def test_file_with_matching_sha256_is_ingested(preflight_ok):
+    digest = hashlib.sha256(b"a,b").hexdigest().upper()
+    dsp = FakeDsp(SETTINGS, requests.Session())
+    sync.sync_media(context(dsp), CSV.model_copy(update={"sha256": digest}), "parent")
+    assert dsp.calls == ["download", "ingest", "create"]
+
+
 def test_file_above_max_ingest_bytes_is_not_ingested(preflight_ok, caplog):
     settings = SETTINGS.model_copy(update={"max_ingest_bytes": 1_000_000})
     dsp = FakeDsp(settings, requests.Session())

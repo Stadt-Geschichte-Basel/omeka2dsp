@@ -112,6 +112,7 @@ Each rule has a test in `test/`.
 6. Missing credentials stop the run before network access.
 7. A private real file is created with restricted file permissions. A placeholder gets metadata only.
 8. A file that is the placeholder image is not ingested.
+9. A downloaded file whose SHA-256 differs from `o:sha256` is not ingested.
 
 A failed Omeka page, a failed DSP read, and a failed DSP search also stop the run.
 The Omeka client retries transient reads before it fails.
