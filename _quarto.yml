@@ -47,7 +47,7 @@ website:
           - text: License (Data)
             href: LICENSE-CCBY.md
           - text: License (Code)
-            href: LICENSE-AGPL.md
+            href: LICENSE.md
           - text: Security
             href: SECURITY.md
       - section: Documentation
@@ -56,15 +56,8 @@ website:
             href: docs/architecture/index.qmd
           - text: Data model
             href: docs/datamodel/index.qmd
-      - section: About
+      - text: About
         href: project-management/about.qmd
-        contents:
-          - text: Communication
-            href: project-management/communication.qmd
-          - text: People
-            href: project-management/people.qmd
-          - text: Report
-            href: report.qmd
 format:
   html:
     toc: true

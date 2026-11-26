@@ -3,7 +3,7 @@
 omeka2dsp copies the research data of [Stadt.Geschichte.Basel (SGB)](https://stadtgeschichtebasel.ch/) from Omeka S to the [DaSCH Service Platform (DSP)](https://www.dasch.swiss/) for long-term preservation.
 It creates new records, changes records that are different, and uploads the media files.
 
-[![Code license](https://img.shields.io/github/license/Stadt-Geschichte-Basel/omeka2dsp.svg)](LICENSE-AGPL.md)
+[![Code license](https://img.shields.io/github/license/Stadt-Geschichte-Basel/omeka2dsp.svg)](LICENSE.md)
 [![GitHub issues](https://img.shields.io/github/issues/Stadt-Geschichte-Basel/omeka2dsp.svg)](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)
 
 ```mermaid
@@ -116,5 +116,5 @@ Report security problems as [SECURITY.md](SECURITY.md) tells you.
 
 ## License
 
-- Code: GNU Affero General Public License v3.0. See [LICENSE-AGPL.md](LICENSE-AGPL.md).
+- Code: GNU Affero General Public License v3.0. See [LICENSE.md](LICENSE.md).
 - Data: Creative Commons Attribution 4.0 International. See [LICENSE-CCBY.md](LICENSE-CCBY.md).
