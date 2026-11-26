@@ -23,7 +23,9 @@ Use it for a migration test on the DSP test server and for the final migration.
    uv run omeka2dsp sync --snapshot SNAPSHOT_DIR --log-file 2-full.log
    ```
 
-5. Do a second dry run. It must log no changes.
+5. Do a second dry run.
+   It may log `would create` only for the records that had errors in step 4.
+   All other records must log "exists already, no changes".
 
    ```bash
    uv run omeka2dsp sync --snapshot SNAPSHOT_DIR --dry-run --log-file 3-verify.log

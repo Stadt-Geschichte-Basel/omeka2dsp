@@ -79,7 +79,9 @@ uv run omeka2dsp sync --snapshot SNAPSHOT_DIR --ids-file test_ids.txt --dry-run
 uv run omeka2dsp sync --snapshot SNAPSHOT_DIR --ids-file test_ids.txt
 ```
 
-After the upload, a second dry run must log no changes.
+After the upload, do a second dry run.
+It may log `would create` only for the records that had errors in the upload.
+All other records must log "exists already, no changes".
 
 Each `sync` run writes its log to `data_2_dasch.log` and replaces the old log.
 Give `--log-file FILE` to keep the log of each run.
