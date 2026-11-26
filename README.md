@@ -3,7 +3,7 @@
 omeka2dsp copies the research data of [Stadt.Geschichte.Basel (SGB)](https://stadtgeschichtebasel.ch/) from Omeka S to the [DaSCH Service Platform (DSP)](https://www.dasch.swiss/) for long-term preservation.
 It creates new records, changes records that are different, and uploads the media files.
 
-[![Code license](https://img.shields.io/github/license/Stadt-Geschichte-Basel/omeka2dsp.svg)](LICENSE-AGPL.md)
+[![Code license](https://img.shields.io/github/license/Stadt-Geschichte-Basel/omeka2dsp.svg)](LICENSE.md)
 [![GitHub issues](https://img.shields.io/github/issues/Stadt-Geschichte-Basel/omeka2dsp.svg)](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues)
 
 ```mermaid
@@ -17,6 +17,7 @@ graph LR
 
 - [Architecture](docs/architecture/index.qmd): modules, sync flow, and safety rules.
 - [Data model](docs/datamodel/index.qmd): DSP classes, lists, and the mapping table.
+- [Full run](docs/full-run/index.qmd): steps, run time, and the known DSP ingest errors.
 
 ## Setup
 
@@ -35,22 +36,24 @@ Then write your values into `.env`.
 
 omeka2dsp reads `.env` and the environment.
 If a required value is missing, the command stops before it connects to a server.
-`SYNC_WORKERS` sets how many items sync at the same time. Use `1` to sync one item at a time.
 
-| Variable             | Required | Default                       |
-| -------------------- | -------- | ----------------------------- |
-| `API_HOST`           | yes      |                               |
-| `INGEST_HOST`        | yes      |                               |
-| `PROJECT_SHORT_CODE` | yes      |                               |
-| `DSP_USER`           | yes      |                               |
-| `DSP_PWD`            | yes      |                               |
-| `ONTOLOGY_NAME`      | no       | `SGB`                         |
-| `ITEM_SET_ID`        | no       | `10780`                       |
-| `OMEKA_API_URL`      | no       | `https://omeka.unibe.ch/api/` |
-| `KEY_IDENTITY`       | no       |                               |
-| `KEY_CREDENTIAL`     | no       |                               |
-| `HTTP_TIMEOUT`       | no       | `30` (seconds)                |
-| `SYNC_WORKERS`       | no       | `4`                           |
+| Variable             | Required | Default                       | Content                                                           |
+| -------------------- | -------- | ----------------------------- | ----------------------------------------------------------------- |
+| `API_HOST`           | yes      |                               | DSP API, for example `https://api.dasch.swiss`.                   |
+| `INGEST_HOST`        | yes      |                               | DSP ingest service, for example `https://ingest.dasch.swiss`.     |
+| `PROJECT_SHORT_CODE` | yes      |                               | DSP project short code, for example `4001`.                       |
+| `DSP_USER`           | yes      |                               | DSP user email.                                                   |
+| `DSP_PWD`            | yes      |                               | DSP password.                                                     |
+| `ONTOLOGY_NAME`      | no       | `SGB`                         | Name of the project ontology on DSP.                              |
+| `ITEM_SET_ID`        | no       | `10780`                       | Omeka item set to sync.                                           |
+| `OMEKA_API_URL`      | no       | `https://omeka.unibe.ch/api/` | Omeka S API.                                                      |
+| `KEY_IDENTITY`       | no       |                               | Omeka API key. Without a key, private items are missing.          |
+| `KEY_CREDENTIAL`     | no       |                               | Omeka API key secret.                                             |
+| `HTTP_TIMEOUT`       | no       | `30` (seconds)                | Timeout for each request.                                         |
+| `INGEST_TIMEOUT`     | no       | `600` (seconds)               | Timeout for each file upload. Use `3600` for files of several GB. |
+| `DSP_RETRIES`        | no       | `20`                          | Retries when DSP answers 429 Too Many Requests.                   |
+| `MAX_INGEST_BYTES`   | no       | no limit                      | Files above this size are not ingested.                           |
+| `SYNC_WORKERS`       | no       | `4`                           | Items that sync at the same time. `1` syncs one item at a time.   |
 
 ## Usage
 
@@ -76,9 +79,12 @@ uv run omeka2dsp sync --snapshot SNAPSHOT_DIR --ids-file test_ids.txt --dry-run
 uv run omeka2dsp sync --snapshot SNAPSHOT_DIR --ids-file test_ids.txt
 ```
 
-After the upload, a second dry run must log no changes.
+After the upload, do a second dry run.
+It may log `would create` only for the records that had errors in the upload.
+All other records must log "exists already, no changes".
 
 Each `sync` run writes its log to `data_2_dasch.log` and replaces the old log.
+Give `--log-file FILE` to keep the log of each run.
 
 | Option            | Effect                                                             |
 | ----------------- | ------------------------------------------------------------------ |
@@ -88,6 +94,7 @@ Each `sync` run writes its log to `data_2_dasch.log` and replaces the old log.
 | `--sample N`      | Select N random items.                                             |
 | `--dry-run`       | Check the payloads and log the changes. Write nothing to DSP.      |
 | `--recreate ID`   | Erase a media record in the wrong class and create it again.       |
+| `--log-file FILE` | Write the log to this file. The default is `data_2_dasch.log`.     |
 
 `omeka2dsp add-text-class` prints the request that adds the `Text` class to the DSP ontology.
 Add `--apply` to send the request. This needs a DSP user with project-admin rights.
@@ -116,5 +123,5 @@ Report security problems as [SECURITY.md](SECURITY.md) tells you.
 
 ## License
 
-- Code: GNU Affero General Public License v3.0. See [LICENSE-AGPL.md](LICENSE-AGPL.md).
+- Code: GNU Affero General Public License v3.0. See [LICENSE.md](LICENSE.md).
 - Data: Creative Commons Attribution 4.0 International. See [LICENSE-CCBY.md](LICENSE-CCBY.md).

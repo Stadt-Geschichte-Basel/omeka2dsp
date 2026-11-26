@@ -1,27 +1,10 @@
-# Security Policy
+# Security policy
 
-<!--
-## Supported Versions
+## Report a vulnerability
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Send an email to info@stadtgeschichtebasel.ch.
+Do not open a public issue.
+Give a description of the problem, the steps to reproduce it, and the affected version.
+If you know a mitigation, add it.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
--->
-
-## Reporting a Vulnerability
-
-<!--
-Use this section to tell people how to report a vulnerability.
-
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
--->
-
-To report a security issue, please email info@stadtgeschichtebasel.ch with a description of the issue, the steps you took to create the issue, affected versions, and, if known, mitigations for the issue. This project follows a 90 day disclosure timeline.
+This project follows a 90-day disclosure timeline.

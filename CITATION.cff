@@ -1,1 +1,18 @@
-# Go to https://citation-file-format.github.io/ to learn more about the Citation File Format.
+cff-version: 1.2.0
+message: If you use this software, please cite it as below.
+title: omeka2dsp
+abstract: Migrate the research data of Stadt.Geschichte.Basel from Omeka S to the DaSCH Service Platform (DSP).
+type: software
+authors:
+  - name: Stadt.Geschichte.Basel
+  - family-names: Görlich
+    given-names: Nico
+repository-code: https://github.com/Stadt-Geschichte-Basel/omeka2dsp
+url: https://Stadt-Geschichte-Basel.github.io/omeka2dsp/
+license: AGPL-3.0-or-later
+keywords:
+  - Omeka S
+  - DaSCH
+  - DSP
+  - long-term preservation
+  - research data

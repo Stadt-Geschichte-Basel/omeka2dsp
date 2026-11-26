@@ -1,0 +1,68 @@
+---
+title: Full run
+date-modified: last-modified
+---
+
+A full run syncs the complete item set to DSP.
+Use it for a migration test on the DSP test server and for the final migration.
+
+## Procedure
+
+1. Make a fresh snapshot with [sgb-data-validator](https://github.com/Stadt-Geschichte-Basel/sgb-data-validator) (`sgb download`, `sgb transform`).
+   The snapshot contains the private items. The Omeka keys in `.env` can miss private items.
+2. Set `INGEST_TIMEOUT="3600"` in `.env`. Some files have several GB.
+3. Do a dry run. Check the log for errors before you continue.
+
+   ```bash
+   uv run omeka2dsp sync --snapshot SNAPSHOT_DIR --dry-run --log-file 1-dry-run.log
+   ```
+
+4. Do the full run.
+
+   ```bash
+   uv run omeka2dsp sync --snapshot SNAPSHOT_DIR --log-file 2-full.log
+   ```
+
+5. Do a second dry run.
+   It may log `would create` only for the records that had errors in step 4.
+   All other records must log "exists already, no changes".
+
+   ```bash
+   uv run omeka2dsp sync --snapshot SNAPSHOT_DIR --dry-run --log-file 3-verify.log
+   ```
+
+6. Find the errors in the logs: `grep " - ERROR - " 2-full.log`.
+
+A second full run is safe. It creates only the records that are missing and changes only the values that are different.
+To ingest the files that failed, run `sync` again with `--ids-file` and the item identifiers.
+
+## Run time
+
+The test run of 2026-11-26 synced 1261 items and 1461 media with one worker.
+It took 4 h 43 min. 2694 of 2722 resources and 1197 files arrived on DSP.
+Most of the time goes to the file ingest: DSP converts each image to JPEG 2000 before it answers.
+`SYNC_WORKERS` makes the run faster. Ask DaSCH before you use more than 4 workers on their servers.
+
+## Known DSP ingest errors
+
+These errors come from Sipi, the image server of DSP. The sync logs them as `file transfer failed` and continues with the next record.
+Issue [#30](https://github.com/Stadt-Geschichte-Basel/omeka2dsp/issues/30) tracks them with DaSCH.
+
+| Log text                                     | Step           | Meaning                                               | Files on 2026-11-26 |
+| -------------------------------------------- | -------------- | ----------------------------------------------------- | ------------------- |
+| `sipi, convert` ... `137)`                   | convert        | Sipi ran out of memory. TIFF files of 2 GB and more.  | 2                   |
+| `decode exceeded the 120000 ms deadline`     | query          | Sipi stopped the check of a large converted file.     | 2                   |
+| `ICC-CMS error: not an ICC profile` ... `139)` | query          | The color profile of the file is broken. Often CMYK.  | 12                  |
+| `Cannot convert text encoding from 'UCS-2LE'` | query          | The EXIF comment uses an encoding that Sipi rejects.  | 3                   |
+| `No valid IPTC data!`                        | ingest         | The IPTC metadata of the file is broken.              | 3                   |
+| `Kakadu exception`                           | convert        | Sipi could not write the JPEG 2000 file.              | 1                   |
+| `Invalid value for: path parameter filename` | ingest         | The ingest service does not accept the file name. Seen with a GIF file. | 1   |
+
+DSP also rejects some values in the metadata:
+
+| Log text      | Meaning                                                                                                         |
+| ------------- | --------------------------------------------------------------------------------------------------------------- |
+| `URI invalid` | DSP rejects a URI with a second URL in its path, for example a `web.archive.org` link. The record is not created. |
+
+When the file ingest works and the create fails, the log shows "file ... is ingested but has no resource on DSP".
+Ask DaSCH to remove this file.

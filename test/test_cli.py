@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 import requests
 from typer.testing import CliRunner
@@ -33,6 +35,25 @@ def test_errors_give_exit_code_1(monkeypatch, tmp_path):
     assert "Run finished with 2 errors" in result.output
     monkeypatch.setattr(cli, "run", lambda *args: 0)
     assert CliRunner().invoke(app, ["sync"]).exit_code == 0
+
+
+def test_log_goes_to_log_file_without_http_lines(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    for name in REQUIRED:
+        monkeypatch.setenv(name, "set")
+
+    def fake_run(*args):
+        logging.getLogger("httpx2").info("HTTP Request: GET https://example.org")
+        logging.getLogger("omeka2dsp.sync").info("abb1: resource created on DaSCH")
+        return 0
+
+    monkeypatch.setattr(cli, "run", fake_run)
+    result = CliRunner().invoke(app, ["sync", "--log-file", "run.log"])
+    assert result.exit_code == 0
+    text = (tmp_path / "run.log").read_text(encoding="utf-8")
+    assert "abb1: resource created on DaSCH" in text
+    assert "HTTP Request" not in text
+    assert not (tmp_path / cli.LOG_FILE).exists()
 
 
 def test_ids_come_from_options_and_file(tmp_path):
