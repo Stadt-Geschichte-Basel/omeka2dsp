@@ -31,6 +31,16 @@ def test_defaults_and_secret(env):
     assert "secret" not in repr(settings)
 
 
+def test_sync_workers_must_be_at_least_one(env):
+    for name, value in REQUIRED.items():
+        env.setenv(name, value)
+    env.setenv("SYNC_WORKERS", "0")
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+    env.setenv("SYNC_WORKERS", "2")
+    assert Settings(_env_file=None).sync_workers == 2
+
+
 @pytest.mark.parametrize("value", [None, "", "  "])
 def test_missing_or_empty_required_value_fails(env, value):
     for name, setting in REQUIRED.items():

@@ -35,6 +35,7 @@ Then write your values into `.env`.
 
 omeka2dsp reads `.env` and the environment.
 If a required value is missing, the command stops before it connects to a server.
+`SYNC_WORKERS` sets how many items sync at the same time. Use `1` to sync one item at a time.
 
 | Variable             | Required | Default                       |
 | -------------------- | -------- | ----------------------------- |
@@ -49,6 +50,7 @@ If a required value is missing, the command stops before it connects to a server
 | `KEY_IDENTITY`       | no       |                               |
 | `KEY_CREDENTIAL`     | no       |                               |
 | `HTTP_TIMEOUT`       | no       | `30` (seconds)                |
+| `SYNC_WORKERS`       | no       | `4`                           |
 
 ## Usage
 

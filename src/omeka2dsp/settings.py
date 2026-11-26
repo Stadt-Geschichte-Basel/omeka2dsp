@@ -1,6 +1,6 @@
 """Settings from .env and the environment."""
 
-from pydantic import SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     ingest_timeout: float = 600
     dsp_retries: int = 20
     max_ingest_bytes: int | None = None
+    sync_workers: int = Field(default=4, ge=1)
 
     @field_validator(
         "key_identity", "key_credential", "max_ingest_bytes", mode="before"
