@@ -61,14 +61,19 @@ def sync(
         list[str] | None,
         typer.Option(help="Erase this media in the wrong class and create it again."),
     ] = None,
+    log_file: Annotated[
+        Path, typer.Option(help="Write the log to this file. It replaces the old file.")
+    ] = Path(LOG_FILE),
 ) -> None:
     """Sync the items of the item set and their media to DSP."""
     logging.basicConfig(
         level=logging.INFO,
         format=LOG_FORMAT,
-        handlers=[logging.StreamHandler(), logging.FileHandler(LOG_FILE, mode="w")],
+        handlers=[logging.StreamHandler(), logging.FileHandler(log_file, mode="w")],
         force=True,
     )
+    # omeka-s-client logs each HTTP request at INFO. The run log needs only failures.
+    logging.getLogger("httpx2").setLevel(logging.WARNING)
     selected = read_ids(ids, ids_file)
     if selected is not None and not selected:
         # An empty selection must not become a sync of the full item set.
