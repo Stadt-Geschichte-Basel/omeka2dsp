@@ -30,6 +30,8 @@ website:
         href: docs/architecture/index.qmd
       - text: Data model
         href: docs/datamodel/index.qmd
+      - text: Full run
+        href: docs/full-run/index.qmd
       - text: About
         href: project-management/about.qmd
 
@@ -56,6 +58,8 @@ website:
             href: docs/architecture/index.qmd
           - text: Data model
             href: docs/datamodel/index.qmd
+          - text: Full run
+            href: docs/full-run/index.qmd
       - text: About
         href: project-management/about.qmd
 format:

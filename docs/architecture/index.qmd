@@ -54,8 +54,10 @@ These rules apply to all modules:
 - Data that crosses a boundary has a type. Pydantic models parse Omeka records and settings.
 - All models are frozen. A function returns a new value and does not change its input.
 - No module reads the environment at import time. `Settings` loads once and goes down as an argument.
-- Omeka requests and file downloads use one [omeka-s-client](https://github.com/maehr/omeka-s-client) `OmekaClient`.
-- DSP requests use one `requests.Session`.
+- Omeka requests and file downloads use an [omeka-s-client](https://github.com/maehr/omeka-s-client) `OmekaClient`.
+- DSP requests use a `requests.Session`.
+- `SYNC_WORKERS` items sync at the same time. Each worker thread has its own `OmekaClient` and its own `requests.Session`.
+- A failed Omeka page or DSP search in one worker stops all workers.
 - All requests use the timeout `HTTP_TIMEOUT`. File uploads to the ingest service use `INGEST_TIMEOUT`.
 - `MAX_INGEST_BYTES` is optional. The sync does not ingest a file above this size, because Sipi runs out of memory on very large files.
 - DSP requests retry when DSP answers 429. `DSP_RETRIES` sets the number of retries.
