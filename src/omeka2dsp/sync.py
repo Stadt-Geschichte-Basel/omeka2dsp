@@ -7,7 +7,7 @@ import tempfile
 import threading
 import time
 from collections.abc import Callable, Mapping
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -189,12 +189,16 @@ def _sync_parallel(
         with ThreadPoolExecutor(
             max_workers=settings.sync_workers, initializer=start_worker
         ) as pool:
-            futures = [
-                pool.submit(lambda item=item: sync_item(local.context, item, media_of))
-                for item in items
-            ]
             try:
-                for future in futures:
+                futures = [
+                    pool.submit(
+                        lambda item=item: sync_item(local.context, item, media_of)
+                    )
+                    for item in items
+                ]
+                # Stop at the first failure, not at the next future in order.
+                done, _ = wait(futures, return_when=FIRST_EXCEPTION)
+                for future in done:
                     future.result()
             except BaseException:
                 # A failed search or Ctrl-C stops the run: drop the queued items.

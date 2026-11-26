@@ -497,3 +497,30 @@ def test_parallel_run_syncs_a_repeated_media_identifier_once(preflight_ok, caplo
     )
     assert dsp.calls == ["create"] * 3
     assert caplog.text.count("duplicate media identifier in this run") == 1
+
+
+def test_parallel_run_stops_at_the_first_failure(monkeypatch):
+    """A failure in a later item cancels the queue while an early item still runs."""
+    import threading
+
+    slow = threading.Event()
+    ran: list[int] = []
+
+    def fake_sync_item(ctx, item, media_of):
+        if item.id == 0:
+            slow.wait(timeout=0.5)
+        elif item.id == 1:
+            raise DspError("search failed")
+        else:
+            ran.append(item.id)
+
+    monkeypatch.setattr(sync, "sync_item", fake_sync_item)
+    items = [OmekaRecord.parse({"o:id": n}) for n in range(10)]
+    settings = SETTINGS.model_copy(update={"sync_workers": 2})
+    dsp = RunDsp(SETTINGS, requests.Session())
+    with pytest.raises(DspError):
+        sync._sync_parallel(
+            settings, context(dsp), items, lambda item: [], dsp.session, True
+        )
+    # The failed worker can take one more item before the queue is cancelled.
+    assert len(ran) <= 1
