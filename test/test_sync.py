@@ -422,19 +422,31 @@ class RunDsp(FakeDsp):
         return {}
 
 
-def run_snapshot(monkeypatch, tmp_path, identifiers):
-    """Run a snapshot of items with these identifiers. Return (DSP, error count)."""
+def run_snapshot(monkeypatch, tmp_path, identifiers, media=(), workers=1):
+    """Run a snapshot of items with these identifiers. Return (DSP, error count).
+
+    media holds (media identifier, item number) pairs.
+    """
     items = [
         {"o:id": n, "dcterms:identifier": [{"@value": i}]}
         for n, i in enumerate(identifiers, start=1)
     ]
     (tmp_path / "items.json").write_text(json.dumps(items))
-    (tmp_path / "media.json").write_text("[]")
-    dsp = RunDsp(SETTINGS, requests.Session())
+    media_records = [
+        {
+            "o:id": 100 + n,
+            "dcterms:identifier": [{"@value": i}],
+            "o:item": {"o:id": item},
+        }
+        for n, (i, item) in enumerate(media)
+    ]
+    (tmp_path / "media.json").write_text(json.dumps(media_records))
+    settings = SETTINGS.model_copy(update={"sync_workers": workers})
+    dsp = RunDsp(settings, requests.Session())
     monkeypatch.setattr(sync, "Dsp", type("Login", (), {"login": lambda *a: dsp}))
     omeka = OmekaClient(SETTINGS.omeka_api_url, transport=FakeOmeka())
     errors = sync.run(
-        SETTINGS, Selection(tmp_path), Options(), requests.Session(), omeka
+        settings, Selection(tmp_path), Options(), requests.Session(), omeka
     )
     return dsp, errors
 
@@ -460,3 +472,28 @@ def test_media_identifier_is_synced_once(preflight_ok):
     sync.sync_media(ctx, CSV, "parent")
     sync.sync_media(ctx, CSV, "parent")
     assert dsp.calls.count("create") == 1
+
+
+def test_parallel_run_syncs_every_item_once(monkeypatch, tmp_path, preflight_ok):
+    identifiers = [f"abb{n}" for n in range(1, 21)]
+    media = [(f"m{n}", n) for n in range(1, 21)]
+    one, _ = run_snapshot(monkeypatch, tmp_path, identifiers, media, workers=1)
+    many, errors = run_snapshot(monkeypatch, tmp_path, identifiers, media, workers=4)
+    assert sorted(many.calls) == sorted(one.calls) == ["create"] * 40 and errors == 0
+    assert len(many.bodies) == 40
+
+
+def test_parallel_run_syncs_a_repeated_media_identifier_once(preflight_ok, caplog):
+    # A snapshot drops repeats at load. The Omeka API path can still return one.
+    dsp = RunDsp(SETTINGS, requests.Session())
+    items = [
+        OmekaRecord.parse({"o:id": n, "dcterms:identifier": [{"@value": f"abb{n}"}]})
+        for n in (1, 2)
+    ]
+    media = OmekaRecord.parse({"o:id": 9, "dcterms:identifier": [{"@value": "m1"}]})
+    settings = SETTINGS.model_copy(update={"sync_workers": 4})
+    sync._sync_parallel(
+        settings, context(dsp), items, lambda item: [media], dsp.session, True
+    )
+    assert dsp.calls == ["create"] * 3
+    assert caplog.text.count("duplicate media identifier in this run") == 1

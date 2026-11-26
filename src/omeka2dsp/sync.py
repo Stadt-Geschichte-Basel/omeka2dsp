@@ -1,9 +1,13 @@
 """Connect the parts: sync one item, then its media."""
 
+import dataclasses
 import logging
 import random
 import tempfile
+import threading
+import time
 from collections.abc import Callable, Mapping
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -29,6 +33,9 @@ from omeka2dsp.settings import Settings
 from omeka2dsp.values import OmekaRecord, describe
 
 log = logging.getLogger(__name__)
+
+# Guards the check-then-add on Context.synced_media.
+_media_lock = threading.Lock()
 
 MediaOf = Callable[[OmekaRecord], list[OmekaRecord]]
 
@@ -96,8 +103,12 @@ def load(
     else:
         items = _without_duplicates(omeka.api_items(settings, omeka_client), "items")
 
+        listing = threading.Lock()
+
         def media_of(item: OmekaRecord) -> list[OmekaRecord]:
-            return omeka.api_media(omeka_client, item)
+            # Workers share this client for the media listing.
+            with listing:
+                return omeka.api_media(omeka_client, item)
 
     if selection.ids is not None:
         items = omeka.select(items, set(selection.ids))
@@ -131,17 +142,67 @@ def _run(
     session: requests.Session | None,
     omeka_client: OmekaClient | None,
 ) -> None:
-    session = session if session is not None else retry_session(settings)
+    own_session = session if session is not None else retry_session(settings)
     with omeka_client if omeka_client is not None else omeka.client(settings) as client:
         items, media_of = load(settings, client, selection)
-        dsp = Dsp.login(settings, session)
+        dsp = Dsp.login(settings, own_session)
         project = dsp.project()
         lists, ontology = dsp.lists(project), dsp.ontology(project)
         context = Context(dsp, project, lists, ontology, client, options)
         if options.dry_run:
             log.info("Dry run: no writes to DSP")
-        for item in items:
-            sync_item(context, item, media_of)
+        if settings.sync_workers == 1:
+            for item in items:
+                sync_item(context, item, media_of)
+        else:
+            _sync_parallel(
+                settings, context, items, media_of, session, omeka_client is not None
+            )
+
+
+def _sync_parallel(
+    settings: Settings,
+    context: Context,
+    items: list[OmekaRecord],
+    media_of: MediaOf,
+    session: requests.Session | None,
+    omeka_injected: bool,
+) -> None:
+    """Sync the items in worker threads. Each thread has its own clients.
+
+    A caller that injects a session or an Omeka client gets it in every thread.
+    """
+    local = threading.local()
+    created: list[OmekaClient] = []
+
+    def start_worker() -> None:
+        dsp, client = context.dsp, context.omeka
+        if session is None:
+            dsp = dataclasses.replace(dsp, session=retry_session(settings))
+        if not omeka_injected:
+            client = omeka.client(settings)
+            created.append(client)
+        # replace() keeps the same synced_media set in every context.
+        local.context = dataclasses.replace(context, dsp=dsp, omeka=client)
+
+    try:
+        with ThreadPoolExecutor(
+            max_workers=settings.sync_workers, initializer=start_worker
+        ) as pool:
+            futures = [
+                pool.submit(lambda item=item: sync_item(local.context, item, media_of))
+                for item in items
+            ]
+            try:
+                for future in futures:
+                    future.result()
+            except BaseException:
+                # A failed search or Ctrl-C stops the run: drop the queued items.
+                pool.shutdown(cancel_futures=True)
+                raise
+    finally:
+        for client in created:
+            client.close()
 
 
 def _checked(context: Context, label: str, body: JsonLd, record: OmekaRecord) -> bool:
@@ -268,12 +329,14 @@ def _ingest(context: Context, label: str, media: OmekaRecord) -> str | None:
         )
         return None
     size = media.size
+    started = time.monotonic()
     try:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "file"
             downloaded = context.omeka.download(url, path)
             content = path.read_bytes()
             size = size if size is not None else len(content)
+        download_s = time.monotonic() - started
         if is_placeholder_file(content):
             log.error(f"{url}: file is the placeholder image; not uploaded")
             return None
@@ -281,7 +344,13 @@ def _ingest(context: Context, label: str, media: OmekaRecord) -> str | None:
             # An error or login page must never become a private original.
             log.error(f"{label}: downloaded file does not match o:sha256; not uploaded")
             return None
-        return context.dsp.ingest(name, content)
+        started = time.monotonic()
+        filename = context.dsp.ingest(name, content)
+        log.info(
+            f"{label}: ingested as {filename} ({_megabytes(size)} MB, "
+            f"download {download_s:.1f} s, ingest {time.monotonic() - started:.1f} s)"
+        )
+        return filename
     except (OmekaError, OSError, requests.RequestException, DspError) as error:
         shown = f"{_megabytes(size)} MB" if size is not None else "size unknown"
         log.error(f"{label}: file transfer failed ({shown}): {error}")
@@ -290,11 +359,13 @@ def _ingest(context: Context, label: str, media: OmekaRecord) -> str | None:
 
 def sync_media(context: Context, media: OmekaRecord, parent_iri: str | None) -> None:
     label, project, dry_run = media.identifier, context.project, context.options.dry_run
-    if label in context.synced_media:
+    with _media_lock:
+        duplicate = label in context.synced_media
+        if label and not duplicate:
+            context.synced_media.add(label)
+    if duplicate:
         log.error(f"{label}: duplicate media identifier in this run; skipped")
         return
-    if label:
-        context.synced_media.add(label)
     wanted_class = media_class(media)
     if is_placeholder(media):
         log.info(f"{label}: placeholder -> metadata only")
@@ -345,7 +416,6 @@ def sync_media(context: Context, media: OmekaRecord, parent_iri: str | None) -> 
         if not filename:
             log.error(f"{label}: could not ingest the file; nothing changed")
             return
-        log.info(f"{label}: ingested as {filename}")
 
     if replace and iri:
         old = context.dsp.resource(iri)
